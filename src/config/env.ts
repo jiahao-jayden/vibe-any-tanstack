@@ -4,7 +4,7 @@ try {
 } catch {}
 
 if (!viteEnv) {
-  const dotenv = require("dotenv")
+  const dotenv = await import("dotenv")
   dotenv.config({ path: ".env.local" })
   dotenv.config({ path: ".env.development" })
   dotenv.config({ path: ".env" })

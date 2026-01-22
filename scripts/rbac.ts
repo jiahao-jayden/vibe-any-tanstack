@@ -3,7 +3,7 @@ import { Command } from 'commander';
 import chalk from 'chalk';
 import figlet from 'figlet';
 import { eq, and } from 'drizzle-orm';
-import { db } from '@/db';
+import { db, closeDb } from '@/db';
 import { permission, role, rolePermission, userRole, user } from '@/db/';
 import { getUuid } from '@/shared/lib/tools/hash';
 
@@ -252,7 +252,7 @@ async function assignRole(options: { email?: string; userId?: string; role: stri
 
   if (!targetUser) {
     log('User not found', 'error');
-    process.exit(1);
+    return;
   }
 
   log(`User: ${targetUser.name} (${targetUser.email})`, 'info');
@@ -262,7 +262,7 @@ async function assignRole(options: { email?: string; userId?: string; role: stri
   if (!targetRole) {
     log(`Role not found: ${options.role}`, 'error');
     log('Available roles: ' + DEFAULT_ROLES.map((r) => r.name).join(', '), 'info');
-    process.exit(1);
+    return;
   }
 
   const [existing] = await db
@@ -272,7 +272,7 @@ async function assignRole(options: { email?: string; userId?: string; role: stri
 
   if (existing) {
     log(`User already has role: ${options.role}`, 'warn');
-    process.exit(0);
+    return;
   }
 
   let expiresAt: Date | undefined;
@@ -309,17 +309,17 @@ async function revokeRole(options: { email?: string; userId?: string; role: stri
 
   if (!targetUser) {
     log('User not found', 'error');
-    process.exit(1);
+    return;
   }
 
   const [targetRole] = await db.select().from(role).where(eq(role.name, options.role));
 
   if (!targetRole) {
     log(`Role not found: ${options.role}`, 'error');
-    process.exit(1);
+    return;
   }
 
-  const result = await db
+  await db
     .delete(userRole)
     .where(and(eq(userRole.userId, targetUser.id), eq(userRole.roleId, targetRole.id)));
 
@@ -383,7 +383,7 @@ async function listUserRoles(options: { email?: string; userId?: string }) {
 
   if (!targetUser) {
     log('User not found', 'error');
-    process.exit(1);
+    return;
   }
 
   log(`User: ${targetUser.name} (${targetUser.email})`, 'info');
@@ -427,7 +427,7 @@ async function checkPermission(options: { email?: string; userId?: string; permi
 
   if (!targetUser) {
     log('User not found', 'error');
-    process.exit(1);
+    return;
   }
 
   log(`User: ${targetUser.name}`, 'info');
@@ -461,7 +461,6 @@ async function checkPermission(options: { email?: string; userId?: string; permi
     .from(rolePermission)
     .where(eq(rolePermission.roleId, Array.from(allRoleIds)[0]));
 
-  const [resource, action] = options.permission.split(':');
   let hasPermission = false;
   let matchedRule: string | null = null;
 
@@ -565,9 +564,13 @@ ${chalk.gray('Examples:')}
 // ============================================================
 // Start
 // ============================================================
-await showBanner();
-program.parse(process.argv);
+try {
+  await showBanner();
+  await program.parseAsync(process.argv);
 
-if (process.argv.length === 2) {
-  program.help();
+  if (process.argv.length === 2) {
+    program.help();
+  }
+} finally {
+  await closeDb();
 }

@@ -1,4 +1,5 @@
 import { drizzle, type NodePgDatabase } from "drizzle-orm/node-postgres"
+import type { Pool } from "pg"
 
 export * from "./auth.schema"
 export * from "./config.schema"
@@ -39,6 +40,14 @@ export function getDb(): Database {
     _db = drizzle(url, { schema })
   }
   return _db
+}
+
+export async function closeDb(): Promise<void> {
+  if (_db) {
+    const client = (_db as unknown as { $client: Pool }).$client
+    await client.end()
+    _db = null
+  }
 }
 
 export const db = new Proxy({} as Database, {
