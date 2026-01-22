@@ -199,7 +199,11 @@ export class StripeAdapter implements PaymentAdapter {
       }
 
       default:
-        throw new Error(`Unhandled Stripe event type: ${event.type}`)
+        return {
+          type: "ignored",
+          provider: this.name,
+          rawEvent: event,
+        }
     }
   }
 
@@ -214,11 +218,7 @@ export class StripeAdapter implements PaymentAdapter {
       "charge.refunded": "refund.created",
     }
 
-    const mapped = mapping[stripeType]
-    if (!mapped) {
-      throw new Error(`Unknown Stripe event type: ${stripeType}`)
-    }
-    return mapped
+    return mapping[stripeType] || "ignored"
   }
 
   private buildPaymentInfoFromSession(session: Stripe.Checkout.Session): WebhookPaymentInfo {

@@ -397,6 +397,7 @@ function ConfigField({
             value={value as string}
             onChange={(e) => onChange(e.target.value)}
             disabled={isLocked}
+            autoComplete="off"
             className="min-h-20 w-full sm:w-80"
           />
         ) : config.type === "number" ? (
@@ -406,6 +407,7 @@ function ConfigField({
             value={value as number}
             onChange={(e) => onChange(Number(e.target.value))}
             disabled={isLocked}
+            autoComplete="off"
             className="w-full sm:w-40"
           />
         ) : (
@@ -415,6 +417,7 @@ function ConfigField({
             value={value as string}
             onChange={(e) => onChange(e.target.value)}
             disabled={isLocked}
+            autoComplete="off"
             className="w-full sm:w-80"
           />
         )}

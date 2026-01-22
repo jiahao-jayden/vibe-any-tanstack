@@ -1,14 +1,14 @@
 import { createServerFn } from "@tanstack/react-start"
 import { getRequestHeaders } from "@tanstack/react-start/server"
-import { and, eq } from "drizzle-orm"
+import { and, eq, or } from "drizzle-orm"
 import { z } from "zod"
 import { getPlanByPriceId, getPlans } from "@/config/payment-config"
 import { db } from "@/db"
 import { payment } from "@/db/payment.schema"
-import { PaymentService } from "@/integrations/payment"
+import { subscription } from "@/db/subscription.schema"
 import { auth } from "@/shared/lib/auth/auth-server"
 import { logger } from "@/shared/lib/tools/logger"
-import { PaymentTypes, PlanTypes } from "@/shared/types/payment"
+import type { PlanType } from "@/shared/types/payment"
 
 const userIdSchema = z.object({
   userId: z.string().min(1, { message: "User ID must be provided" }),
@@ -33,13 +33,16 @@ export const checkUserLifetimePurchaseAction = createServerFn({ method: "GET" })
     try {
       const plans = getPlans()
       const lifetimePlanIds = plans
-        .filter((plan) => plan.planType === PlanTypes.LIFETIME)
+        .filter((plan) => plan.planType === ("lifetime" satisfies PlanType))
         .map((plan) => plan.id)
 
       if (lifetimePlanIds.length === 0) {
         return {
-          success: false,
-          error: "No lifetime plans defined in the system",
+          success: true,
+          data: {
+            existsLifetimePayment: false,
+            lifetimePriceId: undefined,
+          },
         }
       }
 
@@ -47,18 +50,19 @@ export const checkUserLifetimePurchaseAction = createServerFn({ method: "GET" })
         .select({
           id: payment.id,
           priceId: payment.priceId,
-          type: payment.type,
+          paymentType: payment.paymentType,
         })
         .from(payment)
         .where(
           and(
             eq(payment.userId, userId),
-            eq(payment.type, PaymentTypes.ONE_TIME),
-            eq(payment.status, "completed")
+            eq(payment.paymentType, "one_time"),
+            eq(payment.status, "succeeded")
           )
         )
 
       const lifetimePayment = result.find((paymentRecord) => {
+        if (!paymentRecord.priceId) return false
         const plan = getPlanByPriceId(paymentRecord.priceId)
         return plan && lifetimePlanIds.includes(plan.id)
       })
@@ -99,29 +103,41 @@ export const getUserActiveSubscriptionAction = createServerFn({ method: "GET" })
     }
 
     try {
-      const paymentService = await PaymentService.create()
-
-      const subscriptions = await paymentService.getSubscriptionsByUserId({
-        userId: session.user.id,
-      })
-
-      let result = null
-
-      if (subscriptions && subscriptions.length > 0) {
-        const activeSubscription = subscriptions.find(
-          (subscription) => subscription.status === "active" || subscription.status === "trialing"
+      const subscriptions = await db
+        .select()
+        .from(subscription)
+        .where(
+          and(
+            eq(subscription.userId, session.user.id),
+            or(eq(subscription.status, "active"), eq(subscription.status, "trialing"))
+          )
         )
 
-        if (activeSubscription) {
-          logger.info(`Find active subscription for userId: ${session.user.id}`)
-          result = activeSubscription
-        } else {
-          logger.info(`No active subscription found for userId: ${session.user.id}`)
-        }
+      if (subscriptions.length === 0) {
+        logger.info(`No active subscription found for userId: ${session.user.id}`)
+        return { success: true, data: null }
       }
 
-      return { success: true, data: result }
+      const activeSubscription = subscriptions[0]
+      logger.info(`Find active subscription for userId: ${session.user.id}`)
+
+      return {
+        success: true,
+        data: {
+          id: activeSubscription.id,
+          status: activeSubscription.status,
+          priceId: activeSubscription.priceId,
+          interval: activeSubscription.interval,
+          currentPeriodStart: activeSubscription.currentPeriodStart,
+          currentPeriodEnd: activeSubscription.currentPeriodEnd,
+          cancelAtPeriodEnd: activeSubscription.cancelAtPeriodEnd,
+          trialStart: activeSubscription.trialStart,
+          trialEnd: activeSubscription.trialEnd,
+          createdAt: activeSubscription.createdAt,
+        },
+      }
     } catch (error) {
+      logger.error(`Get active subscription failed: ${error}`)
       return {
         success: false,
         message: "Get active subscription failed",

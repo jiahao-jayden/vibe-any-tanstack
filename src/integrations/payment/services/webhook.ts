@@ -17,6 +17,10 @@ import type { WebhookEvent } from "../types"
  * Process webhook event from payment provider
  */
 export async function processWebhookEvent(event: WebhookEvent): Promise<void> {
+  if (event.type === "ignored") {
+    return
+  }
+
   logger.info(`Processing webhook event: ${event.provider} - ${event.type}`)
 
   switch (event.type) {
@@ -47,9 +51,6 @@ export async function processWebhookEvent(event: WebhookEvent): Promise<void> {
     case "refund.created":
       await handleRefundCreated(event)
       break
-
-    default:
-      logger.warn(`Unhandled webhook event type: ${event.type}`)
   }
 }
 

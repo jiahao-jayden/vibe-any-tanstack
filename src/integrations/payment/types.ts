@@ -89,6 +89,7 @@ export type WebhookEventType =
   | "subscription.updated"
   | "subscription.canceled"
   | "refund.created"
+  | "ignored"
 
 /**
  * Webhook event
