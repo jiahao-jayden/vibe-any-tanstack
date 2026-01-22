@@ -87,7 +87,6 @@ function CreditPackagesPage() {
     mutationFn: async (data: FormData) => {
       const res = await fetch("/api/admin/credit-packages", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data),
       })
       const json = await res.json()

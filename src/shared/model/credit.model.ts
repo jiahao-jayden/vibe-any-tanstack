@@ -1,5 +1,5 @@
 import { and, asc, count, desc, eq, gte, isNull, or } from "drizzle-orm"
-import { db, type DbTransaction } from "@/db"
+import { type DbTransaction, db } from "@/db"
 import { credits } from "@/db/credit.schema"
 
 export async function insertCredits(data: typeof credits.$inferInsert, tx?: DbTransaction) {

@@ -37,6 +37,15 @@ export default {
     paymentProviderCreem: {
       label: t({ zh: "Creem", en: "Creem" }),
     },
+    paymentProviderPaypal: {
+      label: t({ zh: "PayPal", en: "PayPal" }),
+    },
+    paymentProviderWechat: {
+      label: t({ zh: "微信支付", en: "WeChat Pay" }),
+    },
+    paymentProviderAlipay: {
+      label: t({ zh: "支付宝", en: "Alipay" }),
+    },
     paymentStripeSecretKey: {
       label: t({ zh: "Stripe Secret Key", en: "Stripe Secret Key" }),
       description: t({ zh: "用于支付的 Secret Key", en: "Secret Key for payment" }),
@@ -56,6 +65,65 @@ export default {
     paymentCreemWebhookSecret: {
       label: t({ zh: "Creem Webhook Secret", en: "Creem Webhook Secret" }),
       description: t({ zh: "用于支付的 Webhook Secret", en: "Webhook Secret for payment" }),
+    },
+    // PayPal
+    paymentPaypalClientId: {
+      label: t({ zh: "PayPal Client ID", en: "PayPal Client ID" }),
+      description: t({ zh: "PayPal 应用客户端 ID", en: "PayPal application client ID" }),
+    },
+    paymentPaypalClientSecret: {
+      label: t({ zh: "PayPal Client Secret", en: "PayPal Client Secret" }),
+      description: t({ zh: "PayPal 应用客户端密钥", en: "PayPal application client secret" }),
+    },
+    paymentPaypalWebhookId: {
+      label: t({ zh: "PayPal Webhook ID", en: "PayPal Webhook ID" }),
+      description: t({ zh: "PayPal Webhook ID", en: "PayPal Webhook ID" }),
+    },
+    paymentPaypalSandbox: {
+      label: t({ zh: "PayPal 沙盒模式", en: "PayPal Sandbox Mode" }),
+      description: t({ zh: "是否使用 PayPal 沙盒环境", en: "Whether to use PayPal sandbox environment" }),
+    },
+    // WeChat Pay
+    paymentWechatAppId: {
+      label: t({ zh: "微信 App ID", en: "WeChat App ID" }),
+      description: t({ zh: "微信支付应用 ID", en: "WeChat Pay application ID" }),
+    },
+    paymentWechatMchId: {
+      label: t({ zh: "微信商户号", en: "WeChat Merchant ID" }),
+      description: t({ zh: "微信支付商户号", en: "WeChat Pay merchant ID" }),
+    },
+    paymentWechatApiKey: {
+      label: t({ zh: "微信 API 密钥", en: "WeChat API Key" }),
+      description: t({ zh: "微信支付 API 密钥", en: "WeChat Pay API key" }),
+    },
+    paymentWechatApiV3Key: {
+      label: t({ zh: "微信 API v3 密钥", en: "WeChat API v3 Key" }),
+      description: t({ zh: "微信支付 API v3 密钥", en: "WeChat Pay API v3 key" }),
+    },
+    paymentWechatSerialNo: {
+      label: t({ zh: "微信证书序列号", en: "WeChat Certificate Serial No" }),
+      description: t({ zh: "微信支付证书序列号", en: "WeChat Pay certificate serial number" }),
+    },
+    paymentWechatPrivateKey: {
+      label: t({ zh: "微信私钥", en: "WeChat Private Key" }),
+      description: t({ zh: "微信支付 API 私钥", en: "WeChat Pay API private key" }),
+    },
+    // Alipay
+    paymentAlipayAppId: {
+      label: t({ zh: "支付宝 App ID", en: "Alipay App ID" }),
+      description: t({ zh: "支付宝应用 ID", en: "Alipay application ID" }),
+    },
+    paymentAlipayPrivateKey: {
+      label: t({ zh: "支付宝应用私钥", en: "Alipay Private Key" }),
+      description: t({ zh: "支付宝应用私钥", en: "Alipay application private key" }),
+    },
+    paymentAlipayPublicKey: {
+      label: t({ zh: "支付宝公钥", en: "Alipay Public Key" }),
+      description: t({ zh: "支付宝公钥", en: "Alipay public key" }),
+    },
+    paymentAlipaySandbox: {
+      label: t({ zh: "支付宝沙盒模式", en: "Alipay Sandbox Mode" }),
+      description: t({ zh: "是否使用支付宝沙盒环境", en: "Whether to use Alipay sandbox environment" }),
     },
     creditEnable: {
       label: t({ zh: "启用积分系统", en: "Enable Credit System" }),
@@ -109,6 +177,15 @@ export default {
       },
       paymentCreem: {
         title: t({ zh: "Creem 配置", en: "Creem Configuration" }),
+      },
+      paymentPaypal: {
+        title: t({ zh: "PayPal 配置", en: "PayPal Configuration" }),
+      },
+      paymentWechat: {
+        title: t({ zh: "微信支付配置", en: "WeChat Pay Configuration" }),
+      },
+      paymentAlipay: {
+        title: t({ zh: "支付宝配置", en: "Alipay Configuration" }),
       },
       creditBasic: {
         title: t({ zh: "基本设置", en: "Basic Settings" }),

@@ -4,7 +4,7 @@ import { ChevronLeftIcon, Eye, EyeOff, Loader2 } from "lucide-react"
 import type React from "react"
 import { useId, useState } from "react"
 import { toast } from "sonner"
-import { websiteConfig } from "@/config/website-config"
+import { siteConfig } from "@/config/site-config"
 import { LocalizedLink } from "@/shared/components/locale/localized-link"
 import { FloatingPaths } from "@/shared/components/login/floating-paths"
 import { Button } from "@/shared/components/ui/button"
@@ -25,7 +25,7 @@ function RouteComponent() {
   const [password, setPassword] = useState("")
   const [name, setName] = useState("")
   const [showPassword, setShowPassword] = useState(false)
-  const { title, author } = websiteConfig.metadata
+  const { title, author } = siteConfig
 
   const {
     googleMutation,

@@ -70,3 +70,6 @@ export const Resp = {
   json: <T = unknown>(code: number, message: string, data?: T) => createResponse(code, message, data),
 }
 ```
+
+# 类型
+数据库表中有的类型，应该在 shared/types 中推导，比如：

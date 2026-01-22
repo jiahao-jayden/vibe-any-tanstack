@@ -3,7 +3,7 @@
 import { useLocation } from "@tanstack/react-router"
 import { MenuIcon } from "lucide-react"
 import { useIntlayer } from "react-intlayer"
-import { websiteConfig } from "@/config/website-config"
+import { siteConfig } from "@/config/site-config"
 import { LocaleSwitcher } from "@/shared/components/locale/locale-switcher"
 import { LocalizedLink } from "@/shared/components/locale/localized-link"
 import { Button } from "@/shared/components/ui/button"
@@ -27,7 +27,7 @@ import { UserMenu } from "./user-menu"
 export const LandingHeader = () => {
   const { header } = useIntlayer("landing")
   const location = useLocation()
-  const { title, images } = websiteConfig.metadata
+  const { title, images } = siteConfig
 
   const items = header.items.map((item, index) => ({
     id: `${index}`,

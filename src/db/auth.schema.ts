@@ -1,12 +1,20 @@
 import { relations } from "drizzle-orm"
-import { boolean, index, pgTable, text, timestamp } from "drizzle-orm/pg-core"
+import { boolean, index, jsonb, pgTable, text, timestamp } from "drizzle-orm/pg-core"
+
+export type ProviderCustomers = {
+  stripe?: string
+  creem?: string
+  paypal?: string
+  wechat?: string
+  alipay?: string
+}
 
 export const user = pgTable("user", {
   id: text("id").primaryKey(),
   name: text("name").notNull(),
   email: text("email").notNull().unique(),
   emailVerified: boolean("email_verified").default(false).notNull(),
-  customerId: text("customer_id").unique(),
+  providerCustomers: jsonb("provider_customers").$type<ProviderCustomers>(),
   image: text("image"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at")

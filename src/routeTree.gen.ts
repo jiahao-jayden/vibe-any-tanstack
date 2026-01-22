@@ -24,7 +24,6 @@ import { Route as Char123LocaleChar125AdminUsersRouteImport } from './routes/{-$
 import { Route as Char123LocaleChar125AdminProductsRouteImport } from './routes/{-$locale}/admin/products'
 import { Route as Char123LocaleChar125AdminCreditPackagesRouteImport } from './routes/{-$locale}/admin/credit-packages'
 import { Route as Char123LocaleChar125AdminConfigRouteImport } from './routes/{-$locale}/admin/config'
-import { Route as ApiPaymentWebhookRouteImport } from './routes/api/payment/webhook'
 import { Route as ApiPaymentCheckoutRouteImport } from './routes/api/payment/checkout'
 import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
 import { Route as ApiAdminUsersRouteImport } from './routes/api/admin/users'
@@ -35,6 +34,7 @@ import { Route as Char123LocaleChar125LandingDocsIndexRouteImport } from './rout
 import { Route as Char123LocaleChar125LandingChatIndexRouteImport } from './routes/{-$locale}/_landing/chat/index'
 import { Route as Char123LocaleChar125LandingChangelogIndexRouteImport } from './routes/{-$locale}/_landing/changelog/index'
 import { Route as Char123LocaleChar125LandingBlogIndexRouteImport } from './routes/{-$locale}/_landing/blog/index'
+import { Route as ApiPaymentWebhookProviderRouteImport } from './routes/api/payment/webhook.$provider'
 
 const Char123LocaleChar125RouteRoute =
   Char123LocaleChar125RouteRouteImport.update({
@@ -121,11 +121,6 @@ const Char123LocaleChar125AdminConfigRoute =
     path: '/config',
     getParentRoute: () => Char123LocaleChar125AdminRouteRoute,
   } as any)
-const ApiPaymentWebhookRoute = ApiPaymentWebhookRouteImport.update({
-  id: '/api/payment/webhook',
-  path: '/api/payment/webhook',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const ApiPaymentCheckoutRoute = ApiPaymentCheckoutRouteImport.update({
   id: '/api/payment/checkout',
   path: '/api/payment/checkout',
@@ -181,6 +176,12 @@ const Char123LocaleChar125LandingBlogIndexRoute =
     path: '/blog/',
     getParentRoute: () => Char123LocaleChar125LandingRouteRoute,
   } as any)
+const ApiPaymentWebhookProviderRoute =
+  ApiPaymentWebhookProviderRouteImport.update({
+    id: '/api/payment/webhook/$provider',
+    path: '/api/payment/webhook/$provider',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/{-$locale}': typeof Char123LocaleChar125LandingRouteRouteWithChildren
@@ -193,7 +194,6 @@ export interface FileRoutesByFullPath {
   '/api/admin/users': typeof ApiAdminUsersRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/api/payment/checkout': typeof ApiPaymentCheckoutRoute
-  '/api/payment/webhook': typeof ApiPaymentWebhookRoute
   '/{-$locale}/admin/config': typeof Char123LocaleChar125AdminConfigRoute
   '/{-$locale}/admin/credit-packages': typeof Char123LocaleChar125AdminCreditPackagesRoute
   '/{-$locale}/admin/products': typeof Char123LocaleChar125AdminProductsRoute
@@ -203,6 +203,7 @@ export interface FileRoutesByFullPath {
   '/{-$locale}/': typeof Char123LocaleChar125LandingIndexRoute
   '/{-$locale}/admin/': typeof Char123LocaleChar125AdminIndexRoute
   '/{-$locale}/login': typeof Char123LocaleChar125LoginIndexRoute
+  '/api/payment/webhook/$provider': typeof ApiPaymentWebhookProviderRoute
   '/{-$locale}/blog': typeof Char123LocaleChar125LandingBlogIndexRoute
   '/{-$locale}/changelog': typeof Char123LocaleChar125LandingChangelogIndexRoute
   '/{-$locale}/chat': typeof Char123LocaleChar125LandingChatIndexRoute
@@ -219,7 +220,6 @@ export interface FileRoutesByTo {
   '/api/admin/users': typeof ApiAdminUsersRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/api/payment/checkout': typeof ApiPaymentCheckoutRoute
-  '/api/payment/webhook': typeof ApiPaymentWebhookRoute
   '/{-$locale}/admin/config': typeof Char123LocaleChar125AdminConfigRoute
   '/{-$locale}/admin/credit-packages': typeof Char123LocaleChar125AdminCreditPackagesRoute
   '/{-$locale}/admin/products': typeof Char123LocaleChar125AdminProductsRoute
@@ -228,6 +228,7 @@ export interface FileRoutesByTo {
   '/api/user': typeof ApiUserIndexRoute
   '/{-$locale}/admin': typeof Char123LocaleChar125AdminIndexRoute
   '/{-$locale}/login': typeof Char123LocaleChar125LoginIndexRoute
+  '/api/payment/webhook/$provider': typeof ApiPaymentWebhookProviderRoute
   '/{-$locale}/blog': typeof Char123LocaleChar125LandingBlogIndexRoute
   '/{-$locale}/changelog': typeof Char123LocaleChar125LandingChangelogIndexRoute
   '/{-$locale}/chat': typeof Char123LocaleChar125LandingChatIndexRoute
@@ -247,7 +248,6 @@ export interface FileRoutesById {
   '/api/admin/users': typeof ApiAdminUsersRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/api/payment/checkout': typeof ApiPaymentCheckoutRoute
-  '/api/payment/webhook': typeof ApiPaymentWebhookRoute
   '/{-$locale}/admin/config': typeof Char123LocaleChar125AdminConfigRoute
   '/{-$locale}/admin/credit-packages': typeof Char123LocaleChar125AdminCreditPackagesRoute
   '/{-$locale}/admin/products': typeof Char123LocaleChar125AdminProductsRoute
@@ -257,6 +257,7 @@ export interface FileRoutesById {
   '/{-$locale}/_landing/': typeof Char123LocaleChar125LandingIndexRoute
   '/{-$locale}/admin/': typeof Char123LocaleChar125AdminIndexRoute
   '/{-$locale}/login/': typeof Char123LocaleChar125LoginIndexRoute
+  '/api/payment/webhook/$provider': typeof ApiPaymentWebhookProviderRoute
   '/{-$locale}/_landing/blog/': typeof Char123LocaleChar125LandingBlogIndexRoute
   '/{-$locale}/_landing/changelog/': typeof Char123LocaleChar125LandingChangelogIndexRoute
   '/{-$locale}/_landing/chat/': typeof Char123LocaleChar125LandingChatIndexRoute
@@ -276,7 +277,6 @@ export interface FileRouteTypes {
     | '/api/admin/users'
     | '/api/auth/$'
     | '/api/payment/checkout'
-    | '/api/payment/webhook'
     | '/{-$locale}/admin/config'
     | '/{-$locale}/admin/credit-packages'
     | '/{-$locale}/admin/products'
@@ -286,6 +286,7 @@ export interface FileRouteTypes {
     | '/{-$locale}/'
     | '/{-$locale}/admin/'
     | '/{-$locale}/login'
+    | '/api/payment/webhook/$provider'
     | '/{-$locale}/blog'
     | '/{-$locale}/changelog'
     | '/{-$locale}/chat'
@@ -302,7 +303,6 @@ export interface FileRouteTypes {
     | '/api/admin/users'
     | '/api/auth/$'
     | '/api/payment/checkout'
-    | '/api/payment/webhook'
     | '/{-$locale}/admin/config'
     | '/{-$locale}/admin/credit-packages'
     | '/{-$locale}/admin/products'
@@ -311,6 +311,7 @@ export interface FileRouteTypes {
     | '/api/user'
     | '/{-$locale}/admin'
     | '/{-$locale}/login'
+    | '/api/payment/webhook/$provider'
     | '/{-$locale}/blog'
     | '/{-$locale}/changelog'
     | '/{-$locale}/chat'
@@ -329,7 +330,6 @@ export interface FileRouteTypes {
     | '/api/admin/users'
     | '/api/auth/$'
     | '/api/payment/checkout'
-    | '/api/payment/webhook'
     | '/{-$locale}/admin/config'
     | '/{-$locale}/admin/credit-packages'
     | '/{-$locale}/admin/products'
@@ -339,6 +339,7 @@ export interface FileRouteTypes {
     | '/{-$locale}/_landing/'
     | '/{-$locale}/admin/'
     | '/{-$locale}/login/'
+    | '/api/payment/webhook/$provider'
     | '/{-$locale}/_landing/blog/'
     | '/{-$locale}/_landing/changelog/'
     | '/{-$locale}/_landing/chat/'
@@ -354,9 +355,9 @@ export interface RootRouteChildren {
   ApiAdminUsersRoute: typeof ApiAdminUsersRoute
   ApiAuthSplatRoute: typeof ApiAuthSplatRoute
   ApiPaymentCheckoutRoute: typeof ApiPaymentCheckoutRoute
-  ApiPaymentWebhookRoute: typeof ApiPaymentWebhookRoute
   ApiConfigIndexRoute: typeof ApiConfigIndexRoute
   ApiUserIndexRoute: typeof ApiUserIndexRoute
+  ApiPaymentWebhookProviderRoute: typeof ApiPaymentWebhookProviderRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -466,13 +467,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof Char123LocaleChar125AdminConfigRouteImport
       parentRoute: typeof Char123LocaleChar125AdminRouteRoute
     }
-    '/api/payment/webhook': {
-      id: '/api/payment/webhook'
-      path: '/api/payment/webhook'
-      fullPath: '/api/payment/webhook'
-      preLoaderRoute: typeof ApiPaymentWebhookRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/api/payment/checkout': {
       id: '/api/payment/checkout'
       path: '/api/payment/checkout'
@@ -542,6 +536,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/{-$locale}/blog'
       preLoaderRoute: typeof Char123LocaleChar125LandingBlogIndexRouteImport
       parentRoute: typeof Char123LocaleChar125LandingRouteRoute
+    }
+    '/api/payment/webhook/$provider': {
+      id: '/api/payment/webhook/$provider'
+      path: '/api/payment/webhook/$provider'
+      fullPath: '/api/payment/webhook/$provider'
+      preLoaderRoute: typeof ApiPaymentWebhookProviderRouteImport
+      parentRoute: typeof rootRouteImport
     }
   }
 }
@@ -632,9 +633,9 @@ const rootRouteChildren: RootRouteChildren = {
   ApiAdminUsersRoute: ApiAdminUsersRoute,
   ApiAuthSplatRoute: ApiAuthSplatRoute,
   ApiPaymentCheckoutRoute: ApiPaymentCheckoutRoute,
-  ApiPaymentWebhookRoute: ApiPaymentWebhookRoute,
   ApiConfigIndexRoute: ApiConfigIndexRoute,
   ApiUserIndexRoute: ApiUserIndexRoute,
+  ApiPaymentWebhookProviderRoute: ApiPaymentWebhookProviderRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

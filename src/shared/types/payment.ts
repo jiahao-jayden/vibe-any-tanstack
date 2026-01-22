@@ -1,27 +1,77 @@
-export type PaymentProviderType = "stripe" | "creem"
+import type { paymentStatusEnum, paymentTypeEnum } from "@/db/payment.schema"
+import type {
+  paymentProviderEnum,
+  subscriptionIntervalEnum,
+  subscriptionStatusEnum,
+} from "@/db/subscription.schema"
 
 /**
- * Interval types for subscription plans
+ * Payment Provider - inferred from database enum
+ */
+export type PaymentProvider = (typeof paymentProviderEnum.enumValues)[number]
+
+/**
+ * Subscription Interval - inferred from database enum
+ */
+export type SubscriptionInterval = (typeof subscriptionIntervalEnum.enumValues)[number]
+
+/**
+ * Subscription Status - inferred from database enum
+ */
+export type SubscriptionStatus = (typeof subscriptionStatusEnum.enumValues)[number]
+
+/**
+ * Payment Type - inferred from database enum
+ */
+export type PaymentType = (typeof paymentTypeEnum.enumValues)[number]
+
+/**
+ * Payment Status - inferred from database enum
+ */
+export type PaymentStatus = (typeof paymentStatusEnum.enumValues)[number]
+
+/**
+ * Webhook Event Types
+ */
+export type PaymentEventType =
+  | "checkout.completed"
+  | "payment.succeeded"
+  | "payment.failed"
+  | "subscription.created"
+  | "subscription.updated"
+  | "subscription.canceled"
+  | "subscription.renewed"
+  | "refund.created"
+
+/**
+ * Subscription Cycle Type - distinguishes first payment vs renewal
+ */
+export type SubscriptionCycleType = "create" | "renewal"
+
+/**
+ * Plan Types (for local config)
+ */
+export type PlanType = "free" | "subscription" | "lifetime"
+
+/**
+ * Legacy types for backward compatibility
+ * @deprecated Use PaymentType instead
  */
 export enum PlanIntervals {
   MONTH = "month",
   YEAR = "year",
 }
 
-export type PlanInterval = PlanIntervals.MONTH | PlanIntervals.YEAR
-
 /**
- * Payment type (subscription or one-time)
+ * @deprecated Use PaymentType instead
  */
 export enum PaymentTypes {
   SUBSCRIPTION = "subscription",
   ONE_TIME = "one_time",
 }
 
-export type PaymentType = PaymentTypes.SUBSCRIPTION | PaymentTypes.ONE_TIME
-
 /**
- * Plan type enumeration (for local config plans only)
+ * @deprecated Use PlanType instead
  */
 export enum PlanTypes {
   FREE = "free",
@@ -29,106 +79,163 @@ export enum PlanTypes {
   LIFETIME = "lifetime",
 }
 
-/**
- * Subscription or one-time payment status
- */
-export type PaymentStatus =
-  // Active States
-  | "active" // Subscription is active and user has normal access
-  | "trialing" // Subscription is in trial period with free access
-  | "paused" // Subscription is paused, service temporarily stopped but can be resumed
-
-  // Completed States
-  | "completed" // One-time payment completed successfully
-
-  // Failed/Incomplete States
-  | "failed" // Payment failed, possibly due to insufficient funds, card issues, etc.
-  | "incomplete" // Payment not completed, requires further user action
-  | "incomplete_expired" // Payment not completed and expired, user needs to restart payment process
-  | "past_due" // Payment is past due, recurring payment failed but subscription not canceled
-  | "unpaid" // Payment failed, unpaid status
-
-  // Terminated States
-  | "canceled" // Subscription has been canceled, no longer renewing
-  | "processing" // Payment is processing, not yet completed
+export type PlanInterval = SubscriptionInterval
 
 /**
- * Providers and adapter types
+ * Adapter Capabilities - what each provider supports
  */
-export type PaymentProvider = "stripe" | "creem"
-
-export type PaymentAdapterType = "stripe" | "creem"
-
-/**
- * Payment configuration
- */
-export type PaymentConfig = {
-  enabled: boolean
-  provider: PaymentProvider
-  createCustomerOnSignUp: boolean
-  stripe?: {
-    secretKey: string
-    webhookSecret: string
-  }
+export interface AdapterCapabilities {
+  subscription: boolean
+  oneTime: boolean
+  customerPortal: boolean
+  refund: boolean
 }
 
 /**
- * Customer
+ * Provider Customers - stored in user table
  */
-export type Customer = {
-  id: string
+export interface ProviderCustomers {
+  stripe?: string
+  creem?: string
+  paypal?: string
+  wechat?: string
+  alipay?: string
+}
+
+/**
+ * Create Checkout Parameters
+ */
+export interface CreateCheckoutParams {
+  provider?: PaymentProvider
+  planId: string
+  priceId: string
   email: string
-  name?: string
-  metadata?: Record<string, any>
+  userId: string
+  successUrl: string
+  cancelUrl?: string
+  metadata?: Record<string, string>
 }
 
 /**
- * Price definition for a plan
+ * Checkout Result
  */
-export type Price = {
-  type: PaymentType
+export interface CheckoutResult {
+  provider: PaymentProvider
+  sessionId: string
+  checkoutUrl: string
+}
+
+/**
+ * Webhook Event - unified event structure from all providers
+ */
+export interface WebhookEvent {
+  type: PaymentEventType
+  provider: PaymentProvider
+  payment?: WebhookPaymentInfo
+  subscription?: WebhookSubscriptionInfo
+  rawEvent: unknown
+}
+
+export interface WebhookPaymentInfo {
+  providerPaymentId: string
+  providerInvoiceId?: string
   amount: number
   currency: string
-  interval?: PlanInterval
-  trialPeriodDays?: number
-  priceId: string
-  disabled?: boolean
+  status: PaymentStatus
+  cycleType?: SubscriptionCycleType
+  metadata?: Record<string, string>
+}
+
+export interface WebhookSubscriptionInfo {
+  providerSubscriptionId: string
+  providerCustomerId: string
+  status: SubscriptionStatus
+  currentPeriodStart: Date
+  currentPeriodEnd: Date
+  cancelAtPeriodEnd?: boolean
+  metadata?: Record<string, string>
 }
 
 /**
- * Plan definition
+ * Subscription Data (from database)
  */
-export type Plan = {
+export interface Subscription {
   id: string
-  name?: string
-  description?: string
-  features?: string[]
-  prices: Price[]
-  recommended?: boolean
-  popular?: boolean
-  disabled?: boolean
+  provider: PaymentProvider
+  providerSubscriptionId?: string
+  providerCustomerId?: string
+  userId: string
+  planId: string
+  priceId: string
+  status: SubscriptionStatus
+  interval?: SubscriptionInterval
+  amount?: string
+  currency?: string
+  currentPeriodStart?: Date
+  currentPeriodEnd?: Date
+  cancelAtPeriodEnd?: boolean
+  canceledAt?: Date
+  cancelReason?: string
+  trialStart?: Date
+  trialEnd?: Date
+  createdAt: Date
+  updatedAt?: Date
 }
 
-export type Credit = {
+/**
+ * Payment Record (from database)
+ */
+export interface Payment {
+  id: string
+  provider: PaymentProvider
+  providerPaymentId?: string
+  providerInvoiceId?: string
+  userId: string
+  subscriptionId?: string
+  paymentType: PaymentType
+  amount: number
+  currency: string
+  status: PaymentStatus
+  planId?: string
+  priceId?: string
+  refundedAt?: Date
+  refundAmount?: number
+  metadata?: Record<string, string>
+  createdAt: Date
+  updatedAt?: Date
+}
+
+/**
+ * Customer Portal Result
+ */
+export interface CustomerPortalResult {
+  url: string
+}
+
+/**
+ * Credit configuration in plan
+ */
+export interface Credit {
   amount: number
   expireDays?: number
 }
 
 /**
- * Plan price configuration
+ * Plan Price Configuration
  */
-export type PlanPrice = {
+export interface PlanPrice {
   type: PaymentTypes
   priceId: string
   amount: number
   currency: string
   interval?: PlanInterval
+  trialPeriodDays?: number
 }
 
 /**
- * Plan display configuration (non-content, for UI rendering)
+ * Plan Display Configuration
  */
-export type PlanDisplay = {
+export interface PlanDisplay {
   originalPrice?: number
   isFeatured?: boolean
   isRecommended?: boolean
@@ -136,9 +243,9 @@ export type PlanDisplay = {
 }
 
 /**
- * Plan with price configuration (local config)
+ * Plan with Price Configuration (local config)
  */
-export type PlanWithPrice = {
+export interface PlanWithPrice {
   id: string
   planType: PlanTypes
   credit?: Credit
@@ -147,9 +254,9 @@ export type PlanWithPrice = {
 }
 
 /**
- * Credit package from database
+ * Credit Package (from database)
  */
-export type CreditPackage = {
+export interface CreditPackage {
   id: string
   name: string
   description: string | null
@@ -165,32 +272,38 @@ export type CreditPackage = {
 }
 
 /**
- * Subscription data
+ * Customer
  */
-export type Subscription = {
+export interface Customer {
   id: string
-  customerId: string
-  status: PaymentStatus
-  priceId: string
-  type: PaymentType
-  interval?: PlanInterval
-  currentPeriodStart?: Date
-  currentPeriodEnd?: Date
-  cancelAtPeriodEnd?: boolean
-  trialStartDate?: Date
-  trialEndDate?: Date
-  createdAt: Date
+  email: string
+  name?: string
+  metadata?: Record<string, unknown>
 }
 
 /**
- * Payment
+ * Price Definition
  */
-export type Payment = {
-  id: string
-  customerId: string
+export interface Price {
+  type: PaymentType
   amount: number
   currency: string
-  status: PaymentStatus
-  createdAt: Date
-  metadata?: Record<string, string>
+  interval?: PlanInterval
+  trialPeriodDays?: number
+  priceId: string
+  disabled?: boolean
+}
+
+/**
+ * Plan Definition
+ */
+export interface Plan {
+  id: string
+  name?: string
+  description?: string
+  features?: string[]
+  prices: Price[]
+  recommended?: boolean
+  popular?: boolean
+  disabled?: boolean
 }

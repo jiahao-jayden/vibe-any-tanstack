@@ -11,7 +11,7 @@ import {
 } from "@react-email/components"
 import { getTranslationContent, type Locale } from "intlayer"
 import { magicLinkEmailTranslations } from "@/config/locale/auth.content"
-import { websiteConfig } from "@/config/website-config"
+import { siteConfig } from "@/config/site-config"
 
 interface MagicLinkEmailProps {
   magicLink: string
@@ -19,7 +19,7 @@ interface MagicLinkEmailProps {
 }
 
 export function MagicLinkEmail({ magicLink, locale = "en" }: MagicLinkEmailProps) {
-  const { title } = websiteConfig.metadata
+  const { title } = siteConfig
   const i18n = magicLinkEmailTranslations
   const t = {
     preview: getTranslationContent(i18n.preview, locale as Locale),

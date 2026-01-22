@@ -3,6 +3,7 @@ import { drizzle, type NodePgDatabase } from "drizzle-orm/node-postgres"
 export * from "./auth.schema"
 export * from "./config.schema"
 export * from "./credit.schema"
+export * from "./subscription.schema"
 export * from "./payment.schema"
 export * from "./rbac.schema"
 
@@ -10,6 +11,7 @@ import { env } from "@/config/env"
 import * as authSchema from "./auth.schema"
 import * as configSchema from "./config.schema"
 import * as creditSchema from "./credit.schema"
+import * as subscriptionSchema from "./subscription.schema"
 import * as paymentSchema from "./payment.schema"
 import * as rbacSchema from "./rbac.schema"
 
@@ -17,6 +19,7 @@ const schema = {
   ...authSchema,
   ...configSchema,
   ...creditSchema,
+  ...subscriptionSchema,
   ...paymentSchema,
   ...rbacSchema,
 }

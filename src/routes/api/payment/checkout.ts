@@ -1,10 +1,12 @@
 import { createFileRoute } from "@tanstack/react-router"
 import { env } from "@/config/env"
-import { PaymentService } from "@/integrations/payment"
+import { getPlanById, getPriceById } from "@/config/payment-config"
+import { getDefaultPaymentAdapter, getPaymentAdapter } from "@/integrations/payment/"
 import { auth } from "@/shared/lib/auth/auth-server"
 import { logger } from "@/shared/lib/tools/logger"
 import { Resp } from "@/shared/lib/tools/response"
 import { authMiddleware } from "@/shared/middleware/auth"
+import type { PaymentProvider } from "@/shared/types/payment"
 
 export const Route = createFileRoute("/api/payment/checkout")({
   server: {
@@ -12,7 +14,6 @@ export const Route = createFileRoute("/api/payment/checkout")({
     handlers: {
       POST: async ({ request }: { request: Request }) => {
         try {
-          // Verify authentication
           const session = await auth.api.getSession({
             headers: request.headers,
           })
@@ -22,34 +23,61 @@ export const Route = createFileRoute("/api/payment/checkout")({
           }
 
           const body = await request.json()
-          logger.info("Full body:", body)
-
-          const { planId, priceId, successUrl, cancelUrl, metadata } = body
+          const { planId, priceId, provider, successUrl, cancelUrl, metadata } = body
 
           if (!planId || !priceId) {
-            logger.error("Missing params - planId:", planId, "priceId:", priceId)
-            return Resp.error("Missing required parameters: planId and priceId")
+            return Resp.error("Missing required parameters: planId and priceId", 400)
           }
-          logger.info("Extracted params:", { planId, priceId, successUrl, cancelUrl, metadata })
 
-          const paymentService = await PaymentService.create()
-          const result = await paymentService.createCheckout({
+          const plan = getPlanById(planId)
+          if (!plan) {
+            return Resp.error(`Plan not found: ${planId}`, 400)
+          }
+
+          const price = getPriceById(planId, priceId)
+          if (!price) {
+            return Resp.error(`Price not found: ${priceId}`, 400)
+          }
+
+          const adapter = provider
+            ? await getPaymentAdapter(provider as PaymentProvider)
+            : await getDefaultPaymentAdapter()
+
+          const paymentType = price.type === "subscription" ? "subscription" : "one_time"
+
+          if (paymentType === "subscription" && !adapter.capabilities.subscription) {
+            return Resp.error(`Provider ${adapter.name} does not support subscriptions`, 400)
+          }
+
+          if (paymentType === "one_time" && !adapter.capabilities.oneTime) {
+            return Resp.error(`Provider ${adapter.name} does not support one-time payments`, 400)
+          }
+
+          const result = await adapter.createCheckout({
+            type: paymentType,
             planId,
             priceId,
             email: session.user.email,
+            userId: session.user.id,
             successUrl: successUrl || `${env.BETTER_AUTH_URL}/dashboard?success=true`,
             cancelUrl: cancelUrl || `${env.BETTER_AUTH_URL}/pricing`,
             metadata: {
-              userId: session.user.id,
-              planId,
               ...metadata,
+              planId,
+              priceId,
             },
           })
 
-          return Resp.success(result)
+          logger.info(`Checkout created: ${adapter.name} - ${result.sessionId}`)
+
+          return Resp.success({
+            provider: adapter.name,
+            ...result,
+          })
         } catch (error) {
           logger.error("Error creating checkout:", error)
-          return Resp.error("Failed to create checkout session")
+          const message = error instanceof Error ? error.message : "Unknown error"
+          return Resp.error(`Failed to create checkout: ${message}`, 500)
         }
       },
     },

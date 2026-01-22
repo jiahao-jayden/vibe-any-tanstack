@@ -1,52 +1,50 @@
 import { getAllConfigs } from "@/shared/model/config.model"
-import { CreemAdapter } from "./adapter/creem"
-import type { PaymentAdapter } from "./adapter/interface"
-import { StripeAdapter } from "./adapter/stripe"
+import type { PaymentProvider } from "@/shared/types/payment"
+import { StripeAdapter } from "./adapters/stripe"
+import type { PaymentAdapter } from "./types"
 
-export class PaymentService {
-  private readonly adapter: PaymentAdapter
-  public readonly provider: string
+export type { PaymentAdapter } from "./types"
+export * from "./types"
 
-  private constructor(adapter: PaymentAdapter, provider: string) {
-    this.adapter = adapter
-    this.provider = provider
+/**
+ * Get payment adapter by provider name
+ */
+export async function getPaymentAdapter(provider: PaymentProvider): Promise<PaymentAdapter> {
+  const configs = await getAllConfigs()
+
+  switch (provider) {
+    case "stripe":
+      return new StripeAdapter({
+        secretKey: configs.payment_stripe_secret_key,
+        webhookSecret: configs.payment_stripe_webhook_secret,
+      })
+
+    case "creem":
+      // TODO: Implement CreemAdapter
+      throw new Error("Creem adapter not implemented yet")
+
+    case "paypal":
+      // TODO: Implement PayPalAdapter
+      throw new Error("PayPal adapter not implemented yet")
+
+    case "wechat":
+      // TODO: Implement WechatAdapter
+      throw new Error("WeChat adapter not implemented yet")
+
+    case "alipay":
+      // TODO: Implement AlipayAdapter
+      throw new Error("Alipay adapter not implemented yet")
+
+    default:
+      throw new Error(`Unsupported payment provider: ${provider}`)
   }
+}
 
-  static async create(): Promise<PaymentService> {
-    const configs = await getAllConfigs()
-    const provider = configs.public_payment_provider
-
-    let adapter: PaymentAdapter
-    switch (provider) {
-      case "stripe":
-        adapter = new StripeAdapter(
-          configs.payment_stripe_secret_key,
-          configs.payment_stripe_webhook_secret
-        )
-        break
-      case "creem":
-        adapter = new CreemAdapter(
-          configs.payment_creem_x_api_key,
-          configs.payment_creem_test_mode,
-          configs.payment_creem_webhook_secret
-        )
-        break
-      default:
-        throw new Error(`Unsupported payment adapter: ${provider}`)
-    }
-
-    return new PaymentService(adapter, provider)
-  }
-
-  async createCheckout(params: Parameters<PaymentAdapter["createCheckout"]>[0]) {
-    return this.adapter.createCheckout(params)
-  }
-
-  async getSubscriptionsByUserId(params: Parameters<PaymentAdapter["getSubscriptionsByUserId"]>[0]) {
-    return this.adapter.getSubscriptionsByUserId(params)
-  }
-
-  async handleWebhookEvent(payload: string, signature: string) {
-    return this.adapter.handleWebhookEvent(payload, signature)
-  }
+/**
+ * Get the default payment adapter based on config
+ */
+export async function getDefaultPaymentAdapter(): Promise<PaymentAdapter> {
+  const configs = await getAllConfigs()
+  const provider = (configs.public_payment_provider || "stripe") as PaymentProvider
+  return getPaymentAdapter(provider)
 }

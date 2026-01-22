@@ -5,29 +5,8 @@
     {
       "idx": 0,
       "version": "7",
-      "when": 1768020109154,
-      "tag": "0000_tired_magus",
-      "breakpoints": true
-    },
-    {
-      "idx": 1,
-      "version": "7",
-      "when": 1768465966568,
-      "tag": "0001_unusual_the_anarchist",
-      "breakpoints": true
-    },
-    {
-      "idx": 2,
-      "version": "7",
-      "when": 1768968079222,
-      "tag": "0002_wooden_bruce_banner",
-      "breakpoints": true
-    },
-    {
-      "idx": 3,
-      "version": "7",
-      "when": 1769050660428,
-      "tag": "0003_wonderful_yellowjacket",
+      "when": 1769072135192,
+      "tag": "0000_adorable_hydra",
       "breakpoints": true
     }
   ]

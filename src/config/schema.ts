@@ -23,8 +23,15 @@ export const configSchema = defineConfig({
     env: "VITE_PAYMENT_PROVIDER",
     labelKey: "paymentProvider",
     descriptionKey: "paymentProvider",
-    options: [{ value: "stripe" }, { value: "creem" }],
+    options: [
+      { value: "stripe" },
+      { value: "creem" },
+      { value: "paypal" },
+      { value: "wechat" },
+      { value: "alipay" },
+    ],
   },
+  // Stripe
   payment_stripe_secret_key: {
     type: "string",
     default: "",
@@ -39,6 +46,7 @@ export const configSchema = defineConfig({
     labelKey: "paymentStripeWebhookSecret",
     descriptionKey: "paymentStripeWebhookSecret",
   },
+  // Creem
   payment_creem_x_api_key: {
     type: "string",
     default: "",
@@ -59,6 +67,107 @@ export const configSchema = defineConfig({
     env: "CREEM_WEBHOOK_SECRET",
     labelKey: "paymentCreemWebhookSecret",
     descriptionKey: "paymentCreemWebhookSecret",
+  },
+  // PayPal
+  payment_paypal_client_id: {
+    type: "string",
+    default: "",
+    env: "PAYPAL_CLIENT_ID",
+    labelKey: "paymentPaypalClientId",
+    descriptionKey: "paymentPaypalClientId",
+  },
+  payment_paypal_client_secret: {
+    type: "string",
+    default: "",
+    env: "PAYPAL_CLIENT_SECRET",
+    labelKey: "paymentPaypalClientSecret",
+    descriptionKey: "paymentPaypalClientSecret",
+  },
+  payment_paypal_webhook_id: {
+    type: "string",
+    default: "",
+    env: "PAYPAL_WEBHOOK_ID",
+    labelKey: "paymentPaypalWebhookId",
+    descriptionKey: "paymentPaypalWebhookId",
+  },
+  payment_paypal_sandbox: {
+    type: "boolean",
+    default: true,
+    env: "PAYPAL_SANDBOX",
+    labelKey: "paymentPaypalSandbox",
+    descriptionKey: "paymentPaypalSandbox",
+  },
+  // WeChat Pay
+  payment_wechat_app_id: {
+    type: "string",
+    default: "",
+    env: "WECHAT_APP_ID",
+    labelKey: "paymentWechatAppId",
+    descriptionKey: "paymentWechatAppId",
+  },
+  payment_wechat_mch_id: {
+    type: "string",
+    default: "",
+    env: "WECHAT_MCH_ID",
+    labelKey: "paymentWechatMchId",
+    descriptionKey: "paymentWechatMchId",
+  },
+  payment_wechat_api_key: {
+    type: "string",
+    default: "",
+    env: "WECHAT_API_KEY",
+    labelKey: "paymentWechatApiKey",
+    descriptionKey: "paymentWechatApiKey",
+  },
+  payment_wechat_api_v3_key: {
+    type: "string",
+    default: "",
+    env: "WECHAT_API_V3_KEY",
+    labelKey: "paymentWechatApiV3Key",
+    descriptionKey: "paymentWechatApiV3Key",
+  },
+  payment_wechat_serial_no: {
+    type: "string",
+    default: "",
+    env: "WECHAT_SERIAL_NO",
+    labelKey: "paymentWechatSerialNo",
+    descriptionKey: "paymentWechatSerialNo",
+  },
+  payment_wechat_private_key: {
+    type: "string",
+    default: "",
+    env: "WECHAT_PRIVATE_KEY",
+    labelKey: "paymentWechatPrivateKey",
+    descriptionKey: "paymentWechatPrivateKey",
+  },
+  // Alipay
+  payment_alipay_app_id: {
+    type: "string",
+    default: "",
+    env: "ALIPAY_APP_ID",
+    labelKey: "paymentAlipayAppId",
+    descriptionKey: "paymentAlipayAppId",
+  },
+  payment_alipay_private_key: {
+    type: "string",
+    default: "",
+    env: "ALIPAY_PRIVATE_KEY",
+    labelKey: "paymentAlipayPrivateKey",
+    descriptionKey: "paymentAlipayPrivateKey",
+  },
+  payment_alipay_public_key: {
+    type: "string",
+    default: "",
+    env: "ALIPAY_PUBLIC_KEY",
+    labelKey: "paymentAlipayPublicKey",
+    descriptionKey: "paymentAlipayPublicKey",
+  },
+  payment_alipay_sandbox: {
+    type: "boolean",
+    default: true,
+    env: "ALIPAY_SANDBOX",
+    labelKey: "paymentAlipaySandbox",
+    descriptionKey: "paymentAlipaySandbox",
   },
   // credit (public)
   public_credit_enable: {
@@ -145,6 +254,38 @@ export const configGroups = [
           "payment_creem_x_api_key",
           "payment_creem_test_mode",
           "payment_creem_webhook_secret",
+        ],
+      }),
+      defineSubGroup({
+        id: "payment-paypal",
+        labelKey: "paymentPaypal",
+        keys: [
+          "payment_paypal_client_id",
+          "payment_paypal_client_secret",
+          "payment_paypal_webhook_id",
+          "payment_paypal_sandbox",
+        ],
+      }),
+      defineSubGroup({
+        id: "payment-wechat",
+        labelKey: "paymentWechat",
+        keys: [
+          "payment_wechat_app_id",
+          "payment_wechat_mch_id",
+          "payment_wechat_api_key",
+          "payment_wechat_api_v3_key",
+          "payment_wechat_serial_no",
+          "payment_wechat_private_key",
+        ],
+      }),
+      defineSubGroup({
+        id: "payment-alipay",
+        labelKey: "paymentAlipay",
+        keys: [
+          "payment_alipay_app_id",
+          "payment_alipay_private_key",
+          "payment_alipay_public_key",
+          "payment_alipay_sandbox",
         ],
       }),
     ],

@@ -11,7 +11,7 @@ import {
 } from "@react-email/components"
 import { getTranslationContent, type Locale } from "intlayer"
 import { verificationEmailTranslations } from "@/config/locale/auth.content"
-import { websiteConfig } from "@/config/website-config"
+import { siteConfig } from "@/config/site-config"
 
 interface VerificationEmailProps {
   verificationLink: string
@@ -19,7 +19,7 @@ interface VerificationEmailProps {
 }
 
 export function VerificationEmail({ verificationLink, locale = "en" }: VerificationEmailProps) {
-  const { title } = websiteConfig.metadata
+  const { title } = siteConfig
   const i18n = verificationEmailTranslations
   const t = {
     preview: getTranslationContent(i18n.preview, locale as Locale),

@@ -31,9 +31,7 @@ export function getPlanById(planId: string): PlanWithPrice | undefined {
  * @returns The matching plan or undefined if not found
  */
 export function getPlanByPriceId(priceId: string): PlanWithPrice | undefined {
-  return websiteConfig.plans?.find((plan) =>
-    plan.prices.some((price) => price.priceId === priceId)
-  )
+  return websiteConfig.plans?.find((plan) => plan.prices.some((price) => price.priceId === priceId))
 }
 
 /**
@@ -61,18 +59,4 @@ export function getPriceById(planId: string, priceId: string): PlanPrice | undef
 export function getPlanType(planId: string) {
   const plan = getPlanById(planId)
   return plan?.planType ?? null
-}
-
-/**
- * Check if credit system is enabled
- */
-export function isCreditEnabled(): boolean {
-  return websiteConfig.payment?.credit?.enabled ?? false
-}
-
-/**
- * Get credit configuration
- */
-export function getCreditConfig() {
-  return websiteConfig.payment?.credit
 }
