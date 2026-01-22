@@ -57,6 +57,38 @@ export default {
       label: t({ zh: "Creem Webhook Secret", en: "Creem Webhook Secret" }),
       description: t({ zh: "用于支付的 Webhook Secret", en: "Webhook Secret for payment" }),
     },
+    creditEnable: {
+      label: t({ zh: "启用积分系统", en: "Enable Credit System" }),
+      description: t({ zh: "是否启用积分功能", en: "Whether to enable credit functionality" }),
+    },
+    creditAllowFreeUserPurchase: {
+      label: t({ zh: "允许免费用户购买", en: "Allow Free User Purchase" }),
+      description: t({
+        zh: "是否允许免费用户购买积分包",
+        en: "Whether to allow free users to purchase credit packages",
+      }),
+    },
+    creditSignupBonusEnabled: {
+      label: t({ zh: "启用注册赠送", en: "Enable Signup Bonus" }),
+      description: t({
+        zh: "新用户注册时是否赠送积分",
+        en: "Whether to grant credits when new users sign up",
+      }),
+    },
+    creditSignupBonusAmount: {
+      label: t({ zh: "注册赠送数量", en: "Signup Bonus Amount" }),
+      description: t({
+        zh: "新用户注册时赠送的积分数量",
+        en: "Number of credits granted to new users on signup",
+      }),
+    },
+    creditSignupBonusExpireDays: {
+      label: t({ zh: "赠送积分有效期", en: "Signup Bonus Validity" }),
+      description: t({
+        zh: "注册赠送积分的有效天数",
+        en: "Number of days signup bonus credits are valid",
+      }),
+    },
     groups: {
       mail: {
         title: t({ zh: "邮件设置", en: "Mail Settings" }),
@@ -65,6 +97,24 @@ export default {
       payment: {
         title: t({ zh: "支付设置", en: "Payment Settings" }),
         description: t({ zh: "支付服务配置", en: "Payment service configuration" }),
+      },
+      credit: {
+        title: t({ zh: "积分设置", en: "Credit Settings" }),
+        description: t({ zh: "积分系统配置", en: "Credit system configuration" }),
+      },
+    },
+    subGroups: {
+      paymentStripe: {
+        title: t({ zh: "Stripe 配置", en: "Stripe Configuration" }),
+      },
+      paymentCreem: {
+        title: t({ zh: "Creem 配置", en: "Creem Configuration" }),
+      },
+      creditBasic: {
+        title: t({ zh: "基本设置", en: "Basic Settings" }),
+      },
+      creditSignupBonus: {
+        title: t({ zh: "注册赠送", en: "Signup Bonus" }),
       },
     },
   },

@@ -2,7 +2,7 @@ import { createServerFn } from "@tanstack/react-start"
 import { getRequestHeaders } from "@tanstack/react-start/server"
 import { and, eq } from "drizzle-orm"
 import { z } from "zod"
-import { getAllPricePlans, getPlanByPriceId } from "@/config/payment-config"
+import { getPlanByPriceId, getPlans } from "@/config/payment-config"
 import { db } from "@/db"
 import { payment } from "@/db/payment.schema"
 import { PaymentService } from "@/integrations/payment"
@@ -31,7 +31,7 @@ export const checkUserLifetimePurchaseAction = createServerFn({ method: "GET" })
     }
 
     try {
-      const plans = getAllPricePlans()
+      const plans = getPlans()
       const lifetimePlanIds = plans
         .filter((plan) => plan.planType === PlanTypes.LIFETIME)
         .map((plan) => plan.id)

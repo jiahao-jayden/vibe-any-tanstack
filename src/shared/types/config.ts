@@ -1,8 +1,4 @@
-import type {
-  CreditPackageWithPrice,
-  PaymentAdapterType,
-  PlanWithPrice,
-} from "@/shared/types/payment"
+import type { PaymentAdapterType, PlanWithPrice } from "@/shared/types/payment"
 
 // Website config types
 export type ThemeId = "default" | string
@@ -43,20 +39,21 @@ export type StorageConfig = {
   provider: "cloudflare" | string
 }
 
+export type CreditConfig = {
+  enabled: boolean
+  allowFreeUserPurchase: boolean
+  signupBonus: {
+    enabled: boolean
+    amount: number
+    expireDays?: number
+  }
+}
+
 export type PaymentConfig = {
   enabled: boolean
   provider: PaymentAdapterType
-  credit: {
-    enabled: boolean
-    allowFreeUserPurchaseCredits: boolean
-    signupBonusCredits: {
-      enabled: boolean
-      amount: number
-      expireDays?: number
-    }
-    packages?: CreditPackageWithPrice[]
-  }
-  planWithPrice: PlanWithPrice[]
+  credit: CreditConfig
+  plans: PlanWithPrice[]
 }
 
 export type WebsiteConfig = {
@@ -93,30 +90,14 @@ export type WebsiteConfig = {
     initialLoadSize: number
     relatedPostsSize: number
   }
-  mail?: {
-    provider: "resend" | string
-    contact: string
-  }
   newsletter?: {
     provider: "resend" | string
     autoSubscribeAfterSignUp: boolean
   }
-  storage?: {
-    provider: "s3" | string
-  }
   payment?: {
     enabled: boolean
     provider: PaymentAdapterType
-    credit?: {
-      enabled: boolean
-      allowFreeUserPurchaseCredits: boolean
-      signupBonusCredits: {
-        enabled: boolean
-        amount: number
-        expireDays?: number
-      }
-      packages?: CreditPackageWithPrice[]
-    }
+    credit?: CreditConfig
   }
-  planWithPrice?: PlanWithPrice[]
+  plans?: PlanWithPrice[]
 }

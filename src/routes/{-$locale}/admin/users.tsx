@@ -2,6 +2,7 @@ import { useQuery } from "@tanstack/react-query"
 import { createFileRoute } from "@tanstack/react-router"
 import { UserRoundX, Users } from "lucide-react"
 import { useIntlayer } from "react-intlayer"
+import { PageHeader } from "@/shared/components/admin/page-header"
 import { Avatar, AvatarFallback, AvatarImage } from "@/shared/components/ui/avatar"
 import { Badge } from "@/shared/components/ui/badge"
 import { Skeleton } from "@/shared/components/ui/skeleton"
@@ -40,18 +41,17 @@ function UsersPage() {
   })
 
   return (
-    <div className="flex-1 space-y-6 p-8">
-      <div>
-        <h1 className="text-2xl font-semibold tracking-tight">{content.users.title}</h1>
-        <p className="text-muted-foreground">{content.users.description}</p>
-      </div>
-
+    <>
+      <PageHeader title={content.users.title.value} description={content.users.description.value} />
       <div className="rounded-xl border bg-card">
         <div className="flex items-center gap-3 border-b px-6 py-4">
           <Users className="size-5 text-muted-foreground" />
           <h2 className="text-base font-medium">{content.users.title}</h2>
           {users && (
-            <Badge variant="secondary" className="ml-auto">
+            <Badge
+              variant="secondary"
+              className="ml-auto"
+            >
               {users.length} {content.users.count}
             </Badge>
           )}
@@ -117,7 +117,10 @@ function UsersPage() {
                   <TableRow key={user.id}>
                     <TableCell className="pl-6">
                       <Avatar className="size-10">
-                        <AvatarImage src={user.image ?? undefined} alt={user.name} />
+                        <AvatarImage
+                          src={user.image ?? undefined}
+                          alt={user.name}
+                        />
                         <AvatarFallback>{user.name.slice(0, 2).toUpperCase()}</AvatarFallback>
                       </Avatar>
                     </TableCell>
@@ -138,6 +141,6 @@ function UsersPage() {
           </div>
         )}
       </div>
-    </div>
+    </>
   )
 }

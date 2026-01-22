@@ -21,14 +21,12 @@ export enum PaymentTypes {
 export type PaymentType = PaymentTypes.SUBSCRIPTION | PaymentTypes.ONE_TIME
 
 /**
- * Plan type enumeration
+ * Plan type enumeration (for local config plans only)
  */
 export enum PlanTypes {
   FREE = "free",
   SUBSCRIPTION = "subscription",
   LIFETIME = "lifetime",
-  // To smooth out the differences between plans and credit packages
-  CREDITS = "credits",
 }
 
 /**
@@ -113,32 +111,57 @@ export type Plan = {
 
 export type Credit = {
   amount: number
-  // if expireDays is not set, the credit is valid forever
   expireDays?: number
 }
 
+/**
+ * Plan price configuration
+ */
+export type PlanPrice = {
+  type: PaymentTypes
+  priceId: string
+  amount: number
+  currency: string
+  interval?: PlanInterval
+}
+
+/**
+ * Plan display configuration (non-content, for UI rendering)
+ */
+export type PlanDisplay = {
+  originalPrice?: number
+  isFeatured?: boolean
+  isRecommended?: boolean
+  group?: string
+}
+
+/**
+ * Plan with price configuration (local config)
+ */
 export type PlanWithPrice = {
   id: string
   planType: PlanTypes
   credit?: Credit
-  prices: {
-    type: PaymentTypes
-    priceId: string
-    amount: number
-    currency: string
-    interval?: PlanInterval
-  }[]
-  recommended?: boolean
+  prices: PlanPrice[]
+  display?: PlanDisplay
 }
 
-export type CreditPackageWithPrice = {
+/**
+ * Credit package from database
+ */
+export type CreditPackage = {
   id: string
-  credit: Credit
-  price: {
-    priceId: string
-    amount: number
-    currency: string
-  }
+  name: string
+  description: string | null
+  creditAmount: number
+  expireDays: number | null
+  priceAmount: number
+  currency: string
+  stripePriceId: string
+  sortOrder: number
+  isActive: boolean
+  createdAt: Date
+  updatedAt: Date | null
 }
 
 /**

@@ -5,6 +5,7 @@ import { useState } from "react"
 import { useIntlayer } from "react-intlayer"
 import { toast } from "sonner"
 import { configGroups } from "@/config/schema"
+import { PageHeader } from "@/shared/components/admin/page-header"
 import { Button } from "@/shared/components/ui/button"
 import {
   Card,
@@ -26,7 +27,7 @@ import { Skeleton } from "@/shared/components/ui/skeleton"
 import { Switch } from "@/shared/components/ui/switch"
 import { Textarea } from "@/shared/components/ui/textarea"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/shared/components/ui/tooltip"
-import type { ConfigGroup, ConfigMeta, SelectOption } from "@/shared/lib/config/helper"
+import type { ConfigGroup, ConfigMeta, ConfigSubGroup, SelectOption } from "@/shared/lib/config/helper"
 
 export const Route = createFileRoute("/{-$locale}/admin/config")({
   component: ConfigPage,
@@ -55,7 +56,8 @@ function ConfigPage() {
     queryFn: async () => {
       const res = await fetch("/api/admin/config")
       if (!res.ok) throw new Error("Failed to fetch configs")
-      return res.json() as Promise<ConfigMeta[]>
+      const json = await res.json()
+      return json.data as ConfigMeta[]
     },
   })
 
@@ -68,11 +70,11 @@ function ConfigPage() {
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ key, value }),
           })
-          if (!res.ok) {
-            const error = await res.json()
-            throw new Error(error.error || `Failed to update ${key}`)
+          const json = await res.json()
+          if (!res.ok || json.code !== 200) {
+            throw new Error(json.message || `Failed to update ${key}`)
           }
-          return res.json()
+          return json.data
         })
       )
       return results
@@ -131,23 +133,20 @@ function ConfigPage() {
   }
 
   if (isLoading) {
-    return <ConfigSkeleton />
+    return (
+      <>
+        <PageHeader title={content.config.title.value} description={content.config.description.value} />
+        <ConfigSkeleton />
+      </>
+    )
   }
 
   return (
-    <div className="flex-1 space-y-6 p-4 sm:p-6">
-      <div className="flex items-start justify-between">
-        <div>
-          <h1 className="text-2xl font-semibold">{content.config.title}</h1>
-          <p className="text-muted-foreground text-sm">{content.config.description}</p>
-        </div>
+    <>
+      <PageHeader title={content.config.title.value} description={content.config.description.value}>
         <Tooltip>
           <TooltipTrigger asChild>
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={toggleShowValues}
-            >
+            <Button variant="ghost" size="icon" onClick={toggleShowValues}>
               {showValues ? <Eye className="size-5" /> : <EyeOff className="size-5" />}
             </Button>
           </TooltipTrigger>
@@ -155,8 +154,7 @@ function ConfigPage() {
             {showValues ? content.config.hideValues.value : content.config.showValues.value}
           </TooltipContent>
         </Tooltip>
-      </div>
-
+      </PageHeader>
       <div className="grid gap-6">
         {configGroups.map((group) => {
           const items = getGroupConfigs(group.prefixes)
@@ -183,7 +181,7 @@ function ConfigPage() {
           )
         })}
       </div>
-    </div>
+    </>
   )
 }
 
@@ -216,6 +214,36 @@ function ConfigGroupCard({
 }: ConfigGroupCardProps) {
   const groupI18n = configI18n.groups?.[group.labelKey as keyof typeof configI18n.groups]
 
+  const getSubGroupItems = (subGroup: ConfigSubGroup) => {
+    return items.filter((item) => subGroup.keys.includes(item.key))
+  }
+
+  const getUngroupedItems = () => {
+    if (!group.subGroups || group.subGroups.length === 0) return items
+    const groupedKeys = group.subGroups.flatMap((sg) => sg.keys)
+    return items.filter((item) => !groupedKeys.includes(item.key))
+  }
+
+  const getSubGroupI18n = (labelKey: string) => {
+    return configI18n.subGroups?.[labelKey as keyof typeof configI18n.subGroups]
+  }
+
+  const renderConfigItems = (configItems: ConfigMeta[]) => (
+    <>
+      {configItems.map((config) => (
+        <ConfigField
+          key={config.key}
+          config={config}
+          value={getConfigValue(config)}
+          showValues={showValues}
+          configI18n={configI18n}
+          content={content}
+          onChange={(value) => onChange(config.key, value)}
+        />
+      ))}
+    </>
+  )
+
   return (
     <Card className="shadow-none">
       <CardHeader>
@@ -245,18 +273,35 @@ function ConfigGroupCard({
           )}
         </div>
       </CardHeader>
-      <CardContent className="grid gap-4">
-        {items.map((config) => (
-          <ConfigField
-            key={config.key}
-            config={config}
-            value={getConfigValue(config)}
-            showValues={showValues}
-            configI18n={configI18n}
-            content={content}
-            onChange={(value) => onChange(config.key, value)}
-          />
-        ))}
+      <CardContent className="grid gap-6">
+        {group.subGroups && group.subGroups.length > 0 ? (
+          <>
+            {getUngroupedItems().length > 0 && (
+              <div className="grid gap-4">
+                {renderConfigItems(getUngroupedItems())}
+              </div>
+            )}
+            {group.subGroups.map((subGroup) => {
+              const subGroupItems = getSubGroupItems(subGroup)
+              if (subGroupItems.length === 0) return null
+              const subGroupI18n = getSubGroupI18n(subGroup.labelKey)
+              return (
+                <div key={subGroup.id} className="space-y-3">
+                  <h4 className="text-sm font-medium text-muted-foreground">
+                    {subGroupI18n?.title?.value ?? subGroup.labelKey}
+                  </h4>
+                  <div className="grid gap-4">
+                    {renderConfigItems(subGroupItems)}
+                  </div>
+                </div>
+              )
+            })}
+          </>
+        ) : (
+          <div className="grid gap-4">
+            {renderConfigItems(items)}
+          </div>
+        )}
       </CardContent>
     </Card>
   )
@@ -401,25 +446,19 @@ function SelectField({
 
 function ConfigSkeleton() {
   return (
-    <div className="flex-1 space-y-6 p-4 sm:p-6">
-      <div className="space-y-2">
-        <Skeleton className="h-8 w-32" />
-        <Skeleton className="h-4 w-64" />
-      </div>
-      <Card>
-        <CardHeader>
-          <Skeleton className="h-6 w-24" />
-          <Skeleton className="h-4 w-48" />
-        </CardHeader>
-        <CardContent className="grid gap-4">
-          {[1, 2, 3].map((j) => (
-            <Skeleton
-              key={j}
-              className="h-16 w-full"
-            />
-          ))}
-        </CardContent>
-      </Card>
-    </div>
+    <Card>
+      <CardHeader>
+        <Skeleton className="h-6 w-24" />
+        <Skeleton className="h-4 w-48" />
+      </CardHeader>
+      <CardContent className="grid gap-4">
+        {[1, 2, 3].map((j) => (
+          <Skeleton
+            key={j}
+            className="h-16 w-full"
+          />
+        ))}
+      </CardContent>
+    </Card>
   )
 }

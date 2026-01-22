@@ -1,11 +1,16 @@
 import { z } from "zod"
-import { createConfigResolver, defineConfig, defineGroup } from "@/shared/lib/config/helper"
+import {
+  createConfigResolver,
+  defineConfig,
+  defineGroup,
+  defineSubGroup,
+} from "@/shared/lib/config/helper"
 
 export const configSchema = defineConfig({
   payment_provider: {
     type: "select",
     default: "stripe",
-    env: "PAYMENT_PROVIDER",
+    env: "VITE_PAYMENT_PROVIDER",
     labelKey: "paymentProvider",
     descriptionKey: "paymentProvider",
     options: [{ value: "stripe" }, { value: "creem" }],
@@ -45,6 +50,42 @@ export const configSchema = defineConfig({
     labelKey: "paymentCreemWebhookSecret",
     descriptionKey: "paymentCreemWebhookSecret",
   },
+  // credit
+  credit_enable: {
+    type: "boolean",
+    default: false,
+    env: "VITE_CREDIT_ENABLE",
+    labelKey: "creditEnable",
+    descriptionKey: "creditEnable",
+  },
+  credit_allow_free_user_purchase: {
+    type: "boolean",
+    default: false,
+    env: "VITE_CREDIT_ALLOW_FREE_USER_PURCHASE",
+    labelKey: "creditAllowFreeUserPurchase",
+    descriptionKey: "creditAllowFreeUserPurchase",
+  },
+  credit_signup_bonus_enabled: {
+    type: "boolean",
+    default: false,
+    env: "VITE_CREDIT_SIGNUP_BONUS_ENABLED",
+    labelKey: "creditSignupBonusEnabled",
+    descriptionKey: "creditSignupBonusEnabled",
+  },
+  credit_signup_bonus_amount: {
+    type: "number",
+    default: 0,
+    env: "VITE_CREDIT_SIGNUP_BONUS_AMOUNT",
+    labelKey: "creditSignupBonusAmount",
+    descriptionKey: "creditSignupBonusAmount",
+  },
+  credit_signup_bonus_expire_days: {
+    type: "number",
+    default: 30,
+    env: "VITE_CREDIT_SIGNUP_BONUS_EXPIRE_DAYS",
+    labelKey: "creditSignupBonusExpireDays",
+    descriptionKey: "creditSignupBonusExpireDays",
+  },
   // mail
   mail_provider: {
     type: "select",
@@ -81,6 +122,43 @@ export const configGroups = [
     id: "payment",
     labelKey: "payment",
     prefixes: ["payment_"],
+    subGroups: [
+      defineSubGroup({
+        id: "payment-stripe",
+        labelKey: "paymentStripe",
+        keys: ["payment_stripe_secret_key", "payment_stripe_webhook_secret"],
+      }),
+      defineSubGroup({
+        id: "payment-creem",
+        labelKey: "paymentCreem",
+        keys: [
+          "payment_creem_x_api_key",
+          "payment_creem_test_mode",
+          "payment_creem_webhook_secret",
+        ],
+      }),
+    ],
+  }),
+  defineGroup({
+    id: "credit",
+    labelKey: "credit",
+    prefixes: ["credit_"],
+    subGroups: [
+      defineSubGroup({
+        id: "credit-basic",
+        labelKey: "creditBasic",
+        keys: ["credit_enable", "credit_allow_free_user_purchase"],
+      }),
+      defineSubGroup({
+        id: "credit-signup-bonus",
+        labelKey: "creditSignupBonus",
+        keys: [
+          "credit_signup_bonus_enabled",
+          "credit_signup_bonus_amount",
+          "credit_signup_bonus_expire_days",
+        ],
+      }),
+    ],
   }),
 ]
 

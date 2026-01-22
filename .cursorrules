@@ -59,3 +59,14 @@ const { powerBy } = useIntlayer("landing")
 
 # 禁止
 未经用户的允许，禁止修改数据库的迁移文件，禁止允许迁移的命令
+
+# 响应规则
+```tsx
+import { createResponse } from "@/shared/lib/tools/response"
+export const Resp = {
+  success: <T = unknown>(data?: T) => createResponse(200, "success", data),
+  error: (message: string, code = 500, error?: string) =>
+    createResponse(code, message, undefined, error),
+  json: <T = unknown>(code: number, message: string, data?: T) => createResponse(code, message, data),
+}
+```

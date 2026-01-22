@@ -20,7 +20,9 @@ function RouteComponent() {
         style={{ fontFamily: "Inter Variable" }}
       >
         <SidebarTrigger />
-        <Outlet />
+        <div className="flex-1 space-y-6 p-4 sm:p-6">
+          <Outlet />
+        </div>
       </main>
     </SidebarProvider>
   )

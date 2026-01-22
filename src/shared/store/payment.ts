@@ -1,7 +1,7 @@
 import { create } from "zustand"
 import { persist } from "zustand/middleware"
 import { checkUserLifetimePurchaseAction, getUserActiveSubscriptionAction } from "@/actions/payment"
-import { getAllPricePlans } from "@/config/payment-config"
+import { getPlans } from "@/config/payment-config"
 import { PlanTypes, type PlanWithPrice, type Subscription } from "@/shared/types/payment"
 
 // Payment store state interface
@@ -42,7 +42,7 @@ export const usePaymentStore = create<PaymentState>()(
 
         try {
           // Get all available plans and categorize them
-          const plans: PlanWithPrice[] = getAllPricePlans()
+          const plans: PlanWithPrice[] = getPlans()
 
           const freePlans = plans.filter((plan) => plan.planType === PlanTypes.FREE)
           const subscriptionPlans = plans.filter((plan) => plan.planType === PlanTypes.SUBSCRIPTION)

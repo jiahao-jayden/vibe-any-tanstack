@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router"
 import { configResolver, configSchema } from "@/config/schema"
+import { Resp } from "@/shared/lib/tools/response"
 import { adminMiddleware } from "@/shared/middleware/auth"
 import { getConfigs, setConfig } from "@/shared/model/config.model"
 
@@ -11,7 +12,7 @@ export const Route = createFileRoute("/api/admin/config")({
         const dbConfigs = await getConfigs()
         const values = configResolver.resolveAllConfigs(dbConfigs)
         const metas = configResolver.getConfigMetas(values)
-        return Response.json(metas)
+        return Resp.success(metas)
       },
 
       PUT: async ({ request }) => {
@@ -19,20 +20,20 @@ export const Route = createFileRoute("/api/admin/config")({
         const { key, value } = body as { key: string; value: unknown }
 
         if (!key || !(key in configSchema)) {
-          return Response.json({ error: "Invalid config key" }, { status: 400 })
+          return Resp.error("Invalid config key", 400)
         }
 
         if (configResolver.isConfigLocked(key as keyof typeof configSchema)) {
-          return Response.json({ error: "Config is locked by environment variable" }, { status: 400 })
+          return Resp.error("Config is locked by environment variable", 400)
         }
 
         const validation = configResolver.validateConfig(key as keyof typeof configSchema, value)
         if (!validation.success) {
-          return Response.json({ error: validation.error }, { status: 400 })
+          return Resp.error(validation.error ?? "Validation failed", 400)
         }
 
         await setConfig(key, value)
-        return Response.json({ success: true })
+        return Resp.success({ updated: true })
       },
     },
   },

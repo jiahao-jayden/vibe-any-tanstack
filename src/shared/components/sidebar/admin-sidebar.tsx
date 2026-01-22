@@ -1,5 +1,5 @@
 import { useRouterState } from "@tanstack/react-router"
-import { Cog, Users } from "lucide-react"
+import { Cog, Coins, Package, Users } from "lucide-react"
 import { useIntlayer } from "react-intlayer"
 import logo from "@/logo.svg"
 import { LocalizedLink, type To } from "@/shared/components/locale/localized-link"
@@ -26,6 +26,18 @@ export default function AdminSidebar() {
       url: "/admin/users",
       icon: Users,
       match: "/admin/users",
+    },
+    {
+      title: String(content.sidebar.products.value),
+      url: "/admin/products",
+      icon: Package,
+      match: "/admin/products",
+    },
+    {
+      title: String(content.sidebar.creditPackages.value),
+      url: "/admin/credit-packages",
+      icon: Coins,
+      match: "/admin/credit-packages",
     },
     {
       title: String(content.sidebar.config.value),

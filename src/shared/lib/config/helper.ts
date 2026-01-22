@@ -29,7 +29,7 @@ type InferConfigValues<T extends ConfigSchema> = {
 }
 
 // 导出类型
-export type { ConfigType, ConfigDef, ConfigSchema, SelectOption, ConfigGroup }
+export type { ConfigType, ConfigDef, ConfigSchema, SelectOption, ConfigGroup, ConfigSubGroup }
 
 // 配置元数据类型（用于 Admin UI）
 export type ConfigMeta = {
@@ -50,15 +50,27 @@ export function defineConfig<T extends ConfigSchema>(schema: T) {
   return schema
 }
 
-// 定义分组
+// 子分组定义
+type ConfigSubGroup = {
+  id: string
+  labelKey: string
+  keys: string[]
+}
+
+// 分组定义
 type ConfigGroup = {
   id: string
   labelKey: string
   prefixes: string[]
+  subGroups?: ConfigSubGroup[]
 }
 
 export function defineGroup(group: ConfigGroup) {
   return group
+}
+
+export function defineSubGroup(subGroup: ConfigSubGroup) {
+  return subGroup
 }
 
 // 获取环境变量值

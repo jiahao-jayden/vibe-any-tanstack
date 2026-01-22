@@ -3,8 +3,7 @@ import { Check, Loader2 } from "lucide-react"
 import { useEffect, useState } from "react"
 import { useIntlayer } from "react-intlayer"
 import { toast } from "sonner"
-import { getPricePlans } from "@/config/payment-config"
-import { LocalizedLink } from "@/shared/components/locale/localized-link"
+import { getPlans } from "@/config/payment-config"
 import { Button } from "@/shared/components/ui/button"
 import {
   Card,
@@ -26,7 +25,7 @@ export function Pricing() {
   const { data: session } = authClient.useSession()
   const content = useIntlayer("pricing")
 
-  const plans = getPricePlans()
+  const plans = getPlans()
 
   const {
     activePlan,
@@ -216,7 +215,7 @@ export function Pricing() {
             const defaultIndex = plan.prices ? getDefaultPriceIndex(plan.id, plan.prices) : 0
             const selectedIndex = selectedPrices[plan.id] ?? defaultIndex
             const displayPrice = plan.prices?.[selectedIndex]
-            const isPopular = plan.recommended
+            const isPopular = plan.display?.isRecommended
             const planContent = getPlanContent(plan.id)
 
             return (
