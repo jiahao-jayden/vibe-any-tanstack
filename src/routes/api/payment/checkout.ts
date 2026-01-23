@@ -43,7 +43,7 @@ export const Route = createFileRoute("/api/payment/checkout")({
             ? await getPaymentAdapter(provider as PaymentProvider)
             : await getDefaultPaymentAdapter()
 
-          const paymentType = price.type === "subscription" ? "subscription" : "one_time"
+          const paymentType = plan.planType === "subscription" ? "subscription" : "one_time"
 
           if (paymentType === "subscription" && !adapter.capabilities.subscription) {
             return Resp.error(`Provider ${adapter.name} does not support subscriptions`, 400)

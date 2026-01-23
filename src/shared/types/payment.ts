@@ -53,43 +53,7 @@ export type SubscriptionCycleType = "create" | "renewal"
  */
 export type PlanType = "free" | "subscription" | "lifetime"
 
-/**
- * Legacy types for backward compatibility
- * @deprecated Use PaymentType instead
- */
-export enum PlanIntervals {
-  MONTH = "month",
-  YEAR = "year",
-}
-
-/**
- * @deprecated Use PaymentType instead
- */
-export enum PaymentTypes {
-  SUBSCRIPTION = "subscription",
-  ONE_TIME = "one_time",
-}
-
-/**
- * @deprecated Use PlanType instead
- */
-export enum PlanTypes {
-  FREE = "free",
-  SUBSCRIPTION = "subscription",
-  LIFETIME = "lifetime",
-}
-
 export type PlanInterval = SubscriptionInterval
-
-/**
- * Adapter Capabilities - what each provider supports
- */
-export interface AdapterCapabilities {
-  subscription: boolean
-  oneTime: boolean
-  customerPortal: boolean
-  refund: boolean
-}
 
 /**
  * Provider Customers - stored in user table
@@ -100,60 +64,6 @@ export interface ProviderCustomers {
   paypal?: string
   wechat?: string
   alipay?: string
-}
-
-/**
- * Create Checkout Parameters
- */
-export interface CreateCheckoutParams {
-  provider?: PaymentProvider
-  planId: string
-  priceId: string
-  email: string
-  userId: string
-  successUrl: string
-  cancelUrl?: string
-  metadata?: Record<string, string>
-}
-
-/**
- * Checkout Result
- */
-export interface CheckoutResult {
-  provider: PaymentProvider
-  sessionId: string
-  checkoutUrl: string
-}
-
-/**
- * Webhook Event - unified event structure from all providers
- */
-export interface WebhookEvent {
-  type: PaymentEventType
-  provider: PaymentProvider
-  payment?: WebhookPaymentInfo
-  subscription?: WebhookSubscriptionInfo
-  rawEvent: unknown
-}
-
-export interface WebhookPaymentInfo {
-  providerPaymentId: string
-  providerInvoiceId?: string
-  amount: number
-  currency: string
-  status: PaymentStatus
-  cycleType?: SubscriptionCycleType
-  metadata?: Record<string, string>
-}
-
-export interface WebhookSubscriptionInfo {
-  providerSubscriptionId: string
-  providerCustomerId: string
-  status: SubscriptionStatus
-  currentPeriodStart: Date
-  currentPeriodEnd: Date
-  cancelAtPeriodEnd?: boolean
-  metadata?: Record<string, string>
 }
 
 /**
@@ -206,13 +116,6 @@ export interface Payment {
 }
 
 /**
- * Customer Portal Result
- */
-export interface CustomerPortalResult {
-  url: string
-}
-
-/**
  * Credit configuration in plan
  */
 export interface Credit {
@@ -224,7 +127,6 @@ export interface Credit {
  * Plan Price Configuration
  */
 export interface PlanPrice {
-  type: PaymentTypes
   priceId: string
   amount: number
   currency: string
@@ -247,7 +149,7 @@ export interface PlanDisplay {
  */
 export interface PlanWithPrice {
   id: string
-  planType: PlanTypes
+  planType: PlanType
   credit?: Credit
   prices: PlanPrice[]
   display?: PlanDisplay

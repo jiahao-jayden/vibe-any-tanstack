@@ -125,8 +125,11 @@ export const getUserActiveSubscriptionAction = createServerFn({ method: "GET" })
         success: true,
         data: {
           id: activeSubscription.id,
-          status: activeSubscription.status,
+          provider: activeSubscription.provider,
+          userId: activeSubscription.userId,
+          planId: activeSubscription.planId,
           priceId: activeSubscription.priceId,
+          status: activeSubscription.status,
           interval: activeSubscription.interval,
           currentPeriodStart: activeSubscription.currentPeriodStart,
           currentPeriodEnd: activeSubscription.currentPeriodEnd,

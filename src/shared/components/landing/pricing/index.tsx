@@ -15,24 +15,21 @@ import {
 } from "@/shared/components/ui/card"
 import { Label } from "@/shared/components/ui/label"
 import { RadioGroup, RadioGroupItem } from "@/shared/components/ui/radio-group"
+import { useGlobalContext } from "@/shared/context/global.context"
 import { useLocalizedNavigate } from "@/shared/hooks/use-localized-navigate"
-import { authClient } from "@/shared/lib/auth/auth-client"
 import { cn } from "@/shared/lib/utils"
-import { usePaymentStore } from "@/shared/store/payment"
 
 export function Pricing() {
   const navigate = useLocalizedNavigate()
-  const { data: session } = authClient.useSession()
+  const { userInfo, isLoadingUserInfo } = useGlobalContext()
   const content = useIntlayer("pricing")
 
   const plans = getPlans()
 
-  const {
-    activePlan,
-    activeSubscription,
-    isLoading: isPaymentLoading,
-    fetchPaymentInfo,
-  } = usePaymentStore()
+  const { activePlan, activeSubscription } = userInfo?.payment ?? {
+    activePlan: null,
+    activeSubscription: null,
+  }
 
   const getDefaultPriceIndex = (planId: string, prices: Array<{ priceId: string }>) => {
     if (activeSubscription && prices) {
@@ -116,12 +113,6 @@ export function Pricing() {
   const [loadingPlan, setLoadingPlan] = useState<{ planId: string; priceId: string } | null>(null)
 
   useEffect(() => {
-    if (session?.user?.id) {
-      fetchPaymentInfo(session.user.id)
-    }
-  }, [session?.user?.id, fetchPaymentInfo])
-
-  useEffect(() => {
     if (plans && (activePlan || activeSubscription)) {
       const defaultPrices: Record<string, number> = {}
 
@@ -162,7 +153,7 @@ export function Pricing() {
 
   const { mutate: handlePayment, isPending } = useMutation({
     mutationFn: async ({ planId, priceId }: { planId: string; priceId: string }) => {
-      if (!session?.user) {
+      if (!userInfo?.user) {
         toast.error(content.loginRequired.value)
         navigate("/login")
         return
@@ -338,7 +329,7 @@ export function Pricing() {
                                 isCurrentPlan ||
                                 isPlanDowngrade ||
                                 hasPaidSubAndDifferentPlan ||
-                                isPaymentLoading
+                                isLoadingUserInfo
                               )
                                 return
 
@@ -349,7 +340,7 @@ export function Pricing() {
                               isCurrentPlan ||
                               isPlanDowngrade ||
                               hasPaidSubAndDifferentPlan ||
-                              isPaymentLoading
+                              isLoadingUserInfo
                             }
                           >
                             {isCurrentButtonLoading ? (
@@ -357,7 +348,7 @@ export function Pricing() {
                                 <Loader2 className="mr-2 size-4 animate-spin" />
                                 {content.processing.value}
                               </>
-                            ) : isPaymentLoading ? (
+                            ) : isLoadingUserInfo ? (
                               <>
                                 <Loader2 className="mr-2 size-4 animate-spin" />
                                 {content.loading.value}
@@ -375,7 +366,11 @@ export function Pricing() {
                         )
                       })()
                     ) : (
-                      <Button variant="secondary" className="w-full" disabled>
+                      <Button
+                        variant="secondary"
+                        className="w-full"
+                        disabled
+                      >
                         {content.free.value}
                       </Button>
                     )}

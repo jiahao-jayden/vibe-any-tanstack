@@ -40,7 +40,8 @@ import {
   SidebarRail,
   SidebarSeparator,
 } from "@/shared/components/ui/sidebar"
-import { signOut, useSession } from "@/shared/lib/auth/auth-client"
+import { useGlobalContext } from "@/shared/context/global.context"
+import { signOut } from "@/shared/lib/auth/auth-client"
 
 function getInitials(name: string | undefined | null) {
   if (!name) return "U"
@@ -56,7 +57,7 @@ export default function AdminSidebar() {
   const content = useIntlayer("admin")
   const routerState = useRouterState()
   const currentPath = routerState.location.pathname
-  const { data: session } = useSession()
+  const { userInfo, isLoadingUserInfo } = useGlobalContext()
   const { pathname } = useLocation()
   const { availableLocales, locale, setLocale } = useLocale()
   const pathWithoutLocale = getPathWithoutLocale(pathname)
@@ -232,7 +233,7 @@ export default function AdminSidebar() {
           </SidebarMenuItem>
         </SidebarMenu>
 
-        {session?.user && (
+        {userInfo?.user && (
           <>
             <SidebarSeparator className="mx-0" />
             <SidebarMenu>
@@ -242,21 +243,21 @@ export default function AdminSidebar() {
                     <SidebarMenuButton
                       size="lg"
                       className="data-[state=open]:bg-sidebar-accent"
-                      tooltip={session.user.name ?? "User"}
+                      tooltip={userInfo.user.name ?? "User"}
                     >
                       <Avatar className="size-8 rounded-lg">
                         <AvatarImage
-                          src={session.user.image ?? undefined}
-                          alt={session.user.name ?? ""}
+                          src={userInfo.user.image ?? undefined}
+                          alt={userInfo.user.name ?? ""}
                         />
                         <AvatarFallback className="rounded-lg text-xs">
-                          {getInitials(session.user.name)}
+                          {getInitials(userInfo.user.name)}
                         </AvatarFallback>
                       </Avatar>
                       <div className="grid min-w-0 flex-1 text-left text-sm leading-tight">
-                        <span className="truncate font-medium">{session.user.name}</span>
+                        <span className="truncate font-medium">{userInfo.user.name}</span>
                         <span className="truncate text-xs text-muted-foreground">
-                          {session.user.email}
+                          {userInfo.user.email}
                         </span>
                       </div>
                       <ChevronsUpDown className="ml-auto size-4 text-muted-foreground" />
@@ -271,16 +272,16 @@ export default function AdminSidebar() {
                     <div className="flex items-center gap-3 px-2 py-2">
                       <Avatar className="size-10 rounded-lg">
                         <AvatarImage
-                          src={session.user.image ?? undefined}
-                          alt={session.user.name ?? ""}
+                          src={userInfo.user.image ?? undefined}
+                          alt={userInfo.user.name ?? ""}
                         />
                         <AvatarFallback className="rounded-lg">
-                          {getInitials(session.user.name)}
+                          {getInitials(userInfo.user.name)}
                         </AvatarFallback>
                       </Avatar>
                       <div className="grid flex-1 text-left leading-tight">
-                        <span className="font-medium">{session.user.name}</span>
-                        <span className="text-xs text-muted-foreground">{session.user.email}</span>
+                        <span className="font-medium">{userInfo.user.name}</span>
+                        <span className="text-xs text-muted-foreground">{userInfo.user.email}</span>
                       </div>
                     </div>
                     <DropdownMenuSeparator />

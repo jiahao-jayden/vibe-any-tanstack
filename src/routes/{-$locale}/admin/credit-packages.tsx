@@ -31,7 +31,7 @@ import {
   TableRow,
 } from "@/shared/components/ui/table"
 import { Textarea } from "@/shared/components/ui/textarea"
-import { useGlobalStore } from "@/shared/store/global"
+import { useGlobalContext } from "@/shared/context/global.context"
 import type { CreditPackage } from "@/shared/types/payment"
 
 export const Route = createFileRoute("/{-$locale}/admin/credit-packages")({
@@ -66,7 +66,7 @@ function CreditPackagesPage() {
   const content = useIntlayer("admin")
   const queryClient = useQueryClient()
   const formId = useId()
-  const { config } = useGlobalStore()
+  const { config } = useGlobalContext()
 
   const [isDialogOpen, setIsDialogOpen] = useState(false)
   const [editingPackage, setEditingPackage] = useState<CreditPackage | null>(null)

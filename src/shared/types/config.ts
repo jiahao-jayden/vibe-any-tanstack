@@ -1,4 +1,4 @@
-import type { PaymentAdapterType, PlanWithPrice } from "@/shared/types/payment"
+import type { PaymentProvider, PlanWithPrice } from "@/shared/types/payment"
 
 export type MailConfig = {
   provider: "resend" | "custom"
@@ -11,7 +11,7 @@ export type StorageConfig = {
 
 export type PaymentConfig = {
   enabled: boolean
-  provider: PaymentAdapterType
+  provider: PaymentProvider
   plans: PlanWithPrice[]
 }
 

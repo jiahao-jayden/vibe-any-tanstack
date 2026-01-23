@@ -1,5 +1,4 @@
 import type { WebsiteConfig } from "@/shared/types/config"
-import { PaymentTypes, PlanIntervals, PlanTypes } from "@/shared/types/payment"
 
 export const websiteConfig: WebsiteConfig = {
   blog: {
@@ -13,30 +12,28 @@ export const websiteConfig: WebsiteConfig = {
   plans: [
     {
       id: "free",
-      planType: PlanTypes.FREE,
+      planType: "free",
       prices: [],
     },
     {
       id: "pro",
-      planType: PlanTypes.SUBSCRIPTION,
+      planType: "subscription",
       credit: {
         amount: 100,
         expireDays: 31,
       },
       prices: [
         {
-          type: PaymentTypes.SUBSCRIPTION,
           priceId: import.meta.env.VITE_STRIPE_PRO_MONTHLY_PRICE_ID!,
           amount: 990,
           currency: "USD",
-          interval: PlanIntervals.MONTH,
+          interval: "month",
         },
         {
-          type: PaymentTypes.SUBSCRIPTION,
           priceId: import.meta.env.VITE_STRIPE_PRO_YEARLY_PRICE_ID!,
           amount: 9900,
           currency: "USD",
-          interval: PlanIntervals.YEAR,
+          interval: "year",
         },
       ],
       display: {
@@ -46,10 +43,9 @@ export const websiteConfig: WebsiteConfig = {
     },
     {
       id: "lifetime",
-      planType: PlanTypes.LIFETIME,
+      planType: "lifetime",
       prices: [
         {
-          type: PaymentTypes.ONE_TIME,
           priceId: import.meta.env.VITE_STRIPE_LIFETIME_PRICE_ID!,
           amount: 19900,
           currency: "USD",

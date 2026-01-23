@@ -33,7 +33,6 @@ import type {
   ConfigSubGroup,
   SelectOption,
 } from "@/shared/lib/config/helper"
-import { useGlobalStore } from "@/shared/store/global"
 
 export const Route = createFileRoute("/{-$locale}/admin/config")({
   component: ConfigPage,
@@ -93,7 +92,7 @@ function ConfigPage() {
         }
         return next
       })
-      useGlobalStore.getState().refreshConfig()
+
       toast.success(content.config.saveSuccess)
     },
     onError: (error) => {
