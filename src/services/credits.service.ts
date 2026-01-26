@@ -50,19 +50,31 @@ export class CreditService {
    * - Real-time filtering: expired credits are excluded at query time
    * - No status update needed for expired credits
    * - Automatically grants daily bonus if enabled and eligible
+   * - Returns next refresh time for daily bonus
    */
-  public async getUserCredits(
-    userId: string
-  ): Promise<{ userCredits: number; dailyBonusCredits: number }> {
-    const creditData = {
+  public async getUserCredits(userId: string): Promise<{
+    userCredits: number
+    dailyBonusCredits: number
+    nextRefreshTime: string | null
+  }> {
+    const creditData: {
+      userCredits: number
+      dailyBonusCredits: number
+      nextRefreshTime: string | null
+    } = {
       userCredits: 0,
       dailyBonusCredits: 0,
+      nextRefreshTime: null,
     }
 
     try {
       await this.tryGrantDailyBonus(userId)
 
-      const credits = await getUserValidCredits(userId)
+      const [credits, latestBonus, dailyEnabled] = await Promise.all([
+        getUserValidCredits(userId),
+        getUserLatestDailyBonus(userId, CreditsType.ADD_DAILY_BONUS),
+        getConfig("public_credit_daily_enabled"),
+      ])
 
       if (credits) {
         credits.forEach((c) => {
@@ -72,6 +84,12 @@ export class CreditService {
             creditData.dailyBonusCredits += c.credits || 0
           }
         })
+      }
+
+      // Calculate next refresh time if daily bonus is enabled
+      if (dailyEnabled && latestBonus) {
+        const nextRefresh = new Date(latestBonus.createdAt.getTime() + DAILY_BONUS_INTERVAL_MS)
+        creditData.nextRefreshTime = nextRefresh.toISOString()
       }
 
       return creditData
@@ -112,16 +130,12 @@ export class CreditService {
         }
       }
 
-      // Determine expiration: 24 hours from now if expiration is enabled, otherwise never expires
-      const dailyExpireEnabled = await getConfig("public_credit_daily_expire_enabled")
-      const expiresAt = dailyExpireEnabled ? new Date(Date.now() + DAILY_BONUS_INTERVAL_MS) : null
-
-      // Grant the daily bonus credits
+      // Grant the daily bonus credits with 24-hour expiration
       await this.increaseCredits({
         userId,
         credits: dailyAmount,
         creditsType: CreditsType.ADD_DAILY_BONUS,
-        expiresAt: expiresAt ?? undefined,
+        expiresAt: new Date(Date.now() + DAILY_BONUS_INTERVAL_MS),
         description: `Daily bonus (${new Date().toISOString().split("T")[0]})`,
       })
 

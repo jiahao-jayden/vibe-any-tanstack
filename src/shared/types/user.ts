@@ -12,5 +12,6 @@ export type UserInfo = {
   credits: {
     userCredits: number
     dailyBonusCredits: number
+    nextRefreshTime: string | null
   }
 }

@@ -83,14 +83,28 @@ export function CreditDetail({ planName, onUpgradeClick }: CreditDetailProps) {
   const { credits: t } = useIntlayer("user-dashboard")
   const creditEnabled = config?.public_credit_enable
   const dailyEnabled = config?.public_credit_daily_enabled
+  const dailyAmount = config?.public_credit_daily_amount ?? 0
   const userCredits = userInfo?.credits?.userCredits ?? 0
   const dailyBonusCredits = userInfo?.credits?.dailyBonusCredits ?? 0
+  const nextRefreshTime = userInfo?.credits?.nextRefreshTime
   const totalCredits = userCredits + dailyBonusCredits
+
+  const formatNextRefreshTime = (isoString: string | null | undefined): string => {
+    if (!isoString) return ""
+    const date = new Date(isoString)
+    const now = new Date()
+    if (date <= now) return ""
+    return date.toLocaleString(undefined, {
+      month: "short",
+      day: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+    })
+  }
 
   if (!creditEnabled) return null
 
-  const hour = String(config?.public_credit_daily_refresh_hour).padStart(2, "0")
-  const amount = config?.public_credit_daily_amount
+  const formattedRefreshTime = formatNextRefreshTime(nextRefreshTime)
 
   return (
     <div className="rounded-lg bg-muted/50 p-4 space-y-4 border">
@@ -129,8 +143,11 @@ export function CreditDetail({ planName, onUpgradeClick }: CreditDetailProps) {
             </div>
             <span className="font-medium">{dailyBonusCredits}</span>
           </div>
-          <div className="text-muted-foreground text-xs">
-            {t.dailyRefresh.value.replace("{hour}", hour).replace("{amount}", String(amount))}
+          <div className="text-muted-foreground text-xs space-y-0.5">
+            <div>{t.dailyAmount.value.replace("{amount}", String(dailyAmount))}</div>
+            {formattedRefreshTime && (
+              <div>{t.dailyRefreshAt.value.replace("{time}", formattedRefreshTime)}</div>
+            )}
           </div>
         </div>
       )}

@@ -16,9 +16,13 @@ export default {
         zh: "购买积分/赠送积分（不包含每日赠送）",
       }),
       dailyBonus: t({ en: "Daily Bonus Credits", zh: "每日赠送积分" }),
-      dailyRefresh: t({
-        en: "Refreshes daily at {hour}:00 to {amount}",
-        zh: "每天 {hour}:00 刷新为 {amount}",
+      dailyRefreshAt: t({
+        en: "Next refresh: {time}",
+        zh: "下次刷新：{time}",
+      }),
+      dailyAmount: t({
+        en: "{amount} credits every 24 hours",
+        zh: "每 24 小时赠送 {amount} 积分",
       }),
     },
     history: {

@@ -28,11 +28,11 @@ export const getUserInfoFn = createServerFn({ method: "GET" }).handler(
     const userId = session?.user?.id
 
     if (!userId) {
-      return {
-        user: null,
-        payment: { activePlan: null, activeSubscription: null },
-        credits: { userCredits: 0, dailyBonusCredits: 0 },
-      }
+    return {
+      user: null,
+      payment: { activePlan: null, activeSubscription: null },
+      credits: { userCredits: 0, dailyBonusCredits: 0, nextRefreshTime: null },
+    }
     }
 
     const creditService = new CreditService()
