@@ -39,8 +39,11 @@ function BlogListPage() {
   const filteredPosts = cat ? posts.filter((post) => post.categories.includes(cat)) : posts
 
   return (
-    <main tabIndex={-1} className="relative z-1 outline-none mb-10">
-      <div className={cn("mx-auto w-full max-w-7xl", "px-6 lg:px-8", "pt-24")}>
+    <main
+      tabIndex={-1}
+      className="relative z-1 outline-none mb-10"
+    >
+      <div className={cn("mx-auto w-full max-w-7xl", "px-6 lg:px-8", "pt-6 md:pt-10")}>
         <h2 className={cn("text-6xl leading-tight font-medium", "sm:text-4xl sm:leading-10")}>
           Blog
         </h2>
@@ -52,7 +55,10 @@ function BlogListPage() {
               const href = category.slug ? `/blog?cat=${category.slug}` : "/blog"
 
               return (
-                <li key={category.id} className="text-lg">
+                <li
+                  key={category.id}
+                  className="text-lg"
+                >
                   <LocalizedLink
                     to={href as To}
                     aria-current={isActive ? "page" : undefined}
@@ -75,7 +81,10 @@ function BlogListPage() {
         {filteredPosts.length === 0 ? (
           <EmptyBlog />
         ) : (
-          <BlogGrid posts={filteredPosts} categories={categories} />
+          <BlogGrid
+            posts={filteredPosts}
+            categories={categories}
+          />
         )}
       </div>
     </main>

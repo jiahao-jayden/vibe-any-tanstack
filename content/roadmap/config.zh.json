@@ -1,0 +1,24 @@
+{
+  "columns": [
+    {
+      "title": "计划中",
+      "icon": "Calendar",
+      "color": "#60A5FA",
+      "items": [
+        { "title": "落地页视频介绍" }
+      ]
+    },
+    {
+      "title": "进行中",
+      "icon": "Loader",
+      "color": "#F59E0B",
+      "items": []
+    },
+    {
+      "title": "已上线",
+      "icon": "Rocket",
+      "color": "#34D399",
+      "items": []
+    }
+  ]
+}

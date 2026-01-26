@@ -1,0 +1,24 @@
+{
+  "columns": [
+    {
+      "title": "Planned",
+      "icon": "Calendar",
+      "color": "#60A5FA",
+      "items": [
+        { "title": "Landing video intro" }
+      ]
+    },
+    {
+      "title": "In Progress",
+      "icon": "Loader",
+      "color": "#F59E0B",
+      "items": []
+    },
+    {
+      "title": "Shipped",
+      "icon": "Rocket",
+      "color": "#34D399",
+      "items": []
+    }
+  ]
+}
