@@ -25,9 +25,9 @@ const serverLoader = createServerFn({ method: "GET" })
     if (!page) throw notFound()
 
     const frontmatter = page.data as BlogFrontmatter
-    const author = getAuthor(frontmatter.author)
+    const author = getAuthor(frontmatter.author, lang)
     const categoriesData = frontmatter.categories
-      .map((catSlug: string) => getCategory(catSlug))
+      .map((catSlug: string) => getCategory(catSlug, lang))
       .filter((c): c is BlogCategory => c !== null)
 
     return {

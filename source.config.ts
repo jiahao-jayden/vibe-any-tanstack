@@ -19,10 +19,9 @@ export const blog = defineCollections({
 })
 
 export const authors = defineCollections({
-  type: "meta",
+  type: "doc",
   dir: "content/authors",
-  schema: z.object({
-    name: z.string(),
+  schema: frontmatterSchema.extend({
     avatar: z.string().optional(),
     bio: z.string().optional(),
     twitter: z.string().optional(),
@@ -32,11 +31,9 @@ export const authors = defineCollections({
 })
 
 export const categories = defineCollections({
-  type: "meta",
+  type: "doc",
   dir: "content/categories",
-  schema: z.object({
-    name: z.string(),
-    description: z.string().optional(),
+  schema: frontmatterSchema.extend({
     slug: z.string(),
   }),
 })

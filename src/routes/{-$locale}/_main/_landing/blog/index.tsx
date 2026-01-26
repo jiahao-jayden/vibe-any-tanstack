@@ -26,7 +26,7 @@ const getBlogListData = createServerFn({ method: "GET" })
   .inputValidator((params: { lang?: string }) => params)
   .handler(async ({ data: { lang } }) => {
     const posts = getBlogPosts(lang).map(mapToBlogPost)
-    const categories = getCategories()
+    const categories = getCategories(lang)
     return { posts, categories }
   })
 

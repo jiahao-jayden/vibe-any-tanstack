@@ -1,6 +1,6 @@
 import { authors, blog, categories } from "fumadocs-mdx:collections/server"
-import { toFumadocsSource } from "fumadocs-mdx/runtime/server"
 import { loader } from "fumadocs-core/source"
+import { toFumadocsSource } from "fumadocs-mdx/runtime/server"
 import { i18n } from "@/shared/lib/i18n"
 import type { BlogAuthor, BlogCategory, BlogPost } from "@/shared/types/blog"
 
@@ -21,30 +21,41 @@ export const blogSource = loader({
   i18n,
 })
 
-function getIdFromPath(path: string): string {
+function getInfoFromPath(path: string): { id: string; lang: string } {
   const parts = path.split("/")
   const filename = parts[parts.length - 1]
-  return filename.replace(/\.(json|yaml)$/, "")
+  const match = filename.match(/^(.+?)(?:\.([a-z]{2}))?\.mdx?$/)
+  if (!match) return { id: filename, lang: i18n.defaultLanguage }
+  return {
+    id: match[1],
+    lang: match[2] || i18n.defaultLanguage,
+  }
 }
 
-export function getAuthors(): BlogAuthor[] {
-  return authors.map((author) => ({
-    id: getIdFromPath(author.info.path),
-    name: author.name,
-    avatar: author.avatar,
-    bio: author.bio,
-    twitter: author.twitter,
-    github: author.github,
-    website: author.website,
-  }))
+export function getAuthors(lang?: string): BlogAuthor[] {
+  const language = lang || i18n.defaultLanguage
+  return authors
+    .filter((author) => getInfoFromPath(author.info.path).lang === language)
+    .map((author) => ({
+      id: getInfoFromPath(author.info.path).id,
+      name: author.title,
+      avatar: author.avatar,
+      bio: author.bio,
+      twitter: author.twitter,
+      github: author.github,
+      website: author.website,
+    }))
 }
 
-export function getAuthor(id: string): BlogAuthor | null {
-  const author = authors.find((a) => getIdFromPath(a.info.path) === id)
+export function getAuthor(id: string, lang?: string): BlogAuthor | null {
+  const language = lang || i18n.defaultLanguage
+  const author = authors.find(
+    (a) => getInfoFromPath(a.info.path).id === id && getInfoFromPath(a.info.path).lang === language
+  )
   if (!author) return null
   return {
-    id: getIdFromPath(author.info.path),
-    name: author.name,
+    id: getInfoFromPath(author.info.path).id,
+    name: author.title,
     avatar: author.avatar,
     bio: author.bio,
     twitter: author.twitter,
@@ -53,21 +64,27 @@ export function getAuthor(id: string): BlogAuthor | null {
   }
 }
 
-export function getCategories(): BlogCategory[] {
-  return categories.map((category) => ({
-    id: getIdFromPath(category.info.path),
-    name: category.name,
-    description: category.description,
-    slug: category.slug,
-  }))
+export function getCategories(lang?: string): BlogCategory[] {
+  const language = lang || i18n.defaultLanguage
+  return categories
+    .filter((category) => getInfoFromPath(category.info.path).lang === language)
+    .map((category) => ({
+      id: getInfoFromPath(category.info.path).id,
+      name: category.title,
+      description: category.description,
+      slug: category.slug,
+    }))
 }
 
-export function getCategory(slug: string): BlogCategory | null {
-  const category = categories.find((c) => c.slug === slug)
+export function getCategory(slug: string, lang?: string): BlogCategory | null {
+  const language = lang || i18n.defaultLanguage
+  const category = categories.find(
+    (c) => c.slug === slug && getInfoFromPath(c.info.path).lang === language
+  )
   if (!category) return null
   return {
-    id: getIdFromPath(category.info.path),
-    name: category.name,
+    id: getInfoFromPath(category.info.path).id,
+    name: category.title,
     description: category.description,
     slug: category.slug,
   }
@@ -100,9 +117,7 @@ export function getBlogPost(slug: string[], lang?: string) {
   return blogSource.getPage(slug, language)
 }
 
-export function mapToBlogPost(
-  post: ReturnType<typeof blogSource.getPages>[number]
-): BlogPost {
+export function mapToBlogPost(post: ReturnType<typeof blogSource.getPages>[number]): BlogPost {
   const data = post.data as BlogFrontmatter
   return {
     slug: post.slugs.join("/"),
