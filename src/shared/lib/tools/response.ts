@@ -1,11 +1,6 @@
-export type ApiResponse<T = unknown> = {
-  code: number
-  message: string
-  error?: string
-  data?: T
-}
+import type { ApiResponse, ErrorCode } from "@/shared/types/response"
 
-function createResponse<T = unknown>(code: number, message: string, data?: T, error?: string) {
+function createResponse<T = unknown>(code: number, message: string, data?: T, error?: ErrorCode) {
   const response: ApiResponse<T> = { code, message }
 
   if (data !== undefined) {
@@ -21,7 +16,8 @@ function createResponse<T = unknown>(code: number, message: string, data?: T, er
 
 export const Resp = {
   success: <T = unknown>(data?: T) => createResponse(200, "success", data),
-  error: (message: string, code = 500, error?: string) =>
+  error: (message: string, code = 200, error?: ErrorCode) =>
     createResponse(code, message, undefined, error),
-  json: <T = unknown>(code: number, message: string, data?: T) => createResponse(code, message, data),
+  json: <T = unknown>(code: number, message: string, data?: T) =>
+    createResponse(code, message, data),
 }

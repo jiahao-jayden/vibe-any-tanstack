@@ -4,8 +4,9 @@ import { createRootRouteWithContext, HeadContent, Scripts } from "@tanstack/reac
 import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools"
 import { ThemeProvider } from "tanstack-theme-kit"
 import appCss from "@/config/style/global.css?url"
+import TanStackQueryDevtools from "@/integrations/tanstack-query/devtools"
+import { ErrorToaster } from "@/shared/components/error-toaster"
 import { Toaster } from "@/shared/components/ui/sonner"
-import TanStackQueryDevtools from "../integrations/tanstack-query/devtools"
 
 interface MyRouterContext {
   queryClient: QueryClient
@@ -51,6 +52,7 @@ function RootDocument({ children }: { children: React.ReactNode }) {
           enableSystem
         >
           <Toaster />
+          <ErrorToaster />
           {children}
           <TanStackDevtools
             config={{
