@@ -29,7 +29,7 @@ const clientLoader = browserCollections.changelog.createClientLoader({
   },
 })
 
-export const Route = createFileRoute("/{-$locale}/_main/_landing/changelog/")({
+export const Route = createFileRoute("/{-$locale}/_main/_landing/changelog")({
   component: ChangelogPage,
   head: () => ({
     meta: [{ title: "Changelog" }],

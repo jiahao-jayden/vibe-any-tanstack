@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router"
 import { configResolver, configSchema } from "@/config/schema"
 import { Resp } from "@/shared/lib/tools/response"
-import { adminMiddleware } from "@/shared/middleware/auth"
+import { adminMiddleware } from "@/shared/middleware/auth.middleware"
 import { getConfigs, setConfig } from "@/shared/model/config.model"
 
 export const Route = createFileRoute("/api/admin/config")({

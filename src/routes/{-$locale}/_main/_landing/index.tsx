@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router"
+import { createFileRoute, useMatches } from "@tanstack/react-router"
 import { ThreeBenefits } from "@/shared/components/landing/benefits"
 import { Cta } from "@/shared/components/landing/cta"
 import { Faq } from "@/shared/components/landing/faq"

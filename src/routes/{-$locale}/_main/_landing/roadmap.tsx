@@ -4,7 +4,7 @@ import { getRoadmapConfig } from "@/config/content/roadmap-source"
 import { Board, type RoadmapColumn } from "@/shared/components/roadmap"
 import { cn } from "@/shared/lib/utils"
 
-export const Route = createFileRoute("/{-$locale}/_main/_landing/roadmap/")({
+export const Route = createFileRoute("/{-$locale}/_main/_landing/roadmap")({
   component: RoadmapPage,
   head: () => ({
     meta: [{ title: "Roadmap" }],

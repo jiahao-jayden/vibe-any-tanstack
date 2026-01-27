@@ -5,7 +5,7 @@ import { getDefaultPaymentAdapter, getPaymentAdapter } from "@/integrations/paym
 import { auth } from "@/shared/lib/auth/auth-server"
 import { logger } from "@/shared/lib/tools/logger"
 import { Resp } from "@/shared/lib/tools/response"
-import { authMiddleware } from "@/shared/middleware/auth"
+import { authMiddleware } from "@/shared/middleware/auth.middleware"
 import type { PaymentProvider } from "@/shared/types/payment"
 
 export const Route = createFileRoute("/api/payment/checkout")({

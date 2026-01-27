@@ -31,10 +31,11 @@ import { Route as Char123LocaleChar125MainAdminUsersRouteImport } from './routes
 import { Route as Char123LocaleChar125MainAdminProductsRouteImport } from './routes/{-$locale}/_main/admin/products'
 import { Route as Char123LocaleChar125MainAdminCreditPackagesRouteImport } from './routes/{-$locale}/_main/admin/credit-packages'
 import { Route as Char123LocaleChar125MainAdminConfigRouteImport } from './routes/{-$locale}/_main/admin/config'
+import { Route as Char123LocaleChar125MainLandingWaitlistRouteImport } from './routes/{-$locale}/_main/_landing/waitlist'
+import { Route as Char123LocaleChar125MainLandingRoadmapRouteImport } from './routes/{-$locale}/_main/_landing/roadmap'
+import { Route as Char123LocaleChar125MainLandingChatRouteImport } from './routes/{-$locale}/_main/_landing/chat'
+import { Route as Char123LocaleChar125MainLandingChangelogRouteImport } from './routes/{-$locale}/_main/_landing/changelog'
 import { Route as ApiPaymentWebhookProviderRouteImport } from './routes/api/payment/webhook.$provider'
-import { Route as Char123LocaleChar125MainLandingRoadmapIndexRouteImport } from './routes/{-$locale}/_main/_landing/roadmap/index'
-import { Route as Char123LocaleChar125MainLandingChatIndexRouteImport } from './routes/{-$locale}/_main/_landing/chat/index'
-import { Route as Char123LocaleChar125MainLandingChangelogIndexRouteImport } from './routes/{-$locale}/_main/_landing/changelog/index'
 import { Route as Char123LocaleChar125MainLandingBlogIndexRouteImport } from './routes/{-$locale}/_main/_landing/blog/index'
 import { Route as Char123LocaleChar125MainLandingBlogSlugRouteImport } from './routes/{-$locale}/_main/_landing/blog/$slug'
 
@@ -160,29 +161,35 @@ const Char123LocaleChar125MainAdminConfigRoute =
     path: '/config',
     getParentRoute: () => Char123LocaleChar125MainAdminRouteRoute,
   } as any)
+const Char123LocaleChar125MainLandingWaitlistRoute =
+  Char123LocaleChar125MainLandingWaitlistRouteImport.update({
+    id: '/waitlist',
+    path: '/waitlist',
+    getParentRoute: () => Char123LocaleChar125MainLandingRouteRoute,
+  } as any)
+const Char123LocaleChar125MainLandingRoadmapRoute =
+  Char123LocaleChar125MainLandingRoadmapRouteImport.update({
+    id: '/roadmap',
+    path: '/roadmap',
+    getParentRoute: () => Char123LocaleChar125MainLandingRouteRoute,
+  } as any)
+const Char123LocaleChar125MainLandingChatRoute =
+  Char123LocaleChar125MainLandingChatRouteImport.update({
+    id: '/chat',
+    path: '/chat',
+    getParentRoute: () => Char123LocaleChar125MainLandingRouteRoute,
+  } as any)
+const Char123LocaleChar125MainLandingChangelogRoute =
+  Char123LocaleChar125MainLandingChangelogRouteImport.update({
+    id: '/changelog',
+    path: '/changelog',
+    getParentRoute: () => Char123LocaleChar125MainLandingRouteRoute,
+  } as any)
 const ApiPaymentWebhookProviderRoute =
   ApiPaymentWebhookProviderRouteImport.update({
     id: '/api/payment/webhook/$provider',
     path: '/api/payment/webhook/$provider',
     getParentRoute: () => rootRouteImport,
-  } as any)
-const Char123LocaleChar125MainLandingRoadmapIndexRoute =
-  Char123LocaleChar125MainLandingRoadmapIndexRouteImport.update({
-    id: '/roadmap/',
-    path: '/roadmap/',
-    getParentRoute: () => Char123LocaleChar125MainLandingRouteRoute,
-  } as any)
-const Char123LocaleChar125MainLandingChatIndexRoute =
-  Char123LocaleChar125MainLandingChatIndexRouteImport.update({
-    id: '/chat/',
-    path: '/chat/',
-    getParentRoute: () => Char123LocaleChar125MainLandingRouteRoute,
-  } as any)
-const Char123LocaleChar125MainLandingChangelogIndexRoute =
-  Char123LocaleChar125MainLandingChangelogIndexRouteImport.update({
-    id: '/changelog/',
-    path: '/changelog/',
-    getParentRoute: () => Char123LocaleChar125MainLandingRouteRoute,
   } as any)
 const Char123LocaleChar125MainLandingBlogIndexRoute =
   Char123LocaleChar125MainLandingBlogIndexRouteImport.update({
@@ -213,6 +220,10 @@ export interface FileRoutesByFullPath {
   '/{-$locale}/docs/$': typeof Char123LocaleChar125DocsSplatRoute
   '/{-$locale}/login': typeof Char123LocaleChar125LoginIndexRoute
   '/api/payment/webhook/$provider': typeof ApiPaymentWebhookProviderRoute
+  '/{-$locale}/changelog': typeof Char123LocaleChar125MainLandingChangelogRoute
+  '/{-$locale}/chat': typeof Char123LocaleChar125MainLandingChatRoute
+  '/{-$locale}/roadmap': typeof Char123LocaleChar125MainLandingRoadmapRoute
+  '/{-$locale}/waitlist': typeof Char123LocaleChar125MainLandingWaitlistRoute
   '/{-$locale}/admin/config': typeof Char123LocaleChar125MainAdminConfigRoute
   '/{-$locale}/admin/credit-packages': typeof Char123LocaleChar125MainAdminCreditPackagesRoute
   '/{-$locale}/admin/products': typeof Char123LocaleChar125MainAdminProductsRoute
@@ -221,9 +232,6 @@ export interface FileRoutesByFullPath {
   '/{-$locale}/admin/': typeof Char123LocaleChar125MainAdminIndexRoute
   '/{-$locale}/blog/$slug': typeof Char123LocaleChar125MainLandingBlogSlugRoute
   '/{-$locale}/blog': typeof Char123LocaleChar125MainLandingBlogIndexRoute
-  '/{-$locale}/changelog': typeof Char123LocaleChar125MainLandingChangelogIndexRoute
-  '/{-$locale}/chat': typeof Char123LocaleChar125MainLandingChatIndexRoute
-  '/{-$locale}/roadmap': typeof Char123LocaleChar125MainLandingRoadmapIndexRoute
 }
 export interface FileRoutesByTo {
   '/{-$locale}': typeof Char123LocaleChar125MainLandingIndexRoute
@@ -240,6 +248,10 @@ export interface FileRoutesByTo {
   '/{-$locale}/docs/$': typeof Char123LocaleChar125DocsSplatRoute
   '/{-$locale}/login': typeof Char123LocaleChar125LoginIndexRoute
   '/api/payment/webhook/$provider': typeof ApiPaymentWebhookProviderRoute
+  '/{-$locale}/changelog': typeof Char123LocaleChar125MainLandingChangelogRoute
+  '/{-$locale}/chat': typeof Char123LocaleChar125MainLandingChatRoute
+  '/{-$locale}/roadmap': typeof Char123LocaleChar125MainLandingRoadmapRoute
+  '/{-$locale}/waitlist': typeof Char123LocaleChar125MainLandingWaitlistRoute
   '/{-$locale}/admin/config': typeof Char123LocaleChar125MainAdminConfigRoute
   '/{-$locale}/admin/credit-packages': typeof Char123LocaleChar125MainAdminCreditPackagesRoute
   '/{-$locale}/admin/products': typeof Char123LocaleChar125MainAdminProductsRoute
@@ -247,9 +259,6 @@ export interface FileRoutesByTo {
   '/{-$locale}/admin': typeof Char123LocaleChar125MainAdminIndexRoute
   '/{-$locale}/blog/$slug': typeof Char123LocaleChar125MainLandingBlogSlugRoute
   '/{-$locale}/blog': typeof Char123LocaleChar125MainLandingBlogIndexRoute
-  '/{-$locale}/changelog': typeof Char123LocaleChar125MainLandingChangelogIndexRoute
-  '/{-$locale}/chat': typeof Char123LocaleChar125MainLandingChatIndexRoute
-  '/{-$locale}/roadmap': typeof Char123LocaleChar125MainLandingRoadmapIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -270,6 +279,10 @@ export interface FileRoutesById {
   '/{-$locale}/docs/$': typeof Char123LocaleChar125DocsSplatRoute
   '/{-$locale}/login/': typeof Char123LocaleChar125LoginIndexRoute
   '/api/payment/webhook/$provider': typeof ApiPaymentWebhookProviderRoute
+  '/{-$locale}/_main/_landing/changelog': typeof Char123LocaleChar125MainLandingChangelogRoute
+  '/{-$locale}/_main/_landing/chat': typeof Char123LocaleChar125MainLandingChatRoute
+  '/{-$locale}/_main/_landing/roadmap': typeof Char123LocaleChar125MainLandingRoadmapRoute
+  '/{-$locale}/_main/_landing/waitlist': typeof Char123LocaleChar125MainLandingWaitlistRoute
   '/{-$locale}/_main/admin/config': typeof Char123LocaleChar125MainAdminConfigRoute
   '/{-$locale}/_main/admin/credit-packages': typeof Char123LocaleChar125MainAdminCreditPackagesRoute
   '/{-$locale}/_main/admin/products': typeof Char123LocaleChar125MainAdminProductsRoute
@@ -278,9 +291,6 @@ export interface FileRoutesById {
   '/{-$locale}/_main/admin/': typeof Char123LocaleChar125MainAdminIndexRoute
   '/{-$locale}/_main/_landing/blog/$slug': typeof Char123LocaleChar125MainLandingBlogSlugRoute
   '/{-$locale}/_main/_landing/blog/': typeof Char123LocaleChar125MainLandingBlogIndexRoute
-  '/{-$locale}/_main/_landing/changelog/': typeof Char123LocaleChar125MainLandingChangelogIndexRoute
-  '/{-$locale}/_main/_landing/chat/': typeof Char123LocaleChar125MainLandingChatIndexRoute
-  '/{-$locale}/_main/_landing/roadmap/': typeof Char123LocaleChar125MainLandingRoadmapIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -300,6 +310,10 @@ export interface FileRouteTypes {
     | '/{-$locale}/docs/$'
     | '/{-$locale}/login'
     | '/api/payment/webhook/$provider'
+    | '/{-$locale}/changelog'
+    | '/{-$locale}/chat'
+    | '/{-$locale}/roadmap'
+    | '/{-$locale}/waitlist'
     | '/{-$locale}/admin/config'
     | '/{-$locale}/admin/credit-packages'
     | '/{-$locale}/admin/products'
@@ -308,9 +322,6 @@ export interface FileRouteTypes {
     | '/{-$locale}/admin/'
     | '/{-$locale}/blog/$slug'
     | '/{-$locale}/blog'
-    | '/{-$locale}/changelog'
-    | '/{-$locale}/chat'
-    | '/{-$locale}/roadmap'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/{-$locale}'
@@ -327,6 +338,10 @@ export interface FileRouteTypes {
     | '/{-$locale}/docs/$'
     | '/{-$locale}/login'
     | '/api/payment/webhook/$provider'
+    | '/{-$locale}/changelog'
+    | '/{-$locale}/chat'
+    | '/{-$locale}/roadmap'
+    | '/{-$locale}/waitlist'
     | '/{-$locale}/admin/config'
     | '/{-$locale}/admin/credit-packages'
     | '/{-$locale}/admin/products'
@@ -334,9 +349,6 @@ export interface FileRouteTypes {
     | '/{-$locale}/admin'
     | '/{-$locale}/blog/$slug'
     | '/{-$locale}/blog'
-    | '/{-$locale}/changelog'
-    | '/{-$locale}/chat'
-    | '/{-$locale}/roadmap'
   id:
     | '__root__'
     | '/{-$locale}'
@@ -356,6 +368,10 @@ export interface FileRouteTypes {
     | '/{-$locale}/docs/$'
     | '/{-$locale}/login/'
     | '/api/payment/webhook/$provider'
+    | '/{-$locale}/_main/_landing/changelog'
+    | '/{-$locale}/_main/_landing/chat'
+    | '/{-$locale}/_main/_landing/roadmap'
+    | '/{-$locale}/_main/_landing/waitlist'
     | '/{-$locale}/_main/admin/config'
     | '/{-$locale}/_main/admin/credit-packages'
     | '/{-$locale}/_main/admin/products'
@@ -364,9 +380,6 @@ export interface FileRouteTypes {
     | '/{-$locale}/_main/admin/'
     | '/{-$locale}/_main/_landing/blog/$slug'
     | '/{-$locale}/_main/_landing/blog/'
-    | '/{-$locale}/_main/_landing/changelog/'
-    | '/{-$locale}/_main/_landing/chat/'
-    | '/{-$locale}/_main/_landing/roadmap/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -537,33 +550,40 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof Char123LocaleChar125MainAdminConfigRouteImport
       parentRoute: typeof Char123LocaleChar125MainAdminRouteRoute
     }
+    '/{-$locale}/_main/_landing/waitlist': {
+      id: '/{-$locale}/_main/_landing/waitlist'
+      path: '/waitlist'
+      fullPath: '/{-$locale}/waitlist'
+      preLoaderRoute: typeof Char123LocaleChar125MainLandingWaitlistRouteImport
+      parentRoute: typeof Char123LocaleChar125MainLandingRouteRoute
+    }
+    '/{-$locale}/_main/_landing/roadmap': {
+      id: '/{-$locale}/_main/_landing/roadmap'
+      path: '/roadmap'
+      fullPath: '/{-$locale}/roadmap'
+      preLoaderRoute: typeof Char123LocaleChar125MainLandingRoadmapRouteImport
+      parentRoute: typeof Char123LocaleChar125MainLandingRouteRoute
+    }
+    '/{-$locale}/_main/_landing/chat': {
+      id: '/{-$locale}/_main/_landing/chat'
+      path: '/chat'
+      fullPath: '/{-$locale}/chat'
+      preLoaderRoute: typeof Char123LocaleChar125MainLandingChatRouteImport
+      parentRoute: typeof Char123LocaleChar125MainLandingRouteRoute
+    }
+    '/{-$locale}/_main/_landing/changelog': {
+      id: '/{-$locale}/_main/_landing/changelog'
+      path: '/changelog'
+      fullPath: '/{-$locale}/changelog'
+      preLoaderRoute: typeof Char123LocaleChar125MainLandingChangelogRouteImport
+      parentRoute: typeof Char123LocaleChar125MainLandingRouteRoute
+    }
     '/api/payment/webhook/$provider': {
       id: '/api/payment/webhook/$provider'
       path: '/api/payment/webhook/$provider'
       fullPath: '/api/payment/webhook/$provider'
       preLoaderRoute: typeof ApiPaymentWebhookProviderRouteImport
       parentRoute: typeof rootRouteImport
-    }
-    '/{-$locale}/_main/_landing/roadmap/': {
-      id: '/{-$locale}/_main/_landing/roadmap/'
-      path: '/roadmap'
-      fullPath: '/{-$locale}/roadmap'
-      preLoaderRoute: typeof Char123LocaleChar125MainLandingRoadmapIndexRouteImport
-      parentRoute: typeof Char123LocaleChar125MainLandingRouteRoute
-    }
-    '/{-$locale}/_main/_landing/chat/': {
-      id: '/{-$locale}/_main/_landing/chat/'
-      path: '/chat'
-      fullPath: '/{-$locale}/chat'
-      preLoaderRoute: typeof Char123LocaleChar125MainLandingChatIndexRouteImport
-      parentRoute: typeof Char123LocaleChar125MainLandingRouteRoute
-    }
-    '/{-$locale}/_main/_landing/changelog/': {
-      id: '/{-$locale}/_main/_landing/changelog/'
-      path: '/changelog'
-      fullPath: '/{-$locale}/changelog'
-      preLoaderRoute: typeof Char123LocaleChar125MainLandingChangelogIndexRouteImport
-      parentRoute: typeof Char123LocaleChar125MainLandingRouteRoute
     }
     '/{-$locale}/_main/_landing/blog/': {
       id: '/{-$locale}/_main/_landing/blog/'
@@ -583,28 +603,31 @@ declare module '@tanstack/react-router' {
 }
 
 interface Char123LocaleChar125MainLandingRouteRouteChildren {
+  Char123LocaleChar125MainLandingChangelogRoute: typeof Char123LocaleChar125MainLandingChangelogRoute
+  Char123LocaleChar125MainLandingChatRoute: typeof Char123LocaleChar125MainLandingChatRoute
+  Char123LocaleChar125MainLandingRoadmapRoute: typeof Char123LocaleChar125MainLandingRoadmapRoute
+  Char123LocaleChar125MainLandingWaitlistRoute: typeof Char123LocaleChar125MainLandingWaitlistRoute
   Char123LocaleChar125MainLandingIndexRoute: typeof Char123LocaleChar125MainLandingIndexRoute
   Char123LocaleChar125MainLandingBlogSlugRoute: typeof Char123LocaleChar125MainLandingBlogSlugRoute
   Char123LocaleChar125MainLandingBlogIndexRoute: typeof Char123LocaleChar125MainLandingBlogIndexRoute
-  Char123LocaleChar125MainLandingChangelogIndexRoute: typeof Char123LocaleChar125MainLandingChangelogIndexRoute
-  Char123LocaleChar125MainLandingChatIndexRoute: typeof Char123LocaleChar125MainLandingChatIndexRoute
-  Char123LocaleChar125MainLandingRoadmapIndexRoute: typeof Char123LocaleChar125MainLandingRoadmapIndexRoute
 }
 
 const Char123LocaleChar125MainLandingRouteRouteChildren: Char123LocaleChar125MainLandingRouteRouteChildren =
   {
+    Char123LocaleChar125MainLandingChangelogRoute:
+      Char123LocaleChar125MainLandingChangelogRoute,
+    Char123LocaleChar125MainLandingChatRoute:
+      Char123LocaleChar125MainLandingChatRoute,
+    Char123LocaleChar125MainLandingRoadmapRoute:
+      Char123LocaleChar125MainLandingRoadmapRoute,
+    Char123LocaleChar125MainLandingWaitlistRoute:
+      Char123LocaleChar125MainLandingWaitlistRoute,
     Char123LocaleChar125MainLandingIndexRoute:
       Char123LocaleChar125MainLandingIndexRoute,
     Char123LocaleChar125MainLandingBlogSlugRoute:
       Char123LocaleChar125MainLandingBlogSlugRoute,
     Char123LocaleChar125MainLandingBlogIndexRoute:
       Char123LocaleChar125MainLandingBlogIndexRoute,
-    Char123LocaleChar125MainLandingChangelogIndexRoute:
-      Char123LocaleChar125MainLandingChangelogIndexRoute,
-    Char123LocaleChar125MainLandingChatIndexRoute:
-      Char123LocaleChar125MainLandingChatIndexRoute,
-    Char123LocaleChar125MainLandingRoadmapIndexRoute:
-      Char123LocaleChar125MainLandingRoadmapIndexRoute,
   }
 
 const Char123LocaleChar125MainLandingRouteRouteWithChildren =

@@ -79,7 +79,8 @@
     "vite-tsconfig-paths": "^6.0.2",
     "winston": "^3.19.0",
     "zod": "^4.3.5",
-    "zustand": "^5.0.10"
+    "zustand": "^5.0.10",
+    "vite-intlayer": "^7.5.14"
   },
   "devDependencies": {
     "@biomejs/biome": "2.2.4",
@@ -102,7 +103,6 @@
     "tsx": "^4.0.0",
     "typescript": "^5.7.2",
     "vite": "^7.1.7",
-    "vite-intlayer": "^7.5.14",
     "vitest": "^3.0.5",
     "web-vitals": "^5.1.0"
   }
