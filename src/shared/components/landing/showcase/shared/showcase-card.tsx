@@ -16,13 +16,14 @@ export const ShowcaseCard = ({ item, index, className }: ShowcaseCardProps) => {
     <div
       key={`card-${key}`}
       className={cn(
+        "h-full flex flex-col",
         "bg-card rounded-xl border border-border overflow-hidden",
         "transition-all duration-300",
         item.link && "hover:shadow-lg hover:-translate-y-1",
         className
       )}
     >
-      <div className={cn("aspect-[4/3] relative overflow-hidden", "bg-muted rounded-t-lg")}>
+      <div className={cn("aspect-4/3 relative overflow-hidden", "bg-muted rounded-t-lg")}>
         <Image
           src={item.imagePath}
           alt={`Preview of ${item.title}`}
@@ -35,7 +36,7 @@ export const ShowcaseCard = ({ item, index, className }: ShowcaseCardProps) => {
       </div>
 
       {/* Content Section */}
-      <div className="p-4">
+      <div className="flex-1 flex flex-col p-4">
         <h3
           className={cn(
             "font-semibold text-lg mb-2",
@@ -45,7 +46,9 @@ export const ShowcaseCard = ({ item, index, className }: ShowcaseCardProps) => {
           {item.title}
         </h3>
 
-        <p className={cn("text-muted-foreground text-sm leading-relaxed")}>{item.description}</p>
+        <p className={cn("text-muted-foreground text-sm leading-relaxed line-clamp-2")}>
+          {item.description}
+        </p>
       </div>
     </div>
   )

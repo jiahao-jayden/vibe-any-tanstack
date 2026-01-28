@@ -5,35 +5,61 @@ import { MenuIcon } from "lucide-react"
 import { useIntlayer } from "react-intlayer"
 import { siteConfig } from "@/config/site-config"
 import { LocaleSwitcher } from "@/shared/components/locale/locale-switcher"
-import { LocalizedLink } from "@/shared/components/locale/localized-link"
+import { LocalizedLink, type To } from "@/shared/components/locale/localized-link"
 import { Button } from "@/shared/components/ui/button"
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuSub,
+  DropdownMenuSubContent,
+  DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from "@/shared/components/ui/dropdown-menu"
 import {
   NavigationMenu,
+  NavigationMenuContent,
   NavigationMenuItem,
   NavigationMenuLink,
   NavigationMenuList,
+  NavigationMenuTrigger,
   navigationMenuTriggerStyle,
 } from "@/shared/components/ui/navigation-menu"
 import { cn } from "@/shared/lib/utils"
 import { ThemeSwitcher } from "./theme-switcher"
 import { UserMenu } from "./user-menu"
 
+interface MenuItem {
+  id: string
+  label: string
+  href?: To | string
+  children?: MenuItem[]
+}
+
 export const LandingHeader = () => {
   const { header } = useIntlayer("landing")
   const location = useLocation()
   const { title, images } = siteConfig
 
-  const items = header.items.map((item, index) => ({
-    id: `${index}`,
-    label: item.label.value,
-    href: item.href.value,
-  }))
+  const items: MenuItem[] = header.items.map((item, index) => {
+    const children =
+      "children" in item && Array.isArray(item.children)
+        ? item.children.map(
+            (child: { label: { value: string }; href: { value: string } }, childIndex: number) => ({
+              id: `${index}-${childIndex}`,
+              label: child.label.value,
+              href: child.href.value as To,
+            })
+          )
+        : undefined
+
+    return {
+      id: `${index}`,
+      label: item.label.value,
+      href: "href" in item ? (item.href.value as To) : undefined,
+      children,
+    }
+  })
 
   const isActivePath = (href: string) => {
     if (href === "/") return false
@@ -74,17 +100,47 @@ export const LandingHeader = () => {
           <NavigationMenuList className="gap-1">
             {items.map((item) => (
               <NavigationMenuItem key={item.id}>
-                <NavigationMenuLink
-                  asChild
-                  className={navigationMenuTriggerStyle()}
-                >
-                  <LocalizedLink
-                    to={item.href}
-                    className={cn(isActivePath(item.href) && "text-primary bg-muted/50")}
+                {item.children ? (
+                  <>
+                    <NavigationMenuTrigger className="gap-1">{item.label}</NavigationMenuTrigger>
+                    <NavigationMenuContent className="shadow-none!">
+                      <ul className="grid w-48 gap-1">
+                        {item.children.map((child) => (
+                          <li key={child.id}>
+                            <NavigationMenuLink asChild>
+                              <LocalizedLink
+                                to={child.href ?? "/"}
+                                className={cn(
+                                  "block select-none rounded-md p-2 text-sm leading-none no-underline outline-none transition-colors",
+                                  "hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground",
+                                  child.href &&
+                                    isActivePath(child.href) &&
+                                    "text-primary bg-muted/50"
+                                )}
+                              >
+                                {child.label}
+                              </LocalizedLink>
+                            </NavigationMenuLink>
+                          </li>
+                        ))}
+                      </ul>
+                    </NavigationMenuContent>
+                  </>
+                ) : (
+                  <NavigationMenuLink
+                    asChild
+                    className={navigationMenuTriggerStyle()}
                   >
-                    {item.label}
-                  </LocalizedLink>
-                </NavigationMenuLink>
+                    <LocalizedLink
+                      to={item.href ?? "/"}
+                      className={cn(
+                        item.href && isActivePath(item.href) && "text-primary bg-muted/50"
+                      )}
+                    >
+                      {item.label}
+                    </LocalizedLink>
+                  </NavigationMenuLink>
+                )}
               </NavigationMenuItem>
             ))}
           </NavigationMenuList>
@@ -113,22 +169,48 @@ export const LandingHeader = () => {
               className="w-48"
               align="end"
             >
-              {items.map((item) => (
-                <DropdownMenuItem
-                  key={item.id}
-                  asChild
-                >
-                  <LocalizedLink
-                    to={item.href}
-                    className={cn(
-                      "w-full cursor-pointer",
-                      isActivePath(item.href) && "text-primary"
-                    )}
+              {items.map((item) =>
+                item.children ? (
+                  <DropdownMenuSub key={item.id}>
+                    <DropdownMenuSubTrigger className="cursor-pointer">
+                      {item.label}
+                    </DropdownMenuSubTrigger>
+                    <DropdownMenuSubContent>
+                      {item.children.map((child) => (
+                        <DropdownMenuItem
+                          key={child.id}
+                          asChild
+                        >
+                          <LocalizedLink
+                            to={child.href ?? "/"}
+                            className={cn(
+                              "w-full cursor-pointer",
+                              child.href && isActivePath(child.href) && "text-primary"
+                            )}
+                          >
+                            {child.label}
+                          </LocalizedLink>
+                        </DropdownMenuItem>
+                      ))}
+                    </DropdownMenuSubContent>
+                  </DropdownMenuSub>
+                ) : (
+                  <DropdownMenuItem
+                    key={item.id}
+                    asChild
                   >
-                    {item.label}
-                  </LocalizedLink>
-                </DropdownMenuItem>
-              ))}
+                    <LocalizedLink
+                      to={item.href ?? "/"}
+                      className={cn(
+                        "w-full cursor-pointer",
+                        item.href && isActivePath(item.href) && "text-primary"
+                      )}
+                    >
+                      {item.label}
+                    </LocalizedLink>
+                  </DropdownMenuItem>
+                )
+              )}
             </DropdownMenuContent>
           </DropdownMenu>
         </div>

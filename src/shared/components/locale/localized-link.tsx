@@ -31,6 +31,18 @@ export const LocalizedLink: FC<LocalizedLinkProps> = (props) => {
   const { locale } = useLocale()
   const { localePrefix } = getPrefix(locale)
 
+  const isHashOnly = typeof props.to === "string" && props.to.startsWith("#")
+
+  if (isHashOnly) {
+    const { to, ...rest } = props
+    return (
+      <a
+        {...(rest as React.AnchorHTMLAttributes<HTMLAnchorElement>)}
+        href={to}
+      />
+    )
+  }
+
   return (
     <Link
       {...props}

@@ -55,7 +55,8 @@
         "noUnusedVariables": "warn",
         "noUnusedImports": "warn",
         "useHookAtTopLevel": "error",
-        "useExhaustiveDependencies": "off"
+        "useExhaustiveDependencies": "off",
+        "useUniqueElementIds": "off"
       },
       "complexity": {
         "noBannedTypes": "off",

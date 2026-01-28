@@ -134,7 +134,9 @@ export const HorizontalShowcase = () => {
           <ul
             ref={scrollRef}
             onScroll={handleScroll}
-            className={cn("flex gap-6 overflow-x-auto scrollbar-hide pb-4 scroll-smooth")}
+            className={cn(
+              "flex items-stretch gap-6 overflow-x-auto scrollbar-hide pb-4 scroll-smooth"
+            )}
             style={{
               scrollbarWidth: "none",
               msOverflowStyle: "none",
@@ -145,11 +147,14 @@ export const HorizontalShowcase = () => {
               const key = `${item.title}-${index}`
 
               return (
-                <li key={key}>
+                <li
+                  key={key}
+                  className="h-auto"
+                >
                   <ShowcaseCard
                     item={item}
                     index={index}
-                    className="flex-shrink-0 w-80 p-1"
+                    className="shrink-0 w-80 h-full"
                   />
                 </li>
               )

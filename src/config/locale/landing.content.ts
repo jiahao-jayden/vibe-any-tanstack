@@ -36,7 +36,7 @@ export default {
         show: true,
         text: t({
           en: "Open Sourced in 2025: Production-grade AI SaaS template available!",
-          zh: "2025 年开源：生产级 AI SaaS 模板现已发布！",
+          zh: "2026 年开源：生产级 AI SaaS 模板现已发布！",
         }),
         href: github,
       },
@@ -118,8 +118,8 @@ export default {
           {
             title: t({ en: "Multiple Login Methods", zh: "多种登录方式" }),
             description: t({
-              en: "Email/password authentication with OAuth support for Google and GitHub",
-              zh: "邮箱密码认证，支持 Google 和 GitHub OAuth 登录",
+              en: "Email/password authentication with OAuth support for Google, GitHub, Apple and more",
+              zh: "邮箱密码认证，支持 Google, GitHub OAuth, Apple 等多种方式登录",
             }),
           },
           {
@@ -136,32 +136,18 @@ export default {
               zh: "安全的会话管理，支持自动令牌刷新和登出",
             }),
           },
-          {
-            title: t({ en: "Admin Dashboard", zh: "管理后台" }),
-            description: t({
-              en: "Built-in admin panel for user management and system monitoring",
-              zh: "内置管理面板，支持用户管理和系统监控",
-            }),
-          },
         ],
       },
       {
         type: "image" as const,
         title: t({ en: "Payment System", zh: "支付系统" }),
         description: t({
-          en: "Supports subscriptions and one-time payments via Stripe, with automated payment event handling and billing management",
-          zh: "支持通过 Stripe 进行订阅和一次性支付，自动处理支付事件和账单管理",
+          en: "Supports subscriptions and one-time payments via Stripe, Creem, PayPal, WeChat and Alipay, with automated payment event handling and billing management",
+          zh: "支持通过 Stripe, Creem, PayPal, 微信和支付宝进行订阅和一次性支付，自动处理支付事件和账单管理",
         }),
-        image: "/home/introduction/payment.avif",
+        image: "/landing/introduction/payment.webp",
         imagePosition: "right" as const,
         features: [
-          {
-            title: t({ en: "Stripe Integration", zh: "Stripe 集成" }),
-            description: t({
-              en: "Official SDK support with secure event signing",
-              zh: "官方 SDK 支持，安全事件签名",
-            }),
-          },
           {
             title: t({ en: "Subscriptions & One-time", zh: "订阅与一次性支付" }),
             description: t({
@@ -177,10 +163,10 @@ export default {
             }),
           },
           {
-            title: t({ en: "Billing & Credits", zh: "账单与积分" }),
+            title: t({ en: "Billing & Credits", zh: "账单与积分充值" }),
             description: t({
               en: "Billing page with credit top-up and history tracking",
-              zh: "账单页面支持积分充值和历史记录追踪",
+              zh: "支持积分充值和账单历史记录追踪",
             }),
           },
         ],
@@ -230,43 +216,33 @@ export default {
       },
       {
         type: "image" as const,
-        title: t({ en: "Authentication", zh: "身份认证" }),
+        title: t({ en: "Blog & Roadmap & Changelog", zh: "博客、路线图与更新日志" }),
         description: t({
-          en: "Supports passwordless email login and Google/GitHub login, with user profile management and secure session control",
-          zh: "支持免密邮箱登录和 Google/GitHub 登录，具备用户资料管理和安全会话控制",
+          en: "Built-in beautiful blog and roadmap system with clear structure, multilingual support, and deep customization",
+          zh: "内置精美博客、路线图和更新日志系统，结构清晰，支持多语言和深度定制",
         }),
-        image: t({
-          en: "/home/introduction/authentication.avif",
-          zh: "/home/introduction/authentication-zh.avif",
-        }),
+        image: "/landing/introduction/blog-roadmap.webp",
         imagePosition: "right" as const,
         features: [
           {
-            title: t({ en: "Passwordless Login", zh: "免密登录" }),
+            title: t({ en: "Blog", zh: "博客" }),
             description: t({
-              en: "Quick login via email link without passwords",
-              zh: "通过邮件链接快速登录，无需密码",
+              en: "Showcase product updates, technical insights, and industry trends",
+              zh: "展示产品更新、技术分享、行业洞察等内容",
             }),
           },
           {
-            title: t({ en: "Social Login", zh: "社交登录" }),
+            title: t({ en: "Roadmap", zh: "路线图" }),
             description: t({
-              en: "Built-in support for Google and GitHub",
-              zh: "内置 Google 和 GitHub 支持",
+              en: "Visual roadmap with clear milestones and progress tracking, helping users understand the project progress",
+              zh: "清晰的路标和进度追踪，帮助用户了解项目进展",
             }),
           },
           {
-            title: t({ en: "User Profiles", zh: "用户资料" }),
+            title: t({ en: "Changelog", zh: "更新日志" }),
             description: t({
-              en: "Manage basic information and avatars",
-              zh: "管理基本信息和头像",
-            }),
-          },
-          {
-            title: t({ en: "Secure Sessions", zh: "安全会话" }),
-            description: t({
-              en: "Server-side validation following security best practices",
-              zh: "服务端验证，遵循安全最佳实践",
+              en: "Product update changelog page",
+              zh: "产品更新日志展示页面",
             }),
           },
         ],
@@ -274,36 +250,26 @@ export default {
 
       {
         type: "image" as const,
-        title: t({ en: "Blog & Documentation", zh: "博客与文档" }),
+        title: t({ en: "Documentation System", zh: "文档系统" }),
         description: t({
-          en: "Built-in beautiful blog and MDX documentation system with clear structure, multilingual support, and deep customization",
-          zh: "内置精美博客和 MDX 文档系统，结构清晰，支持多语言和深度定制",
+          en: "Built-in MDX documentation system with clear structure, multilingual support",
+          zh: "内置 MDX 文档系统，结构清晰，支持多语言和深度定制",
         }),
-        image: t({
-          en: "/home/introduction/blog.avif",
-          zh: "/home/introduction/blog-zh.avif",
-        }),
-        imagePosition: "right" as const,
+        image: "/landing/introduction/doc.webp",
+        imagePosition: "left" as const,
         features: [
           {
             title: t({ en: "MDX Documentation", zh: "MDX 文档" }),
             description: t({
-              en: "Based on Fumadocs with structured directories and example components",
-              zh: "基于 Fumadocs，目录结构化，包含示例组件",
-            }),
-          },
-          {
-            title: t({ en: "Blog System", zh: "博客系统" }),
-            description: t({
-              en: "Content-as-code for easy collaboration and version control",
-              zh: "内容即代码，便于协作和版本控制",
+              en: "Based on Fumadocs with structured directories and rich MDX components",
+              zh: "基于 Fumadocs，支持结构化目录以及丰富的 MDX 组件",
             }),
           },
           {
             title: t({ en: "Multilingual Support", zh: "多语言支持" }),
             description: t({
-              en: "Parallel Chinese/English content with automatic routing",
-              zh: "中英文内容并行，自动路由",
+              en: "Parallel Chinese/English content with automatic routing switching",
+              zh: "中英文内容并行，自动路由切换",
             }),
           },
           {
@@ -675,28 +641,39 @@ export default {
       secondaryButtonHref: "/",
     },
     header: {
-      preferences: t({ en: "Preferences", zh: "偏好设置" }),
-      searchPlaceholder: t({ en: "Search...", zh: "搜索..." }),
       items: [
         {
           label: t({ en: "Documentation", zh: "文档" }),
           href: "/docs",
         },
         {
-          label: t({ en: "Blog", zh: "博客" }),
-          href: "/blog",
-        },
-        {
-          label: t({ en: "Roadmap", zh: "路线图" }),
-          href: "/roadmap",
-        },
-        {
-          label: t({ en: "Changelog", zh: "更新日志" }),
-          href: "/changelog",
-        },
-        {
           label: t({ en: "Chat", zh: "聊天" }),
           href: "/chat",
+        },
+        {
+          label: t({ en: "Features", zh: "特点" }),
+          href: "#introduction",
+        },
+        {
+          label: t({ en: "Pricing", zh: "定价" }),
+          href: "#pricing",
+        },
+        {
+          label: t({ en: "More Features", zh: "更多功能" }),
+          children: [
+            {
+              label: t({ en: "Blog", zh: "博客" }),
+              href: "/blog",
+            },
+            {
+              label: t({ en: "Roadmap", zh: "路线图" }),
+              href: "/roadmap",
+            },
+            {
+              label: t({ en: "Changelog", zh: "更新日志" }),
+              href: "/changelog",
+            },
+          ],
         },
       ] as const,
     },

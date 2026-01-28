@@ -10,7 +10,10 @@ export const Introduction = () => {
   const { introduction } = useIntlayer("landing")
 
   return (
-    <section aria-label="Introduction sections">
+    <section
+      id="introduction"
+      aria-label="Introduction sections"
+    >
       {introduction.map((item, index) => {
         const section = {
           id: `${index}`,

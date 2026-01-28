@@ -236,10 +236,13 @@ export function PricingCards({ variant = "default", onSuccess }: PricingCardsPro
               </CardHeader>
 
               <CardContent className={cn("flex-1 space-y-4", isCompact && "p-4 pt-0 space-y-2")}>
-                <hr className="border-dashed" />
+                <hr className="border-dashed mt-3" />
 
                 <ul
-                  className={cn("list-outside space-y-3 text-sm", isCompact && "space-y-1.5 text-xs")}
+                  className={cn(
+                    "list-outside space-y-3 text-sm",
+                    isCompact && "space-y-1.5 text-xs"
+                  )}
                 >
                   {(isCompact ? planContent.features.slice(0, 4) : planContent.features).map(
                     (feature, index) => (
