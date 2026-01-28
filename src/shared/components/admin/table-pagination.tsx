@@ -29,8 +29,8 @@ export function TablePagination<T>({
   const endRow = Math.min((pageIndex + 1) * pageSize, totalRows)
 
   return (
-    <div className="flex items-center justify-between border-t px-4 py-3">
-      <div className="flex items-center gap-2 text-sm text-muted-foreground">
+    <div className="flex items-center justify-between border-t px-3 py-2 sm:px-4 sm:py-3 gap-2">
+      <div className="hidden sm:flex items-center gap-2 text-sm text-muted-foreground">
         <span>{rowsPerPageLabel}</span>
         <Select
           value={String(pageSize)}
@@ -52,52 +52,51 @@ export function TablePagination<T>({
         </Select>
       </div>
 
-      <div className="flex items-center gap-2">
-        <span className="text-sm text-muted-foreground">
-          {startRow}-{endRow} / {totalRows}
-        </span>
-        <div className="flex items-center gap-1">
-          <Button
-            variant="outline"
-            size="icon"
-            className="size-8"
-            onClick={() => table.setPageIndex(0)}
-            disabled={!table.getCanPreviousPage()}
-            aria-label="First page"
-          >
-            <ChevronsLeft className="size-4" />
-          </Button>
-          <Button
-            variant="outline"
-            size="icon"
-            className="size-8"
-            onClick={() => table.previousPage()}
-            disabled={!table.getCanPreviousPage()}
-            aria-label="Previous page"
-          >
-            <ChevronLeft className="size-4" />
-          </Button>
-          <Button
-            variant="outline"
-            size="icon"
-            className="size-8"
-            onClick={() => table.nextPage()}
-            disabled={!table.getCanNextPage()}
-            aria-label="Next page"
-          >
-            <ChevronRight className="size-4" />
-          </Button>
-          <Button
-            variant="outline"
-            size="icon"
-            className="size-8"
-            onClick={() => table.setPageIndex(table.getPageCount() - 1)}
-            disabled={!table.getCanNextPage()}
-            aria-label="Last page"
-          >
-            <ChevronsRight className="size-4" />
-          </Button>
-        </div>
+      <span className="text-xs sm:text-sm text-muted-foreground whitespace-nowrap">
+        {startRow}-{endRow} / {totalRows}
+      </span>
+
+      <div className="flex items-center gap-1">
+        <Button
+          variant="outline"
+          size="icon"
+          className="size-7 sm:size-8"
+          onClick={() => table.setPageIndex(0)}
+          disabled={!table.getCanPreviousPage()}
+          aria-label="First page"
+        >
+          <ChevronsLeft className="size-4" />
+        </Button>
+        <Button
+          variant="outline"
+          size="icon"
+          className="size-7 sm:size-8"
+          onClick={() => table.previousPage()}
+          disabled={!table.getCanPreviousPage()}
+          aria-label="Previous page"
+        >
+          <ChevronLeft className="size-4" />
+        </Button>
+        <Button
+          variant="outline"
+          size="icon"
+          className="size-7 sm:size-8"
+          onClick={() => table.nextPage()}
+          disabled={!table.getCanNextPage()}
+          aria-label="Next page"
+        >
+          <ChevronRight className="size-4" />
+        </Button>
+        <Button
+          variant="outline"
+          size="icon"
+          className="size-7 sm:size-8"
+          onClick={() => table.setPageIndex(table.getPageCount() - 1)}
+          disabled={!table.getCanNextPage()}
+          aria-label="Last page"
+        >
+          <ChevronsRight className="size-4" />
+        </Button>
       </div>
     </div>
   )

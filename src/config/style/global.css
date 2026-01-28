@@ -101,10 +101,12 @@ code {
   }
 
   /* Hide native scrollbars but keep scroll functionality */
-  .no-scrollbar::-webkit-scrollbar {
+  .no-scrollbar::-webkit-scrollbar,
+  .no-scrollbar [data-slot="table-container"]::-webkit-scrollbar {
     display: none;
   }
-  .no-scrollbar {
+  .no-scrollbar,
+  .no-scrollbar [data-slot="table-container"] {
     -ms-overflow-style: none;
     scrollbar-width: none;
   }

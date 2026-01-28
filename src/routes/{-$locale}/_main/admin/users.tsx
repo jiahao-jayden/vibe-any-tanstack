@@ -5,14 +5,24 @@ import {
   flexRender,
   getCoreRowModel,
   type PaginationState,
+  type SortingState,
   useReactTable,
+  type VisibilityState,
 } from "@tanstack/react-table"
 import { Ban, Coins, Crown, Eye, ShieldCheck, UserRoundX, Users } from "lucide-react"
-import { useMemo, useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 import { useIntlayer } from "react-intlayer"
+import { DataTableColumnHeader } from "@/shared/components/admin/data-table-column-header"
+import { DataTableViewOptions } from "@/shared/components/admin/data-table-view-options"
 import { PageHeader } from "@/shared/components/admin/page-header"
+import { TableContainer, TableScrollArea } from "@/shared/components/admin/table-container"
 import { TablePagination } from "@/shared/components/admin/table-pagination"
 import { UserDetailSheet } from "@/shared/components/admin/user-detail-sheet"
+import {
+  DEFAULT_FILTERS,
+  type UserFilters,
+  UserFiltersBar,
+} from "@/shared/components/admin/user-filters"
 import { Avatar, AvatarFallback, AvatarImage } from "@/shared/components/ui/avatar"
 import { Badge } from "@/shared/components/ui/badge"
 import { Button } from "@/shared/components/ui/button"
@@ -27,6 +37,7 @@ import {
 } from "@/shared/components/ui/table"
 import { useGlobalContext } from "@/shared/context/global.context"
 import { http } from "@/shared/lib/tools/http-client"
+import { cn } from "@/shared/lib/utils"
 import type { AdminUserListItem, PaginatedResponse } from "@/shared/types/admin"
 
 export const Route = createFileRoute("/{-$locale}/_main/admin/users")({
@@ -45,14 +56,14 @@ function StatCard({
   iconClassName?: string
 }) {
   return (
-    <div className="rounded-2xl bg-card border p-5">
-      <div className="flex items-center justify-between">
-        <div>
-          <p className="text-sm text-muted-foreground">{label}</p>
-          <p className="text-3xl font-semibold tabular-nums mt-1">{value}</p>
+    <div className="rounded-xl bg-card border p-3 sm:p-4 w-28 shrink-0 sm:w-auto sm:shrink">
+      <div className="flex items-start gap-2 sm:gap-3">
+        <div className="flex-1 min-w-0">
+          <p className="text-xs sm:text-sm text-muted-foreground truncate">{label}</p>
+          <p className="text-lg sm:text-2xl font-semibold tabular-nums">{value}</p>
         </div>
-        <div className={iconClassName}>
-          <Icon className="size-6" />
+        <div className={cn("shrink-0", iconClassName)}>
+          <Icon className="size-4 sm:size-5" />
         </div>
       </div>
     </div>
@@ -66,18 +77,53 @@ function UsersPage() {
 
   const [selectedUserId, setSelectedUserId] = useState<string | null>(null)
   const [sheetOpen, setSheetOpen] = useState(false)
+  const [filters, setFilters] = useState<UserFilters>(DEFAULT_FILTERS)
   const [pagination, setPagination] = useState<PaginationState>({
     pageIndex: 0,
     pageSize: 10,
   })
+  const [sorting, setSorting] = useState<SortingState>([
+    { id: filters.sortBy, desc: filters.sortOrder === "desc" },
+  ])
+  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
 
   const { data, isLoading, refetch } = useQuery({
-    queryKey: ["admin", "users", pagination.pageIndex, pagination.pageSize],
-    queryFn: () =>
-      http<PaginatedResponse<AdminUserListItem>>(
-        `/api/admin/users?page=${pagination.pageIndex + 1}&pageSize=${pagination.pageSize}`
-      ),
+    queryKey: ["admin", "users", pagination.pageIndex, pagination.pageSize, filters],
+    queryFn: () => {
+      const params = new URLSearchParams({
+        page: String(pagination.pageIndex + 1),
+        pageSize: String(pagination.pageSize),
+        sortBy: filters.sortBy,
+        sortOrder: filters.sortOrder,
+      })
+      if (filters.search) params.set("search", filters.search)
+      if (filters.banned && filters.banned !== "all") params.set("banned", filters.banned)
+      if (filters.subscription && filters.subscription !== "all")
+        params.set("subscription", filters.subscription)
+      if (filters.role && filters.role !== "all") params.set("role", filters.role)
+      return http<PaginatedResponse<AdminUserListItem>>(`/api/admin/users?${params}`)
+    },
   })
+
+  const handleFiltersChange = (newFilters: UserFilters) => {
+    setFilters(newFilters)
+    setPagination((prev) => ({ ...prev, pageIndex: 0 }))
+    setSorting([{ id: newFilters.sortBy, desc: newFilters.sortOrder === "desc" }])
+  }
+
+  useEffect(() => {
+    if (sorting.length > 0) {
+      const { id, desc } = sorting[0]
+      if (id !== filters.sortBy || (desc ? "desc" : "asc") !== filters.sortOrder) {
+        setFilters((prev) => ({
+          ...prev,
+          sortBy: id,
+          sortOrder: desc ? "desc" : "asc",
+        }))
+        setPagination((prev) => ({ ...prev, pageIndex: 0 }))
+      }
+    }
+  }, [sorting, filters.sortBy, filters.sortOrder])
 
   const users = data?.items ?? []
   const totalRows = data?.pagination.total ?? 0
@@ -121,13 +167,25 @@ function UsersPage() {
       },
       {
         accessorKey: "name",
-        header: () => content.users.table.name,
+        header: ({ column }) => (
+          <DataTableColumnHeader
+            column={column}
+            title={content.users.table.name.value}
+          />
+        ),
         cell: ({ row }) => <span className="font-medium">{row.original.name}</span>,
+        enableHiding: true,
       },
       {
         accessorKey: "email",
-        header: () => content.users.table.email,
+        header: ({ column }) => (
+          <DataTableColumnHeader
+            column={column}
+            title={content.users.table.email.value}
+          />
+        ),
         cell: ({ row }) => <span className="text-muted-foreground">{row.original.email}</span>,
+        enableHiding: true,
       },
       {
         id: "roles",
@@ -176,6 +234,7 @@ function UsersPage() {
               {content.users.free}
             </Badge>
           ),
+        enableHiding: true,
       },
       ...(creditEnabled
         ? [
@@ -188,6 +247,7 @@ function UsersPage() {
                   {row.original.creditBalance}
                 </div>
               ),
+              enableHiding: true,
             } as ColumnDef<AdminUserListItem>,
           ]
         : []),
@@ -202,15 +262,22 @@ function UsersPage() {
               {row.original.emailVerified ? content.users.verified : content.users.unverified}
             </Badge>
           ),
+        enableHiding: true,
       },
       {
         accessorKey: "createdAt",
-        header: () => content.users.table.createdAt,
+        header: ({ column }) => (
+          <DataTableColumnHeader
+            column={column}
+            title={content.users.table.createdAt.value}
+          />
+        ),
         cell: ({ row }) => (
           <span className="tabular-nums text-muted-foreground">
             {new Date(row.original.createdAt).toLocaleDateString()}
           </span>
         ),
+        enableHiding: true,
       },
       {
         id: "actions",
@@ -240,21 +307,39 @@ function UsersPage() {
     columns,
     getCoreRowModel: getCoreRowModel(),
     manualPagination: true,
+    manualSorting: true,
     pageCount: data?.pagination.totalPages ?? -1,
     state: {
       pagination,
+      sorting,
+      columnVisibility,
     },
     onPaginationChange: setPagination,
+    onSortingChange: setSorting,
+    onColumnVisibilityChange: setColumnVisibility,
   })
 
+  const columnLabels = useMemo(
+    () => ({
+      name: content.users.table.name.value,
+      email: content.users.table.email.value,
+      roles: content.users.roles.value,
+      subscription: content.users.subscription.value,
+      credits: content.users.credits.value,
+      status: content.users.table.status.value,
+      createdAt: content.users.table.createdAt.value,
+    }),
+    [content]
+  )
+
   return (
-    <>
+    <div className="flex flex-col h-full min-h-0">
       <PageHeader
         title={content.users.title.value}
         description={content.users.description.value}
       />
 
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4 mb-6">
+      <div className="-mx-4 px-4 flex gap-2 overflow-x-auto pb-2 mb-4 no-scrollbar sm:mx-0 sm:px-0 sm:grid sm:grid-cols-2 sm:gap-4 sm:overflow-visible sm:pb-0 sm:mb-6 lg:grid-cols-4 shrink-0">
         <StatCard
           icon={Users}
           label={content.users.stats.total.value}
@@ -281,7 +366,18 @@ function UsersPage() {
         />
       </div>
 
-      <div className="overflow-hidden rounded-xl border bg-card">
+      <div className="mb-4 shrink-0 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+        <UserFiltersBar
+          filters={filters}
+          onChange={handleFiltersChange}
+        />
+        <DataTableViewOptions
+          table={table}
+          columnLabels={columnLabels}
+        />
+      </div>
+
+      <TableContainer>
         {isLoading ? (
           <div className="overflow-x-auto">
             <Table>
@@ -345,8 +441,8 @@ function UsersPage() {
           </div>
         ) : (
           <>
-            <div className="overflow-x-auto">
-              <Table>
+            <TableScrollArea>
+              <Table className="min-w-175">
                 <TableHeader>
                   {table.getHeaderGroups().map((headerGroup) => (
                     <TableRow
@@ -397,7 +493,7 @@ function UsersPage() {
                   ))}
                 </TableBody>
               </Table>
-            </div>
+            </TableScrollArea>
 
             <TablePagination
               table={table}
@@ -406,7 +502,7 @@ function UsersPage() {
             />
           </>
         )}
-      </div>
+      </TableContainer>
 
       <UserDetailSheet
         userId={selectedUserId}
@@ -416,6 +512,6 @@ function UsersPage() {
         }}
         onUpdate={() => refetch()}
       />
-    </>
+    </div>
   )
 }
