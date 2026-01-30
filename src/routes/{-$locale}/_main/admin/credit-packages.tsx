@@ -1,7 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { createFileRoute } from "@tanstack/react-router"
-import { Coins, Package, Pencil, Plus, Trash2 } from "lucide-react"
-import { useId, useState } from "react"
+import { AlertCircle, CheckCircle2, Coins, Package, Pencil, Plus, Trash2 } from "lucide-react"
+import { useId, useMemo, useState } from "react"
 import { useIntlayer } from "react-intlayer"
 import { toast } from "sonner"
 import { CURRENCY } from "@/config/payment-config"
@@ -31,7 +31,6 @@ import {
   TableHeader,
   TableRow,
 } from "@/shared/components/ui/table"
-import { Textarea } from "@/shared/components/ui/textarea"
 import { useGlobalContext } from "@/shared/context/global.context"
 import { http } from "@/shared/lib/tools/http-client"
 import type { CreditPackage } from "@/shared/types/payment"
@@ -64,6 +63,7 @@ const defaultFormData: FormData = {
 
 function CreditPackagesPage() {
   const content = useIntlayer("admin")
+  const creditPackagesDict = useIntlayer("credit-packages")
   const queryClient = useQueryClient()
   const formId = useId()
   const { config } = useGlobalContext()
@@ -72,6 +72,19 @@ function CreditPackagesPage() {
   const [editingPackage, setEditingPackage] = useState<CreditPackage | null>(null)
   const [deletePackage, setDeletePackage] = useState<CreditPackage | null>(null)
   const [formData, setFormData] = useState<FormData>(defaultFormData)
+
+  const localeKeyValidation = useMemo(() => {
+    const nameKey = formData.name.trim()
+    const descKey = formData.description.trim()
+    if (!nameKey || !descKey) return { valid: false, nameExists: false, descExists: false }
+
+    const dict = creditPackagesDict as Record<string, { name?: unknown; description?: unknown }>
+    const entry = dict[nameKey]
+    const nameExists = !!entry?.name
+    const descExists = !!entry?.description
+
+    return { valid: nameExists && descExists, nameExists, descExists }
+  }, [formData.name, formData.description, creditPackagesDict])
 
   const { data: packages, isLoading } = useQuery({
     queryKey: ["admin", "credit-packages"],
@@ -128,7 +141,7 @@ function CreditPackagesPage() {
     setEditingPackage(pkg)
     setFormData({
       name: pkg.name,
-      description: pkg.description || "",
+      description: pkg.name,
       creditAmount: pkg.creditAmount,
       expireDays: pkg.expireDays,
       priceAmount: pkg.priceAmount,
@@ -274,54 +287,61 @@ function CreditPackagesPage() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {packages?.map((pkg) => (
-                  <TableRow key={pkg.id}>
-                    <TableCell className="pl-6">
-                      <div>
-                        <div className="font-medium">{pkg.name}</div>
-                        {pkg.description && (
-                          <div className="text-sm text-muted-foreground truncate max-w-48">
-                            {pkg.description}
-                          </div>
-                        )}
-                      </div>
-                    </TableCell>
-                    <TableCell className="tabular-nums">{pkg.creditAmount}</TableCell>
-                    <TableCell className="tabular-nums">
-                      {formatPrice(pkg.priceAmount, pkg.currency)}
-                    </TableCell>
-                    <TableCell className="tabular-nums">
-                      {pkg.expireDays
-                        ? `${pkg.expireDays} ${content.creditPackages.days}`
-                        : content.creditPackages.forever}
-                    </TableCell>
-                    <TableCell>
-                      <Badge variant={pkg.isActive ? "default" : "secondary"}>
-                        {pkg.isActive
-                          ? content.creditPackages.active
-                          : content.creditPackages.inactive}
-                      </Badge>
-                    </TableCell>
-                    <TableCell className="pr-6">
-                      <div className="flex items-center gap-2">
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          onClick={() => handleEdit(pkg)}
-                        >
-                          <Pencil className="size-4" />
-                        </Button>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          onClick={() => setDeletePackage(pkg)}
-                        >
-                          <Trash2 className="size-4" />
-                        </Button>
-                      </div>
-                    </TableCell>
-                  </TableRow>
-                ))}
+                {packages?.map((pkg) => {
+                  const dict = creditPackagesDict as Record<
+                    string,
+                    { name?: { value: string }; description?: { value: string } }
+                  >
+                  const entry = dict[pkg.name]
+                  return (
+                    <TableRow key={pkg.id}>
+                      <TableCell className="pl-6">
+                        <div>
+                          <div className="font-medium">{entry?.name?.value ?? pkg.name}</div>
+                          {entry?.description && (
+                            <div className="text-sm text-muted-foreground truncate max-w-48">
+                              {entry.description.value}
+                            </div>
+                          )}
+                        </div>
+                      </TableCell>
+                      <TableCell className="tabular-nums">{pkg.creditAmount}</TableCell>
+                      <TableCell className="tabular-nums">
+                        {formatPrice(pkg.priceAmount, pkg.currency)}
+                      </TableCell>
+                      <TableCell className="tabular-nums">
+                        {pkg.expireDays
+                          ? `${pkg.expireDays} ${content.creditPackages.days.value}`
+                          : content.creditPackages.forever.value}
+                      </TableCell>
+                      <TableCell>
+                        <Badge variant={pkg.isActive ? "default" : "secondary"}>
+                          {pkg.isActive
+                            ? content.creditPackages.active
+                            : content.creditPackages.inactive}
+                        </Badge>
+                      </TableCell>
+                      <TableCell className="pr-6">
+                        <div className="flex items-center gap-2">
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => handleEdit(pkg)}
+                          >
+                            <Pencil className="size-4" />
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => setDeletePackage(pkg)}
+                          >
+                            <Trash2 className="size-4" />
+                          </Button>
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  )
+                })}
               </TableBody>
             </Table>
           </div>
@@ -342,119 +362,160 @@ function CreditPackagesPage() {
             onSubmit={handleSubmit}
             className="space-y-4"
           >
-            <div className="space-y-2">
-              <Label htmlFor={`${formId}-name`}>{content.creditPackages.form.name}</Label>
-              <Input
-                id={`${formId}-name`}
-                value={formData.name}
-                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                placeholder={String(content.creditPackages.form.namePlaceholder.value)}
-                required
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor={`${formId}-description`}>
-                {content.creditPackages.form.description}
-              </Label>
-              <Textarea
-                id={`${formId}-description`}
-                value={formData.description}
-                onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                placeholder={String(content.creditPackages.form.descriptionPlaceholder.value)}
-                rows={2}
-              />
-            </div>
-
-            <div className="grid grid-cols-2 gap-4">
+            <div className="rounded-lg border bg-muted/30 p-4 space-y-3">
               <div className="space-y-2">
-                <Label htmlFor={`${formId}-creditAmount`}>
-                  {content.creditPackages.form.creditAmount}
+                <Label htmlFor={`${formId}-name`}>{content.creditPackages.form.localeKey}</Label>
+                <div className="relative">
+                  <Input
+                    id={`${formId}-name`}
+                    value={formData.name}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        name: e.target.value,
+                        description: e.target.value,
+                      })
+                    }
+                    placeholder={String(content.creditPackages.form.localeKeyPlaceholder.value)}
+                    className="pr-8"
+                    required
+                  />
+                  {formData.name && (
+                    <div className="absolute right-2 top-1/2 -translate-y-1/2">
+                      {localeKeyValidation.nameExists && localeKeyValidation.descExists ? (
+                        <CheckCircle2 className="size-4 text-green-500" />
+                      ) : (
+                        <AlertCircle className="size-4 text-amber-500" />
+                      )}
+                    </div>
+                  )}
+                </div>
+                {formData.name && !localeKeyValidation.valid && (
+                  <p className="text-xs text-amber-600">
+                    {!localeKeyValidation.nameExists && !localeKeyValidation.descExists
+                      ? String(content.creditPackages.form.localeKeyNotFound.value).replace(
+                          "{key}",
+                          formData.name
+                        )
+                      : !localeKeyValidation.nameExists
+                        ? String(content.creditPackages.form.localeKeyMissingName.value).replace(
+                            "{key}",
+                            formData.name
+                          )
+                        : String(content.creditPackages.form.localeKeyMissingDesc.value).replace(
+                            "{key}",
+                            formData.name
+                          )}
+                  </p>
+                )}
+                {formData.name && localeKeyValidation.valid && (
+                  <p className="text-xs text-green-600">
+                    {content.creditPackages.form.localeKeyVerified}
+                  </p>
+                )}
+              </div>
+            </div>
+
+            <fieldset
+              disabled={!localeKeyValidation.valid}
+              className="space-y-4 disabled:opacity-50"
+            >
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor={`${formId}-creditAmount`}>
+                    {content.creditPackages.form.creditAmount}
+                  </Label>
+                  <Input
+                    id={`${formId}-creditAmount`}
+                    type="number"
+                    value={formData.creditAmount}
+                    onChange={(e) =>
+                      setFormData({ ...formData, creditAmount: Number(e.target.value) })
+                    }
+                    min={1}
+                    required
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor={`${formId}-expireDays`}>
+                    {content.creditPackages.form.expireDays}
+                  </Label>
+                  <Input
+                    id={`${formId}-expireDays`}
+                    type="number"
+                    value={formData.expireDays ?? ""}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        expireDays: e.target.value ? Number(e.target.value) : null,
+                      })
+                    }
+                    min={1}
+                    placeholder={String(content.creditPackages.form.expireDaysHint.value)}
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor={`${formId}-priceAmount`}>
+                  {content.creditPackages.form.priceAmount} ({CURRENCY})
                 </Label>
                 <Input
-                  id={`${formId}-creditAmount`}
+                  id={`${formId}-priceAmount`}
                   type="number"
-                  value={formData.creditAmount}
+                  value={formData.priceAmount}
                   onChange={(e) =>
-                    setFormData({ ...formData, creditAmount: Number(e.target.value) })
+                    setFormData({ ...formData, priceAmount: Number(e.target.value) })
                   }
                   min={1}
                   required
                 />
+                <p className="text-xs text-muted-foreground">
+                  {content.creditPackages.form.priceAmountHint}
+                </p>
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor={`${formId}-expireDays`}>
-                  {content.creditPackages.form.expireDays}
+                <Label htmlFor={`${formId}-stripePriceId`}>
+                  {content.creditPackages.form.stripePriceId}
                 </Label>
                 <Input
-                  id={`${formId}-expireDays`}
-                  type="number"
-                  value={formData.expireDays ?? ""}
-                  onChange={(e) =>
-                    setFormData({
-                      ...formData,
-                      expireDays: e.target.value ? Number(e.target.value) : null,
-                    })
-                  }
-                  min={1}
-                  placeholder={String(content.creditPackages.form.expireDaysHint.value)}
-                />
-              </div>
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor={`${formId}-priceAmount`}>
-                {content.creditPackages.form.priceAmount} ({CURRENCY})
-              </Label>
-              <Input
-                id={`${formId}-priceAmount`}
-                type="number"
-                value={formData.priceAmount}
-                onChange={(e) => setFormData({ ...formData, priceAmount: Number(e.target.value) })}
-                min={1}
-                required
-              />
-              <p className="text-xs text-muted-foreground">
-                {content.creditPackages.form.priceAmountHint}
-              </p>
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor={`${formId}-stripePriceId`}>
-                {content.creditPackages.form.stripePriceId}
-              </Label>
-              <Input
-                id={`${formId}-stripePriceId`}
-                value={formData.stripePriceId}
-                onChange={(e) => setFormData({ ...formData, stripePriceId: e.target.value })}
-                placeholder="price_xxx"
-                required
-              />
-            </div>
-
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor={`${formId}-sortOrder`}>
-                  {content.creditPackages.form.sortOrder}
-                </Label>
-                <Input
-                  id={`${formId}-sortOrder`}
-                  type="number"
-                  value={formData.sortOrder}
-                  onChange={(e) => setFormData({ ...formData, sortOrder: Number(e.target.value) })}
+                  id={`${formId}-stripePriceId`}
+                  value={formData.stripePriceId}
+                  onChange={(e) => setFormData({ ...formData, stripePriceId: e.target.value })}
+                  placeholder="price_xxx"
+                  required
                 />
               </div>
 
-              <div className="flex items-center justify-between pt-6">
-                <Label htmlFor={`${formId}-isActive`}>{content.creditPackages.form.isActive}</Label>
-                <Switch
-                  id={`${formId}-isActive`}
-                  checked={formData.isActive}
-                  onCheckedChange={(checked) => setFormData({ ...formData, isActive: checked })}
-                />
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor={`${formId}-sortOrder`}>
+                    {content.creditPackages.form.sortOrder}
+                  </Label>
+                  <Input
+                    id={`${formId}-sortOrder`}
+                    type="number"
+                    value={formData.sortOrder}
+                    onChange={(e) =>
+                      setFormData({ ...formData, sortOrder: Number(e.target.value) })
+                    }
+                  />
+                </div>
+
+                <div className="flex items-center justify-between pt-6">
+                  <Label htmlFor={`${formId}-isActive`}>
+                    {content.creditPackages.form.isActive}
+                  </Label>
+                  <Switch
+                    id={`${formId}-isActive`}
+                    checked={formData.isActive}
+                    onCheckedChange={(checked) => setFormData({ ...formData, isActive: checked })}
+                  />
+                </div>
               </div>
-            </div>
+            </fieldset>
 
             <div className="flex justify-end gap-2 pt-4">
               <Button
@@ -466,7 +527,9 @@ function CreditPackagesPage() {
               </Button>
               <Button
                 type="submit"
-                disabled={createMutation.isPending || updateMutation.isPending}
+                disabled={
+                  !localeKeyValidation.valid || createMutation.isPending || updateMutation.isPending
+                }
               >
                 {content.creditPackages.form.save}
               </Button>

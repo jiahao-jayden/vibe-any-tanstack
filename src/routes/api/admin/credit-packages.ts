@@ -60,7 +60,7 @@ export const Route = createFileRoute("/api/admin/credit-packages")({
           return Resp.success(created)
         } catch (error) {
           if (error instanceof z.ZodError) {
-            return Resp.error("Invalid data", 400, JSON.stringify(error.issues))
+            return Resp.error(`Invalid data: ${error.issues.map((i) => i.message).join(", ")}`, 400)
           }
           console.error("Failed to create credit package:", error)
           return Resp.error("Failed to create credit package")
@@ -85,7 +85,7 @@ export const Route = createFileRoute("/api/admin/credit-packages")({
           return Resp.success(updated)
         } catch (error) {
           if (error instanceof z.ZodError) {
-            return Resp.error("Invalid data", 400, JSON.stringify(error.issues))
+            return Resp.error(`Invalid data: ${error.issues.map((i) => i.message).join(", ")}`, 400)
           }
           console.error("Failed to update credit package:", error)
           return Resp.error("Failed to update credit package")
