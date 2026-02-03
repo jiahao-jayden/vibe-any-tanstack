@@ -13,7 +13,7 @@ export default {
   key: "landing",
   content: {
     banner: {
-      show: true,
+      display: true,
       text: t({
         en: "Open Sourced in 2026: Production-grade AI SaaS template available! Join our developer ecosystem today.",
         zh: "2026 年开源：生产级 AI SaaS 模板现已发布！立即加入我们的开发者生态系统。",
@@ -35,7 +35,7 @@ export default {
       announcement: {
         show: true,
         text: t({
-          en: "Open Sourced in 2025: Production-grade AI SaaS template available!",
+          en: "Open Sourced in 2026: Production-grade AI SaaS template available!",
           zh: "2026 年开源：生产级 AI SaaS 模板现已发布！",
         }),
         href: github,
@@ -52,12 +52,13 @@ export default {
       },
       image: {
         enabled: false as const,
-        src: "/home/home.avif",
+        src: "/landing/hero/home.png",
         width: 2700,
         height: 1440,
       },
     },
     powerBy: {
+      display: true,
       title: t({ en: "Trusted by developers worldwide", zh: "被全球开发者信任" }),
       items: [
         "tanstack-start",
@@ -72,6 +73,7 @@ export default {
       ],
     },
     threeBenefits: {
+      display: true,
       title: t({ en: "Three Key Benefits", zh: "三大核心优势" }),
       description: t({
         en: "Discover why choose our template",
@@ -104,174 +106,178 @@ export default {
         },
       ],
     },
-    introduction: [
-      {
-        type: "image" as const,
-        title: t({ en: "Zero-Config Authentication", zh: "零配置认证系统" }),
-        description: t({
-          en: "Built on Better Auth with one-click social login, magic links, and role-based access control. Just configure your OAuth credentials in the admin panel — no code changes needed.",
-          zh: "基于 Better Auth 构建，支持社交登录、魔法链接和基于角色的访问控制。只需在后台配置 OAuth 凭证，无需修改代码即可启用。",
-        }),
-        image: "/landing/introduction/auth.webp" as const,
-        imagePosition: "left" as const,
-        features: [
-          {
-            title: t({ en: "One-Click Social Login", zh: "一键社交登录" }),
-            description: t({
-              en: "Google, GitHub, Apple and more, you can add or modify any provider anytime",
-              zh: "Google、GitHub、Apple 等，随时增加修改",
-            }),
-          },
-          {
-            title: t({ en: "Magic Link & Password", zh: "魔法链接与密码" }),
-            description: t({
-              en: "Passwordless login via email or traditional credentials",
-              zh: "通过邮件无密码登录或传统账密认证",
-            }),
-          },
-          {
-            title: t({ en: "Role-Based Access Control", zh: "角色权限控制" }),
-            description: t({
-              en: "Built-in admin and user roles with extensible permission system",
-              zh: "内置管理员和用户角色，权限系统可扩展",
-            }),
-          },
-        ],
-      },
-      {
-        type: "image" as const,
-        title: t({ en: "Global Payment Ready", zh: "全球支付就绪" }),
-        description: t({
-          en: "Accept payments worldwide with Stripe, Creem, PayPal, WeChat Pay, and Alipay. Subscription and one-time models included — switch providers without touching code.",
-          zh: "通过 Stripe、Creem、PayPal、微信支付和支付宝收款，覆盖全球用户。订阅和一次性支付模型开箱即用，切换支付商无需改代码。",
-        }),
-        image: "/landing/introduction/payment.webp",
-        imagePosition: "right" as const,
-        features: [
-          {
-            title: t({ en: "Dual Payment Models", zh: "双支付模式" }),
-            description: t({
-              en: "Subscription recurring billing and one-time credits, ready out of the box",
-              zh: "订阅周期计费与一次性积分充值，即插即用",
-            }),
-          },
-          {
-            title: t({ en: "Auto Webhook Handling", zh: "自动事件处理" }),
-            description: t({
-              en: "Payment success, refunds, and subscription changes handled automatically",
-              zh: "支付成功、退款、订阅变更自动同步",
-            }),
-          },
-          {
-            title: t({ en: "Credit System Built-in", zh: "内置积分系统" }),
-            description: t({
-              en: "Monetize AI features with built-in credit consumption and top-up flow",
-              zh: "通过积分消耗实现 AI 功能变现，充值流程完整",
-            }),
-          },
-        ],
-      },
-      {
-        type: "image" as const,
-        title: t({ en: "Live Configuration Dashboard", zh: "在线配置中心" }),
-        description: t({
-          en: "Update environment variables, payment keys, and feature flags in real-time through the admin panel. No redeployment, no downtime — changes take effect instantly.",
-          zh: "通过后台实时更新环境变量、支付密钥和功能开关。无需重新部署，无需停机——修改即时生效。",
-        }),
-        image: "/landing/introduction/dynamic-config.webp",
-        imagePosition: "left" as const,
-        features: [
-          {
-            title: t({ en: "Visual Config Editor", zh: "可视化配置编辑器" }),
-            description: t({
-              en: "Edit payment, email, storage, and AI settings from a friendly UI",
-              zh: "通过友好界面配置支付、邮件、存储和 AI 设置",
-            }),
-          },
-          {
-            title: t({ en: "Zero Downtime Updates", zh: "零停机更新" }),
-            description: t({
-              en: "Say goodbye to .env files — 90% of configs can be changed live",
-              zh: "告别 .env 文件——90% 配置可在线修改",
-            }),
-          },
-          {
-            title: t({ en: "Extensible Config Schema", zh: "可扩展配置模式" }),
-            description: t({
-              en: "Add custom config fields and integrate them into the admin panel",
-              zh: "添加自定义配置项，无缝集成到后台系统",
-            }),
-          },
-        ],
-      },
-      {
-        type: "image" as const,
-        title: t({ en: "Content & Communication Hub", zh: "内容与沟通中心" }),
-        description: t({
-          en: "Keep your users informed with built-in blog, visual roadmap, and changelog. Perfect for building trust and transparency with your SaaS audience.",
-          zh: "通过内置博客、可视化路线图和更新日志与用户保持沟通。为您的 SaaS 产品建立信任和透明度。",
-        }),
-        image: "/landing/introduction/blog-roadmap.webp",
-        imagePosition: "right" as const,
-        features: [
-          {
-            title: t({ en: "MDX Blog", zh: "MDX 博客" }),
-            description: t({
-              en: "Write posts with rich components, syntax highlighting, and i18n support",
-              zh: "支持富组件、代码高亮和多语言的技术博客",
-            }),
-          },
-          {
-            title: t({ en: "Visual Roadmap", zh: "可视化路线图" }),
-            description: t({
-              en: "Show upcoming features with progress tracking and milestone markers",
-              zh: "展示即将推出的功能，支持进度追踪",
-            }),
-          },
-          {
-            title: t({ en: "Changelog Timeline", zh: "更新日志时间线" }),
-            description: t({
-              en: "Announce updates with a beautiful timeline layout",
-              zh: "以精美时间线形式发布产品更新",
-            }),
-          },
-        ],
-      },
-      {
-        type: "image" as const,
-        title: t({ en: "Developer-First Documentation", zh: "开发者友好的文档系统" }),
-        description: t({
-          en: "Powered by Fumadocs with full-text search, API references, and multilingual support. Everything you need to onboard developers and support your users.",
-          zh: "基于 Fumadocs 构建，支持全文搜索、API 参考和多语言。为开发者提供完整的文档体验。",
-        }),
-        image: "/landing/introduction/doc.webp",
-        imagePosition: "left" as const,
-        features: [
-          {
-            title: t({ en: "Fumadocs Powered", zh: "Fumadocs 驱动" }),
-            description: t({
-              en: "Structured navigation, MDX components, and code blocks out of the box",
-              zh: "开箱即用的结构化导航、MDX 组件和代码块",
-            }),
-          },
-          {
-            title: t({ en: "i18n Ready", zh: "多语言就绪" }),
-            description: t({
-              en: "Parallel content in multiple languages with automatic route switching",
-              zh: "多语言内容并行，路由自动切换",
-            }),
-          },
-          {
-            title: t({ en: "Search & SEO", zh: "搜索与 SEO" }),
-            description: t({
-              en: "Built-in search with semantic HTML for optimal discoverability",
-              zh: "内置搜索功能，语义化 HTML 提升搜索引擎可见性",
-            }),
-          },
-        ],
-      },
-    ],
+    introduction: {
+      display: true,
+      items: [
+        {
+          type: "image" as const,
+          title: t({ en: "Zero-Config Authentication", zh: "零配置认证系统" }),
+          description: t({
+            en: "Built on Better Auth with one-click social login, magic links, and role-based access control. Just configure your OAuth credentials in the admin panel — no code changes needed.",
+            zh: "基于 Better Auth 构建，支持社交登录、魔法链接和基于角色的访问控制。只需在后台配置 OAuth 凭证，无需修改代码即可启用。",
+          }),
+          image: "/landing/introduction/auth.webp" as const,
+          imagePosition: "left" as const,
+          features: [
+            {
+              title: t({ en: "One-Click Social Login", zh: "一键社交登录" }),
+              description: t({
+                en: "Google, GitHub, Apple and more, you can add or modify any provider anytime",
+                zh: "Google、GitHub、Apple 等，随时增加修改",
+              }),
+            },
+            {
+              title: t({ en: "Magic Link & Password", zh: "魔法链接与密码" }),
+              description: t({
+                en: "Passwordless login via email or traditional credentials",
+                zh: "通过邮件无密码登录或传统账密认证",
+              }),
+            },
+            {
+              title: t({ en: "Role-Based Access Control", zh: "角色权限控制" }),
+              description: t({
+                en: "Built-in admin and user roles with extensible permission system",
+                zh: "内置管理员和用户角色，权限系统可扩展",
+              }),
+            },
+          ],
+        },
+        {
+          type: "image" as const,
+          title: t({ en: "Global Payment Ready", zh: "全球支付就绪" }),
+          description: t({
+            en: "Accept payments worldwide with Stripe, Creem, PayPal, WeChat Pay, and Alipay. Subscription and one-time models included — switch providers without touching code.",
+            zh: "通过 Stripe、Creem、PayPal、微信支付和支付宝收款，覆盖全球用户。订阅和一次性支付模型开箱即用，切换支付商无需改代码。",
+          }),
+          image: "/landing/introduction/payment.webp",
+          imagePosition: "right" as const,
+          features: [
+            {
+              title: t({ en: "Dual Payment Models", zh: "双支付模式" }),
+              description: t({
+                en: "Subscription recurring billing and one-time credits, ready out of the box",
+                zh: "订阅周期计费与一次性积分充值，即插即用",
+              }),
+            },
+            {
+              title: t({ en: "Auto Webhook Handling", zh: "自动事件处理" }),
+              description: t({
+                en: "Payment success, refunds, and subscription changes handled automatically",
+                zh: "支付成功、退款、订阅变更自动同步",
+              }),
+            },
+            {
+              title: t({ en: "Credit System Built-in", zh: "内置积分系统" }),
+              description: t({
+                en: "Monetize AI features with built-in credit consumption and top-up flow",
+                zh: "通过积分消耗实现 AI 功能变现，充值流程完整",
+              }),
+            },
+          ],
+        },
+        {
+          type: "image" as const,
+          title: t({ en: "Live Configuration Dashboard", zh: "在线配置中心" }),
+          description: t({
+            en: "Update environment variables, payment keys, and feature flags in real-time through the admin panel. No redeployment, no downtime — changes take effect instantly.",
+            zh: "通过后台实时更新环境变量、支付密钥和功能开关。无需重新部署，无需停机——修改即时生效。",
+          }),
+          image: "/landing/introduction/dynamic-config.webp",
+          imagePosition: "left" as const,
+          features: [
+            {
+              title: t({ en: "Visual Config Editor", zh: "可视化配置编辑器" }),
+              description: t({
+                en: "Edit payment, email, storage, and AI settings from a friendly UI",
+                zh: "通过友好界面配置支付、邮件、存储和 AI 设置",
+              }),
+            },
+            {
+              title: t({ en: "Zero Downtime Updates", zh: "零停机更新" }),
+              description: t({
+                en: "Say goodbye to .env files — 90% of configs can be changed live",
+                zh: "告别 .env 文件——90% 配置可在线修改",
+              }),
+            },
+            {
+              title: t({ en: "Extensible Config Schema", zh: "可扩展配置模式" }),
+              description: t({
+                en: "Add custom config fields and integrate them into the admin panel",
+                zh: "添加自定义配置项，无缝集成到后台系统",
+              }),
+            },
+          ],
+        },
+        {
+          type: "image" as const,
+          title: t({ en: "Content & Communication Hub", zh: "内容与沟通中心" }),
+          description: t({
+            en: "Keep your users informed with built-in blog, visual roadmap, and changelog. Perfect for building trust and transparency with your SaaS audience.",
+            zh: "通过内置博客、可视化路线图和更新日志与用户保持沟通。为您的 SaaS 产品建立信任和透明度。",
+          }),
+          image: "/landing/introduction/blog-roadmap.webp",
+          imagePosition: "right" as const,
+          features: [
+            {
+              title: t({ en: "MDX Blog", zh: "MDX 博客" }),
+              description: t({
+                en: "Write posts with rich components, syntax highlighting, and i18n support",
+                zh: "支持富组件、代码高亮和多语言的技术博客",
+              }),
+            },
+            {
+              title: t({ en: "Visual Roadmap", zh: "可视化路线图" }),
+              description: t({
+                en: "Show upcoming features with progress tracking and milestone markers",
+                zh: "展示即将推出的功能，支持进度追踪",
+              }),
+            },
+            {
+              title: t({ en: "Changelog Timeline", zh: "更新日志时间线" }),
+              description: t({
+                en: "Announce updates with a beautiful timeline layout",
+                zh: "以精美时间线形式发布产品更新",
+              }),
+            },
+          ],
+        },
+        {
+          type: "image" as const,
+          title: t({ en: "Developer-First Documentation", zh: "开发者友好的文档系统" }),
+          description: t({
+            en: "Powered by Fumadocs with full-text search, API references, and multilingual support. Everything you need to onboard developers and support your users.",
+            zh: "基于 Fumadocs 构建，支持全文搜索、API 参考和多语言。为开发者提供完整的文档体验。",
+          }),
+          image: "/landing/introduction/doc.webp",
+          imagePosition: "left" as const,
+          features: [
+            {
+              title: t({ en: "Fumadocs Powered", zh: "Fumadocs 驱动" }),
+              description: t({
+                en: "Structured navigation, MDX components, and code blocks out of the box",
+                zh: "开箱即用的结构化导航、MDX 组件和代码块",
+              }),
+            },
+            {
+              title: t({ en: "i18n Ready", zh: "多语言就绪" }),
+              description: t({
+                en: "Parallel content in multiple languages with automatic route switching",
+                zh: "多语言内容并行，路由自动切换",
+              }),
+            },
+            {
+              title: t({ en: "Search & SEO", zh: "搜索与 SEO" }),
+              description: t({
+                en: "Built-in search with semantic HTML for optimal discoverability",
+                zh: "内置搜索功能，语义化 HTML 提升搜索引擎可见性",
+              }),
+            },
+          ],
+        },
+      ],
+    },
     features: {
+      display: true,
       title: t({ en: "Core Features", zh: "核心功能" }),
       description: t({
         en: "Everything you need to boost productivity",
@@ -279,10 +285,10 @@ export default {
       }),
       items: [
         {
-          title: t({ en: "Next.js Production Template", zh: "Next.js 生产模板" }),
+          title: t({ en: "Production-grade AI SaaS Template", zh: "生产级 AI SaaS 模板" }),
           description: t({
-            en: "Ready-to-use Next.js template with built-in SEO and i18n support",
-            zh: "开箱即用的 Next.js 模板，内置 SEO 和国际化支持",
+            en: "Ready-to-use production-grade AI SaaS template with built-in SEO and i18n support",
+            zh: "开箱即用的生产级 AI SaaS 模板，内置 SEO 和国际化支持",
           }),
           icon: "Code",
         },
@@ -328,7 +334,11 @@ export default {
         },
       ],
     },
+    pricing: {
+      display: true,
+    },
     horizontalShowcase: {
+      display: false,
       title: t({ en: "Featured Capabilities", zh: "特色能力" }),
       description: t({
         en: "Discover what VibeAny can do for you",
@@ -338,8 +348,8 @@ export default {
         {
           title: t({ en: "AI Integration", zh: "AI 集成" }),
           imagePath: t({
-            en: "/home/introduction/ai-capabilities.avif",
-            zh: "/home/introduction/ai-capabilities-zh.avif",
+            en: "/home/introduction/ai-capabilities.png",
+            zh: "/home/introduction/ai-capabilities-zh.png",
           }),
           link: "/",
           description: t({
@@ -350,8 +360,8 @@ export default {
         {
           title: t({ en: "Seamless Authentication", zh: "无缝认证" }),
           imagePath: t({
-            en: "/home/introduction/authentication.avif",
-            zh: "/home/introduction/authentication-zh.avif",
+            en: "/home/introduction/authentication.png",
+            zh: "/home/introduction/authentication-zh.png",
           }),
           link: "/",
           description: t({
@@ -361,7 +371,7 @@ export default {
         },
         {
           title: t({ en: "Payment Solutions", zh: "支付方案" }),
-          imagePath: "/home/introduction/payment.avif",
+          imagePath: "/landing/introduction/payment.png",
           link: "/",
           description: t({
             en: "Flexible subscriptions and one-time payments",
@@ -371,8 +381,8 @@ export default {
         {
           title: t({ en: "Content Management", zh: "内容管理" }),
           imagePath: t({
-            en: "/home/introduction/blog.avif",
-            zh: "/home/introduction/blog-zh.avif",
+            en: "/landing/introduction/blog.png",
+            zh: "/landing/introduction/blog-zh.png",
           }),
           link: "/",
           description: t({
@@ -383,6 +393,7 @@ export default {
       ],
     },
     userTestimonials: {
+      display: true,
       title: t({ en: "What Our Users Say", zh: "用户评价" }),
       testimonials: [
         {
@@ -469,6 +480,7 @@ export default {
       ],
     },
     mediaCoverage: {
+      display: true,
       title: t({ en: "Featured In", zh: "媒体报道" }),
       description: t({
         en: "See what the tech community is saying about our platform",
@@ -553,6 +565,7 @@ export default {
       ],
     },
     faq: {
+      display: true,
       title: t({ en: "Frequently Asked Questions", zh: "常见问题" }),
       description: t({
         en: "Discover quick and comprehensive answers to common questions about our platform, services, and features.",
@@ -576,6 +589,7 @@ export default {
       ],
     },
     cta: {
+      display: true,
       title: t({ en: "Start Building", zh: "开始构建" }),
       description: t({
         en: "Start building your next great project today.",
@@ -587,6 +601,7 @@ export default {
       secondaryButtonHref: "/",
     },
     header: {
+      display: true,
       items: [
         {
           label: t({ en: "Documentation", zh: "文档" }),
@@ -624,6 +639,7 @@ export default {
       ] as const,
     },
     footer: {
+      display: true,
       companyName: "VibeAny",
       scrollToTop: t({ en: "Back to Top", zh: "返回顶部" }),
       sections: [

@@ -14,7 +14,7 @@ export const Introduction = () => {
       id="introduction"
       aria-label="Introduction sections"
     >
-      {introduction.map((item, index) => {
+      {introduction.items.map((item, index) => {
         const section = {
           id: `${index}`,
           type: item.type.value,

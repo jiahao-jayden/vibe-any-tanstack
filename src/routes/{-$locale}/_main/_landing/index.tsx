@@ -1,4 +1,5 @@
-import { createFileRoute, useMatches } from "@tanstack/react-router"
+import { createFileRoute } from "@tanstack/react-router"
+import { useIntlayer } from "react-intlayer"
 import { ThreeBenefits } from "@/shared/components/landing/benefits"
 import { Cta } from "@/shared/components/landing/cta"
 import { Faq } from "@/shared/components/landing/faq"
@@ -17,19 +18,21 @@ export const Route = createFileRoute("/{-$locale}/_main/_landing/")({
 })
 
 function RouteComponent() {
+  const landing = useIntlayer("landing")
+
   return (
     <div>
       <Hero />
-      <PowerBy />
-      <ThreeBenefits />
-      <Introduction />
-      <Features />
-      <Pricing />
-      <HorizontalShowcase />
-      <Testimonials />
-      <MediaCoverage />
-      <Faq />
-      <Cta />
+      {landing.powerBy.display && <PowerBy />}
+      {landing.threeBenefits.display && <ThreeBenefits />}
+      {landing.introduction.display && <Introduction />}
+      {landing.features.display && <Features />}
+      {landing.pricing.display && <Pricing />}
+      {landing.horizontalShowcase.display && <HorizontalShowcase />}
+      {landing.userTestimonials.display && <Testimonials />}
+      {landing.mediaCoverage.display && <MediaCoverage />}
+      {landing.faq.display && <Faq />}
+      {landing.cta.display && <Cta />}
     </div>
   )
 }

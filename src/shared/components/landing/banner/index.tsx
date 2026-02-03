@@ -4,9 +4,7 @@ import { cn } from "@/shared/lib/utils"
 export default function Banner() {
   const { banner } = useIntlayer("landing")
 
-  const show = banner.show && banner.text.value.trim().length > 0
-
-  if (!show) {
+  if (!banner.text.value.trim()) {
     return null
   }
 
