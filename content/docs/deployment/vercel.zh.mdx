@@ -3,47 +3,30 @@ title: Vercel
 description: 将项目部署到 Vercel 平台的完整指南
 ---
 
-将本项目部署到 Vercel 的完整流程与最佳实践。项目基于 Next.js（App Router），Vercel 对 Next.js 有一流的支持与优化。
-
-## 前置条件
-
-1. 代码托管在 GitHub/GitLab/Bitbucket 中
-2. Vercel 账号，并已完成登录
-3. 已准备好生产环境变量（数据库与第三方服务）
-
-## 快速开始（推荐）
+## 部署上线流程
 
 <div className="fd-steps">
   <div className="fd-step">
     ### 推送代码
     将 `main` 分支推送到远程代码仓库（GitHub/GitLab/Bitbucket）。
+    ```bash
+    git remote set-url origin git@github.com:your-username/your-repo.git
+    ```
+    ```bash
+    git add .
+    git commit -m "feat: deploy to vercel"
+    git push origin main
+    ```
   </div>
   <div className="fd-step">
     ### 连接到 Vercel
-    打开 Vercel → Add New Project → Import Git Repository，选择你的仓库完成导入。
-  </div>
-  <div className="fd-step">
-    ### 首次配置
-    - **Framework Preset（框架预设）**：`Next.js`
-    - **Build Command（构建命令）**：`bun run build`（或 `npm run build` / `pnpm build`）
-    - **Install Command（安装命令）**：`bun install`（或默认）
-    - **Output Directory（输出目录）**：`.next`（保持默认）
-
-    > 提示：以上均为 Next.js 默认值，Vercel 通常可自动识别；使用 Bun 时建议显式设置 `bun run build`、`bun install`。
+    打开[Vercel](https://vercel.com/new)，点击`Import`，选择你的仓库完成导入。
+    ![](/docs/deploy/vercel-import.webp)
   </div>
   <div className="fd-step">
     ### 配置环境变量（Environment Variables）
-    - 请前往《[环境变量配置](../introduction/environment)》查看完整变量清单与含义。
-    - 在 Vercel 的 Project Settings → Environment Variables 中，可将整段 `.env` 文本直接粘贴到输入框，Vercel 会自动解析为多条记录；无需逐个手动添加。
-
-    ```bash
-    # 粘贴示例（请从您项目中配置好的 .env 复制完整内容）
-    # KEY=VALUE 形式的多行文本，可直接整段粘贴到 Vercel 变量输入框
-    ```
-
-    ![](/docs/deploy/deploy-vercel-env.avif)
-
-    > 重要：`NEXT_PUBLIC_BASE_URL` 必须是用户访问的最终域名。若使用 `*.vercel.app`：先部署一次 → 复制生成的域名 → 填入该变量 → 重新部署。
+    导入你的`.env`文件，Vercel 会自动解析。
+    ![Vercel Environment Variables](/docs/deploy/vercel-env.webp)
   </div>
   <div className="fd-step">
     ### 发起部署
@@ -51,45 +34,4 @@ description: 将项目部署到 Vercel 平台的完整指南
   </div>
 </div>
 
-## 术语解释（新手友好）
-
-- **Environment Variables（环境变量）**：运行时配置，不写入代码。以 `NEXT_PUBLIC_` 开头的变量会暴露给浏览器端，请勿放敏感密钥。
-- **Preview Deployment（预览部署）**：为每次分支推送/PR 自动生成的临时部署，便于测试。
-- **Production Deployment（生产部署）**：合并到主分支后触发的正式部署，面向真实用户。
-- **Redeploy（重新部署）**：当你修改了环境变量或构建配置，需要重新触发一次部署让变更生效。
-
-## 自定义域名（可选）
-
-1) 打开 Project Settings → Domains → Add
-
-2) 按提示在 DNS 服务商配置记录
-
-3) 回到 Vercel 确认域名已验证，设置为主域名（Primary）
-
-> 中国大陆说明：Vercel 提供的 `*.vercel.app` 默认域名在中国大陆可能存在访问缓慢或不可达的情况。建议绑定自有域名，并视需要搭配国内 DNS/CDN 加速。
-
-## 常用操作
-
-- 更新环境变量 → 点击「Redeploy」以生效
-- 回滚版本：在 Deployments 列表中选择任意历史版本进行 Rollback
-- 仅构建不触发生产：利用 PR 预览环境进行验收
-
-## 故障排查（FAQ）
-
-### 构建失败（Build Failed）
-
-- 查看 Build Logs，定位错误堆栈
-- 确认包管理器统一（Bun/NPM/PNPM）与锁文件存在
-- PostgreSQL 连接字符串格式是否正确（`postgres://user:pass@host:port/db`）
-- 少配了环境变量？对照本页清单逐项检查
-
-### 运行异常（Runtime Issues）
-
-- 第三方服务（GitHub/Google/Stripe）密钥是否正确且有权限
-- `NEXT_PUBLIC_` 与服务端私密变量是否区分合理
-- 检查数据库网络可达性与 Drizzle 迁移是否执行
-- 打开 Vercel → Logs 查看 Server/Edge 运行时日志
-
-
-
-
+## 自定义域名

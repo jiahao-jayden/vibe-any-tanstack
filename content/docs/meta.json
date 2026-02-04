@@ -1,19 +1,12 @@
 {
   "pages": [
     "index",
-    "---Introduction---",
     "...introduction",
-    "config",
-    "---Deployment---",
+    "customize",
     "deployment",
-    "---Integration---",
+    "------Integration------",
     "...integration",
-    "analytics",
-    "monitoring",
-    "...landing",
-    "...roadmap",
-    "...blog",
-    "---Blocks---",
+    "------Blocks------",
     "...blocks",
     "...backstage"
   ]

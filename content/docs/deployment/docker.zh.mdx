@@ -1,0 +1,18 @@
+---
+title: Docker
+description: 将项目部署到 Docker 平台的完整指南
+---
+
+使用该方式部署要求你已经熟悉 Docker 的基本使用，并且已经准备好生产环境变量（数据库与第三方服务）,本项目已内置 Dockerfile，你只需要按照以下步骤进行部署即可。
+
+```bash title="Build the image"
+docker build -t vibe-any-tanstack .
+```
+
+```bash title="Run the container"
+docker run -p 3000:3000 vibe-any-tanstack
+```
+
+```bash title="Run in detached mode (background)"
+docker run -d -p 3000:3000 --name vibe-any-tanstack vibe-any-tanstack
+```

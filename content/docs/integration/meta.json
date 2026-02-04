@@ -3,6 +3,8 @@
     "...database",
     "payment",
     "...credit",
-    "ai"
+    "ai",
+    "...blog",
+    "...roadmap"
   ]
 }
