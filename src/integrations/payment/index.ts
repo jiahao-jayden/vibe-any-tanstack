@@ -1,5 +1,6 @@
 import { getAllConfigs } from "@/shared/model/config.model"
 import type { PaymentProvider } from "@/shared/types/payment"
+import { CreemAdapter } from "./adapters/creem"
 import { StripeAdapter } from "./adapters/stripe"
 import type { PaymentAdapter } from "./types"
 
@@ -20,8 +21,11 @@ export async function getPaymentAdapter(provider: PaymentProvider): Promise<Paym
       })
 
     case "creem":
-      // TODO: Implement CreemAdapter
-      throw new Error("Creem adapter not implemented yet")
+      return new CreemAdapter({
+        apiKey: configs.payment_creem_x_api_key,
+        webhookSecret: configs.payment_creem_webhook_secret,
+        testMode: configs.payment_creem_test_mode,
+      })
 
     case "paypal":
       // TODO: Implement PayPalAdapter

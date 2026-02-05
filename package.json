@@ -66,6 +66,7 @@
     "ansi-to-react": "^6.2.6",
     "aws4fetch": "^1.0.20",
     "better-auth": "^1.4.10",
+    "better-wechatpay": "^1.0.2",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "cmdk": "^1.1.1",

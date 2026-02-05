@@ -25,7 +25,7 @@ export class StripeAdapter implements PaymentAdapter {
     subscription: true,
     oneTime: true,
     customerPortal: true,
-    refund: true,
+    refund: false,
   }
 
   private stripe: Stripe
