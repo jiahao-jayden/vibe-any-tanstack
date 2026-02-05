@@ -70,6 +70,7 @@
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "cmdk": "^1.1.1",
+    "consola": "^3.4.2",
     "date-fns": "^4.1.0",
     "drizzle-kit": "^0.31.8",
     "drizzle-orm": "^0.45.0",
@@ -108,7 +109,6 @@
     "uuid": "^13.0.0",
     "vite-intlayer": "^7.5.14",
     "vite-tsconfig-paths": "^6.0.2",
-    "winston": "^3.19.0",
     "zod": "^4.3.5",
     "zustand": "^5.0.10"
   },
