@@ -46,6 +46,10 @@ export default {
     paymentProviderAlipay: {
       label: t({ zh: "支付宝", en: "Alipay" }),
     },
+    paymentStripePublishableKey: {
+      label: t({ zh: "Stripe Publishable Key", en: "Stripe Publishable Key" }),
+      description: t({ zh: "用于支付的 Publishable Key", en: "Publishable Key for payment" }),
+    },
     paymentStripeSecretKey: {
       label: t({ zh: "Stripe Secret Key", en: "Stripe Secret Key" }),
       description: t({ zh: "用于支付的 Secret Key", en: "Secret Key for payment" }),

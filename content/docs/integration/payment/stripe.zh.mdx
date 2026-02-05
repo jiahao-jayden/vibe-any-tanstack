@@ -1,41 +1,185 @@
 ---
 title: Stripe
-description: Stripe 支付
+description: Stripe 是
 ---
 
 ## 快速开始
 <div className="fd-steps">
   <div className="fd-step">
     ### 创建 Stripe 账户
-    访问 [Stripe 官网](https://stripe.com/) 注册一个账号。
+    前往 [Stripe 官网](https://stripe.com/) 注册账号。
   </div>
   <div className="fd-step">
-    ### 创建 Stripe 密钥
-    1. 进入 [Stripe Dashboard](https://dashboard.stripe.com/)
-    2. 点击 `Developers` → `API Keys`
+    ### 获取 API 密钥
+    1. 打开 [Stripe Dashboard](https://dashboard.stripe.com/)，点击 `Developers` → `API Keys`
     ![Stripe API Keys](/docs/integration/payment/stripe-developers.webp)
-    3. 创建 API 密钥
-    ![Stripe Create API ](/docs/integration/payment/stripe-create-key.webp)
-    4. 复制 API 密钥，粘贴到 `.env` 文件中：
-    ![Stripe Create API ](/docs/integration/payment/stripe-api.webp)
+    2. 创建密钥
+    ![Stripe Create API](/docs/integration/payment/stripe-create-key.webp)
+    3. 复制密钥到 `.env`
+    ![Stripe Create API](/docs/integration/payment/stripe-api.webp)
     ```bash
-    VITE_STRIPE_PUBLISHABLE_KEY=pk_test_1234567890
-    STRIPE_SECRET_KEY=sk_test_1234567890
+    VITE_STRIPE_PUBLISHABLE_KEY=pk_test_xxx
+    STRIPE_SECRET_KEY=sk_test_xxx
     ```
-    或者在后台配置面板中配置：
+    也可以在后台配置面板填写：
     ![Stripe API Keys](/docs/integration/payment/stripe-backstage-api.webp)
     <Callout type="warn" title="注意">
-     `STRIPE_SECRET_KEY` 是敏感信息，请勿泄露。
+     `STRIPE_SECRET_KEY` 是敏感信息，不要提交到代码仓库。
     </Callout>
-    5. 创建 Webhook 密钥
-    ![Stripe Create Webhook ](/docs/integration/payment/stripe-create-webhook.webp)
-    ```bash
-    STRIPE_WEBHOOK_SECRET=whsec_1234567890
+  </div>
+  <div className="fd-step">
+    ### 配置 Webhook
+    ![Stripe Create Webhook](/docs/integration/payment/stripe-webhook.webp)
+    监听以下事件：
+    - `checkout.session.completed`
+    - `invoice.payment_succeeded`
+    - `invoice.payment_failed`
+    - `customer.subscription.created`
+    - `customer.subscription.updated`
+    - `customer.subscription.deleted`
+    ![Stripe Webhook Events](/docs/integration/payment/stripe-events.webp)
+    填写你的回调路径
     ```
+    https://your-domain.com/api/payment/webhook/stripe
+    ```
+    ![Stripe Webhook Path](/docs/integration/payment/stripe-destination.webp)
+
+    复制 Webhook Secret 到 `.env`，或者在后台配置面板中配置：
+    ![Stripe Webhook Secret](/docs/integration/payment/stripe-webhook-prod.webp)
+    ```bash
+    STRIPE_WEBHOOK_SECRET=whsec_xxx
+    ```
+    本地开发需要用沙盒模式，见 <a href="#sandbox">下文</a>。
   </div>
 </div>
 
 
-## 沙盒模式
-Stripe 提供了沙盒模式，可以在本地测试支付流程，避免使用真实信用卡信息。
+## 沙盒模式[#sandbox]
+
+用于本地测试，不会产生真实扣款。
+
 ![Stripe Sandbox](/docs/integration/payment/stripe-sandbox.webp)
+
+1. 在 Dashboard 切换到 Test Mode，获取测试环境的 `Publishable Key` 和 `Secret Key`
+2. 下载 [Stripe CLI](https://stripe.com/docs/stripe-cli#install)，启动本地监听：
+```bash
+stripe listen --forward-to localhost:3377/api/payment/webhook/stripe
+```
+3. 复制终端输出的 Webhook Secret 到 `.env`，或者在后台配置面板中配置：
+![Stripe Webhook Secret](/docs/integration/payment/stripe-webhook-sandbox.webp)
+```bash
+STRIPE_WEBHOOK_SECRET=whsec_xxx
+```
+
+配置完成后即可本地测试支付，可以使用测试卡：[Stripe Test Cards](https://stripe.com/docs/testing#cards)
+
+
+## 如何使用反向代理测试线上支付
+<div className="fd-steps">
+  <div className="fd-step">
+    ### 访问 Ngrok 官网
+    访问[Ngrok 官网](https://ngrok.com/)，并注册一个账号
+  </div>
+  <div className="fd-step">
+    ### 下载并配置 Ngrok
+    根据[官方设置文档](https://ngrok.com/docs/getting-started/setup/install/)下载并配置 Ngrok
+  </div>
+  <div className="fd-step">
+    ### 启动 Ngrok
+    ```bash
+    ngrok http 3377
+    ```
+    复制终端输出的公网地址
+    ![Ngrok Public URL](/docs/integration/payment/ngrok.webp)
+    你的回调地址就是
+    ```
+    https://xxx.app/api/payment/webhook/stripe
+    ```
+    <Callout type="warn" title="注意">
+    请不要将 ngrok 作为生产环境使用，每次启动 ngrok 后，公网地址都会变化，你需要更新回调地址，若需要保持不变化，可以在 ngrok 中获取固定域名，并使用 `--url=`指定
+    </Callout>
+  </div>
+</div>
+
+## 验证配置
+
+打开首页，下拉到 pricing 模块，点击购买按钮，能跳转到 Stripe Checkout 页面就说明配置成功。
+![Pricing](/docs/integration/payment/pricing.webp)
+
+## 配置价格
+
+1. 在 [Stripe Dashboard](https://dashboard.stripe.com/products) 创建 Product，添加 Price
+![Stripe Product](/docs/integration/payment/stripe-product.webp)
+
+2. 你需要复制 Price ID（格式 `price_xxx`），到 `.env` 中
+![Stripe Price](/docs/integration/payment/stripe-priceid.webp)
+
+3. 复制 Price ID（格式 `price_xxx`）到 `.env`，根据你的需要你可以随意修改环境变量名称，但需要与代码中保持一致：
+```bash
+VITE_STRIPE_PRO_MONTHLY_PRICE_ID=price_xxx
+VITE_STRIPE_PRO_YEARLY_PRICE_ID=price_xxx
+VITE_STRIPE_LIFETIME_PRICE_ID=price_xxx
+```
+3. 修改 `src/config/payment-config.ts`，金额和周期需与 Stripe 后台一致：
+```ts
+export const paymentConfig: PlanWithPrice[] = [
+  {
+    id: "pro",                    // 计划唯一标识，用于代码中引用
+    planType: "subscription",     // free | subscription | lifetime
+    credit: {
+      amount: 100,                // 订阅后每月发放的积分
+      expireDays: 31,             // 积分过期天数
+    },
+    prices: [
+      {
+        priceId: import.meta.env.VITE_STRIPE_PRO_MONTHLY_PRICE_ID!,
+        amount: 990,              // 单位是分，990 = $9.90
+        currency,                 // 货币，从 VITE_CURRENCY 读取
+        interval: "month",        // month | year
+        trialPeriodDays: 7,       // 试用天数（可选）
+      },
+      {
+        priceId: import.meta.env.VITE_STRIPE_PRO_YEARLY_PRICE_ID!,
+        amount: 9900,
+        currency,
+        interval: "year",
+      },
+    ],
+    display: {
+      isRecommended: true,        // 显示"推荐"标签
+      group: "subscription",      // 分组，用于 UI 展示
+    },
+  },
+  {
+    id: "lifetime",
+    planType: "lifetime",         // 一次性买断
+    prices: [
+      {
+        priceId: import.meta.env.VITE_STRIPE_LIFETIME_PRICE_ID!,
+        amount: 19900,
+        currency,
+      },
+    ],
+    display: {
+      originalPrice: 29900,       // 原价（划线价）
+      group: "one-time",
+    },
+  },
+]
+```
+
+### 字段说明
+
+| 字段 | 说明 |
+|------|------|
+| `id` | 计划标识，代码中通过它查找计划 |
+| `planType` | `free` 免费 / `subscription` 订阅 / `lifetime` 买断 |
+| `credit.amount` | 订阅生效后发放的积分数量 |
+| `credit.expireDays` | 积分过期天数，不设置则永不过期 |
+| `priceId` | Stripe Price ID，从 Dashboard 复制 |
+| `amount` | 价格，单位是分（cent），990 = $9.90 |
+| `interval` | 订阅周期，`month` 或 `year` |
+| `trialPeriodDays` | 免费试用天数 |
+| `display.isRecommended` | 是否显示推荐标签 |
+| `display.originalPrice` | 原价，用于显示划线价 |
+| `display.group` | 分组标识，用于 UI 分类展示 |

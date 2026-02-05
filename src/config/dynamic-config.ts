@@ -34,6 +34,13 @@ export const configSchema = defineConfig({
     ],
   },
   // Stripe
+  payment_stripe_publishable_key: {
+    type: "string",
+    default: "",
+    env: "VITE_STRIPE_PUBLISHABLE_KEY",
+    labelKey: "paymentStripePublishableKey",
+    descriptionKey: "paymentStripePublishableKey",
+  },
   payment_stripe_secret_key: {
     type: "string",
     default: "",
@@ -315,7 +322,11 @@ export const configGroups = [
       defineSubGroup({
         id: "payment-stripe",
         labelKey: "paymentStripe",
-        keys: ["payment_stripe_secret_key", "payment_stripe_webhook_secret"],
+        keys: [
+          "payment_stripe_publishable_key",
+          "payment_stripe_secret_key",
+          "payment_stripe_webhook_secret",
+        ],
       }),
       defineSubGroup({
         id: "payment-creem",

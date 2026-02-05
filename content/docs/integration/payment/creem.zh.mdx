@@ -1,4 +1,161 @@
 ---
 title: Creem
-description: Creem 支付
+description: Creem 支付集成指南
 ---
+
+## 快速开始
+
+<div className="fd-steps">
+  <div className="fd-step">
+    ### 创建 Creem 账户
+    前往 [Creem 官网](https://creem.io/) 注册账号。
+  </div>
+  <div className="fd-step">
+    ### 获取 API 密钥
+    1. 登录 [Creem Dashboard](https://www.creem.io/dashboard/developers)，进入 `API Keys`
+    ![Creem Dashboard API Keys](/docs/integration/payment/creem-api-keys.webp)
+    2. 复制 `X API Key` 到 `.env`
+    ```bash
+    CREEM_X_API_KEY=creem_xxx
+    ```
+    也可以在后台配置面板填写：
+    ![Creem API 后台配置](/docs/integration/payment/creem-backstage-api.webp)
+    <Callout type="warn" title="注意">
+     `CREEM_X_API_KEY` 是敏感信息，不要提交到代码仓库。
+    </Callout>
+  </div>
+  <div className="fd-step">
+    ### 配置 Webhook
+    在 Dashboard 的 [Webhooks](https://www.creem.io/dashboard/developers/webhooks) 页面添加 Endpoint：
+    ![Creem Webhook 配置](/docs/integration/payment/creem-webhook.webp)
+    监听以下事件：
+    - `checkout.completed`
+    - `subscription.active`
+    - `subscription.canceled`
+    - `subscription.paid`
+
+    可以选择全部勾选，但 VibeAny 只会处理以上事件。
+    填写回调地址：
+    ```
+    https://your-domain.com/api/payment/webhook/creem
+    ```
+    ![Creem Webhook Path](/docs/integration/payment/creem-copy-webhook.webp)
+
+    复制 Webhook Secret 到 `.env`：
+    ```bash
+    CREEM_WEBHOOK_SECRET=whsec_xxx
+    ```
+  </div>
+</div>
+
+## 测试模式
+
+Creem 提供测试环境，开启后不会产生真实扣款。
+
+在 Creem 中开启测试模式
+![Creem Test Mode](/docs/integration/payment/creem-test-mode.webp)
+
+在 `.env` 中设置，或者在后台配置面板中配置：
+```bash
+CREEM_TEST_MODE=true
+```
+
+测试模式下，可以使用 Creem 提供的测试卡进行支付测试。具体测试卡号参考 [Creem 测试文档](https://docs.creem.io/getting-started/test-mode)。
+
+## 如何使用反向代理测试线上支付
+
+<div className="fd-steps">
+  <div className="fd-step">
+    ### 访问 Ngrok 官网
+    访问[Ngrok 官网](https://ngrok.com/)，注册账号
+  </div>
+  <div className="fd-step">
+    ### 下载并配置 Ngrok
+    根据[官方设置文档](https://ngrok.com/docs/getting-started/setup/install/)下载并配置
+  </div>
+  <div className="fd-step">
+    ### 启动 Ngrok
+    ```bash
+    ngrok http 3377
+    ```
+    复制终端输出的公网地址
+    ![Ngrok Public URL](/docs/integration/payment/ngrok.webp)
+    你的回调地址就是
+    ```
+    https://xxx.app/api/payment/webhook/creem
+    ```
+    <Callout type="warn" title="注意">
+    ngrok 每次启动后公网地址会变化，需要同步更新 Creem Dashboard 中的 Webhook 地址。如需固定域名，可在 ngrok 中获取并使用 `--url=` 指定。
+    </Callout>
+  </div>
+</div>
+
+## 验证配置
+
+打开首页，下拉到 pricing 模块，点击购买按钮，能跳转到 Creem Checkout 页面就说明配置成功。
+![Pricing](/docs/integration/payment/pricing.webp)
+
+## 配置价格
+
+1. 在 [Creem Dashboard](https://creem.io/dashboard) 创建 Product
+![Creem Product ID](/docs/integration/payment/creem-product-id.webp)
+
+2. 复制 Product ID 到 `.env`：
+```bash
+VITE_CREEM_PRO_MONTHLY_PRODUCT_ID=prod_xxx
+VITE_CREEM_LIFETIME_PRODUCT_ID=prod_xxx
+```
+
+3. 修改 `src/config/payment-config.ts`，金额和周期需与 Creem 后台一致：
+```ts
+export const paymentConfig: PlanWithPrice[] = [
+  {
+    id: "pro",
+    planType: "subscription",
+    credit: {
+      amount: 100,
+      expireDays: 31,
+    },
+    prices: [
+      {
+        priceId: import.meta.env.VITE_CREEM_PRO_MONTHLY_PRODUCT_ID!,
+        amount: 990,              // 单位是分，990 = $9.90
+        currency,
+        interval: "month",
+      },
+    ],
+    display: {
+      isRecommended: true,
+      group: "subscription",
+    },
+  },
+  {
+    id: "lifetime",
+    planType: "lifetime",
+    prices: [
+      {
+        priceId: import.meta.env.VITE_CREEM_LIFETIME_PRODUCT_ID!,
+        amount: 19900,
+        currency,
+      },
+    ],
+    display: {
+      group: "one-time",
+    },
+  },
+]
+```
+
+### 字段说明
+
+| 字段 | 说明 |
+|------|------|
+| `id` | 计划标识，代码中通过它查找计划 |
+| `planType` | `free` 免费 / `subscription` 订阅 / `lifetime` 买断 |
+| `credit.amount` | 订阅生效后发放的积分数量 |
+| `credit.expireDays` | 积分过期天数，不设置则永不过期 |
+| `priceId` | Creem Product ID，从 Dashboard 复制 |
+| `amount` | 价格，单位是分（cent），990 = $9.90 |
+| `interval` | 订阅周期，`month` 或 `year` |
+| `display.isRecommended` | 是否显示推荐标签 |
+| `display.group` | 分组标识，用于 UI 分类展示 |
