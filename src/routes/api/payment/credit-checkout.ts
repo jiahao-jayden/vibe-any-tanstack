@@ -7,6 +7,8 @@ import { OrderService } from "@/services/order.service"
 import { logger } from "@/shared/lib/tools/logger"
 import { Resp } from "@/shared/lib/tools/response"
 import { apiAuthMiddleware } from "@/shared/middleware/auth.middleware"
+import { getConfig } from "@/shared/model/config.model"
+import { findActiveSubscriptionByUserId } from "@/shared/model/subscription.model"
 import type { PaymentProvider } from "@/shared/types/payment"
 
 const checkoutSchema = z.object({
@@ -27,6 +29,14 @@ export const Route = createFileRoute("/api/payment/credit-checkout")({
 
           const body = await request.json()
           const data = checkoutSchema.parse(body)
+
+          const allowFreePurchase = await getConfig("public_credit_allow_free_user_purchase")
+          if (!allowFreePurchase) {
+            const activeSub = await findActiveSubscriptionByUserId(userId)
+            if (!activeSub) {
+              return Resp.error("Free users are not allowed to purchase credit packages", 403)
+            }
+          }
 
           const [pkg] = await db
             .select()

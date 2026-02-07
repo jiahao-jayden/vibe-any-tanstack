@@ -15,6 +15,15 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "@/shared/components/ui/avatar"
 import { Badge } from "@/shared/components/ui/badge"
 import { Button } from "@/shared/components/ui/button"
+import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/shared/components/ui/dialog"
+import { Input } from "@/shared/components/ui/input"
+import { Label } from "@/shared/components/ui/label"
 import { Separator } from "@/shared/components/ui/separator"
 import { Sheet, SheetContent } from "@/shared/components/ui/sheet"
 import { Skeleton } from "@/shared/components/ui/skeleton"
@@ -38,6 +47,9 @@ export function UserDetailSheet({ userId, open, onOpenChange, onUpdate }: UserDe
 
   const [roleToRemove, setRoleToRemove] = useState<AdminUserRole | null>(null)
   const [assignDialogOpen, setAssignDialogOpen] = useState(false)
+  const [grantCreditsOpen, setGrantCreditsOpen] = useState(false)
+  const [grantAmount, setGrantAmount] = useState("")
+  const [grantDescription, setGrantDescription] = useState("")
 
   const { data: user, isLoading } = useQuery({
     queryKey: ["admin", "user", userId],
@@ -72,6 +84,30 @@ export function UserDetailSheet({ userId, open, onOpenChange, onUpdate }: UserDe
       onUpdate?.()
     },
   })
+
+  const grantCreditsMutation = useMutation({
+    mutationFn: async ({ amount, description }: { amount: number; description?: string }) => {
+      return http(`/api/admin/users/${userId}/credits`, {
+        method: "POST",
+        body: JSON.stringify({ amount, description: description || undefined }),
+      })
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["admin", "user", userId] })
+      queryClient.invalidateQueries({ queryKey: ["admin", "users"] })
+      onUpdate?.()
+      setGrantCreditsOpen(false)
+      setGrantAmount("")
+      setGrantDescription("")
+    },
+  })
+
+  const handleGrantCredits = () => {
+    const amount = parseInt(grantAmount, 10)
+    if (amount > 0) {
+      grantCreditsMutation.mutate({ amount, description: grantDescription })
+    }
+  }
 
   const handleRemoveRole = () => {
     if (roleToRemove) {
@@ -232,9 +268,20 @@ export function UserDetailSheet({ userId, open, onOpenChange, onUpdate }: UserDe
                         <Separator />
                         <div className="flex items-center justify-between text-sm">
                           <span className="text-muted-foreground">{content.users.credits}</span>
-                          <div className="flex items-center gap-1.5 font-medium tabular-nums">
-                            <Coins className="size-3.5 text-amber-500" />
-                            {user.creditBalance}
+                          <div className="flex items-center gap-2">
+                            <div className="flex items-center gap-1.5 font-medium tabular-nums">
+                              <Coins className="size-3.5 text-amber-500" />
+                              {user.creditBalance}
+                            </div>
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              className="h-6 rounded-md px-2 text-xs"
+                              onClick={() => setGrantCreditsOpen(true)}
+                            >
+                              <Plus className="size-3 mr-0.5" />
+                              {content.users.detail.grantCredits}
+                            </Button>
                           </div>
                         </div>
                       </>
@@ -312,6 +359,59 @@ export function UserDetailSheet({ userId, open, onOpenChange, onUpdate }: UserDe
           onSuccess={handleRoleAssigned}
         />
       )}
+
+      <Dialog
+        open={grantCreditsOpen}
+        onOpenChange={(open) => {
+          setGrantCreditsOpen(open)
+          if (!open) {
+            setGrantAmount("")
+            setGrantDescription("")
+          }
+        }}
+      >
+        <DialogContent className="sm:max-w-sm">
+          <DialogHeader>
+            <DialogTitle>{content.users.detail.grantCredits}</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 py-2">
+            <div className="space-y-2">
+              <Label>{content.users.detail.grantAmount}</Label>
+              <Input
+                type="number"
+                min={1}
+                placeholder="100"
+                value={grantAmount}
+                onChange={(e) => setGrantAmount(e.target.value)}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label>{content.users.detail.grantDescription}</Label>
+              <Input
+                placeholder={content.users.detail.grantDescriptionPlaceholder.value}
+                value={grantDescription}
+                onChange={(e) => setGrantDescription(e.target.value)}
+              />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => setGrantCreditsOpen(false)}
+            >
+              {content.creditPackages.form.cancel}
+            </Button>
+            <Button
+              onClick={handleGrantCredits}
+              disabled={
+                !grantAmount || parseInt(grantAmount, 10) <= 0 || grantCreditsMutation.isPending
+              }
+            >
+              {content.users.detail.grantConfirm}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </>
   )
 }

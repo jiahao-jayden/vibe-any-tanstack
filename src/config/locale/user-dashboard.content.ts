@@ -38,6 +38,7 @@ export default {
       processing: t({ en: "Processing...", zh: "处理中..." }),
       empty: t({ en: "No credit packages available", zh: "暂无可用积分包" }),
       emptyDesc: t({ en: "Please check back later", zh: "请稍后再试" }),
+      subscribeToPurchase: t({ en: "Subscribe to purchase credits", zh: "订阅后可购买积分" }),
     },
     insufficientCredits: {
       title: t({ en: "Insufficient Credits", zh: "积分不足" }),

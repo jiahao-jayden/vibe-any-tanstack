@@ -1,9 +1,10 @@
 {
   "title": "文档系统",
   "pages": [
-    "...docs",
-    "...blog",
-    "...changelog",
-    "...roadmap"
+    "docs",
+    "blog",
+    "changelog",
+    "roadmap",
+    "mdx-syntax"
   ]
 }

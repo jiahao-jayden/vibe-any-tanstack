@@ -1,0 +1,537 @@
+---
+title: MDX 语法大全
+description: Fumadocs MDX 扩展语法参考，包含提示框、标签页、卡片等内置组件和代码块增强功能
+---
+
+本页面汇总了 Fumadocs 提供的 MDX 扩展语法（不含标准 Markdown），每个特性均提供源码与效果对照。
+
+## Callout 提示框
+
+支持 `type` 属性设置类型，`title` 属性设置标题。
+
+<Tabs items={["代码", "效果"]}>
+<Tab value="代码">
+
+```mdx
+<Callout>默认提示框，不指定 type。</Callout>
+
+<Callout type="info" title="信息">
+  这是一个信息提示。
+</Callout>
+
+<Callout type="warn" title="警告">
+  这是一个警告提示。
+</Callout>
+
+<Callout type="error" title="错误">
+  这是一个错误提示。
+</Callout>
+```
+
+</Tab>
+<Tab value="效果">
+
+<Callout>默认提示框，不指定 type。</Callout>
+
+<Callout type="info" title="信息">
+  这是一个信息提示。
+</Callout>
+
+<Callout type="warn" title="警告">
+  这是一个警告提示。
+</Callout>
+
+<Callout type="error" title="错误">
+  这是一个错误提示。
+</Callout>
+
+</Tab>
+</Tabs>
+
+| 属性 | 类型 | 说明 |
+| --- | --- | --- |
+| `type` | `"info" \| "warn" \| "error"` | 提示类型，不填为默认样式 |
+| `title` | `string` | 标题文本（可选） |
+
+## 代码块增强
+
+Fumadocs 基于 [Shiki](https://shiki.style/) 提供了多种代码块增强功能。
+
+### 标题
+
+在代码块语言后添加 `title="文件名"` 显示标题栏。
+
+<Tabs items={["代码", "效果"]}>
+<Tab value="代码">
+
+````text
+```ts title="config.ts"
+export const config = {
+  theme: "dark",
+}
+```
+````
+
+</Tab>
+<Tab value="效果">
+
+```ts title="config.ts"
+export const config = {
+  theme: "dark",
+}
+```
+
+</Tab>
+</Tabs>
+
+### 行高亮
+
+在行尾添加 `// [!code highlight]` 高亮该行。
+
+<Tabs items={["代码", "效果"]}>
+<Tab value="代码">
+
+````text
+```ts
+const a = 1
+const b = 2 // [!code highlight]
+const c = 3
+```
+````
+
+</Tab>
+<Tab value="效果">
+
+```ts
+const a = 1
+const b = 2 // [!code highlight]
+const c = 3
+```
+
+</Tab>
+</Tabs>
+
+### 词高亮
+
+在代码块首行添加 `// [!code word:关键词]`，高亮所有匹配的词。
+
+<Tabs items={["代码", "效果"]}>
+<Tab value="代码">
+
+````text
+```ts
+// [!code word:config]
+const config = {
+  theme: "dark",
+}
+export default config
+```
+````
+
+</Tab>
+<Tab value="效果">
+
+```ts
+// [!code word:config]
+const config = {
+  theme: "dark",
+}
+export default config
+```
+
+</Tab>
+</Tabs>
+
+### 代码差异
+
+使用 `// [!code ++]` 和 `// [!code --]` 标记新增和删除行。
+
+<Tabs items={["代码", "效果"]}>
+<Tab value="代码">
+
+````text
+```ts
+export default {
+  theme: "light", // [!code --]
+  theme: "dark",  // [!code ++]
+}
+```
+````
+
+</Tab>
+<Tab value="效果">
+
+```ts
+export default {
+  theme: "light", // [!code --]
+  theme: "dark",  // [!code ++]
+}
+```
+
+</Tab>
+</Tabs>
+
+## 代码标签页
+
+连续代码块添加 `tab` 属性，自动合并为标签页组。
+
+<Tabs items={["代码", "效果"]}>
+<Tab value="代码">
+
+````text
+```bash tab="pnpm"
+pnpm install fumadocs-ui
+```
+
+```bash tab="npm"
+npm install fumadocs-ui
+```
+
+```bash tab="yarn"
+yarn add fumadocs-ui
+```
+````
+
+</Tab>
+<Tab value="效果">
+
+```bash tab="pnpm"
+pnpm install fumadocs-ui
+```
+
+```bash tab="npm"
+npm install fumadocs-ui
+```
+
+```bash tab="yarn"
+yarn add fumadocs-ui
+```
+
+</Tab>
+</Tabs>
+
+## Tabs 标签页
+
+`Tabs` 和 `Tab` 组件用于创建通用标签页，不限于代码块，可包含任意内容。
+
+<Tabs items={["代码", "效果"]}>
+<Tab value="代码">
+
+```mdx
+<Tabs items={["React", "Vue"]}>
+<Tab value="React">
+
+React 使用 JSX 语法编写组件。
+
+</Tab>
+<Tab value="Vue">
+
+Vue 使用模板语法编写组件。
+
+</Tab>
+</Tabs>
+```
+
+</Tab>
+<Tab value="效果">
+
+<Tabs items={["React", "Vue"]}>
+<Tab value="React">
+
+React 使用 JSX 语法编写组件。
+
+</Tab>
+<Tab value="Vue">
+
+Vue 使用模板语法编写组件。
+
+</Tab>
+</Tabs>
+
+</Tab>
+</Tabs>
+
+<Callout type="info">
+  `Tabs` 和 `Tab` 已在默认 MDX 组件中注册，无需手动导入。
+</Callout>
+
+## Cards 卡片
+
+`Cards` 和 `Card` 用于创建卡片链接集合，支持 `href`、`icon` 和 `title` 属性。
+
+<Tabs items={["代码", "效果"]}>
+<Tab value="代码">
+
+```mdx
+<Cards>
+  <Card title="快速开始" href="/docs">
+    5 分钟内完成项目搭建
+  </Card>
+  <Card title="API 参考" href="/docs/api">
+    查看完整的 API 文档
+  </Card>
+  <Card title="仅标题卡片">
+    href 可选，卡片也可以不带链接。
+  </Card>
+</Cards>
+```
+
+</Tab>
+<Tab value="效果">
+
+<Cards>
+  <Card title="快速开始" href="/docs">
+    5 分钟内完成项目搭建
+  </Card>
+  <Card title="API 参考" href="/docs/api">
+    查看完整的 API 文档
+  </Card>
+  <Card title="仅标题卡片">
+    href 可选，卡片也可以不带链接。
+  </Card>
+</Cards>
+
+</Tab>
+</Tabs>
+
+## Steps 步骤
+
+使用 `Steps` 和 `Step` 组件创建有序步骤引导。
+
+<Tabs items={["代码", "效果"]}>
+<Tab value="代码">
+
+```mdx
+import { Step, Steps } from 'fumadocs-ui/components/steps';
+
+<Steps>
+<Step>
+
+### 安装依赖
+
+运行包管理器安装命令。
+
+</Step>
+<Step>
+
+### 配置项目
+
+编辑配置文件，设置所需选项。
+
+</Step>
+<Step>
+
+### 启动开发
+
+运行开发服务器，开始开发。
+
+</Step>
+</Steps>
+```
+
+</Tab>
+<Tab value="效果">
+
+<Steps>
+<Step>
+
+### 安装依赖
+
+运行包管理器安装命令。
+
+</Step>
+<Step>
+
+### 配置项目
+
+编辑配置文件，设置所需选项。
+
+</Step>
+<Step>
+
+### 启动开发
+
+运行开发服务器，开始开发。
+
+</Step>
+</Steps>
+
+</Tab>
+</Tabs>
+
+<Callout type="info" title="替代写法">
+
+也可以用 CSS 类名实现，无需导入组件：
+
+```mdx
+<div className="fd-steps">
+<div className="fd-step">
+
+### 步骤标题
+
+步骤内容...
+
+</div>
+</div>
+```
+
+</Callout>
+
+## Accordion 折叠面板
+
+使用 `Accordions` 和 `Accordion` 组件创建可折叠内容面板。
+
+<Tabs items={["代码", "效果"]}>
+<Tab value="代码">
+
+```mdx
+import { Accordion, Accordions } from 'fumadocs-ui/components/accordion';
+
+<Accordions type="single">
+  <Accordion title="什么是 Fumadocs？">
+    Fumadocs 是一个基于 Next.js 的现代文档框架，
+    提供 MDX 支持、全文搜索、多语言等功能。
+  </Accordion>
+  <Accordion title="如何安装？">
+    通过包管理器安装 fumadocs-ui 和 fumadocs-core
+    即可开始使用。
+  </Accordion>
+</Accordions>
+```
+
+</Tab>
+<Tab value="效果">
+
+<Accordions type="single">
+  <Accordion title="什么是 Fumadocs？">
+    Fumadocs 是一个基于 Next.js 的现代文档框架，提供 MDX 支持、全文搜索、多语言等功能。
+  </Accordion>
+  <Accordion title="如何安装？">
+    通过包管理器安装 fumadocs-ui 和 fumadocs-core 即可开始使用。
+  </Accordion>
+</Accordions>
+
+</Tab>
+</Tabs>
+
+| 属性 | 说明 |
+| --- | --- |
+| `type="single"` | 同时只能展开一个面板 |
+| `type="multiple"` | 可同时展开多个面板 |
+
+## Files 文件树
+
+使用 `Files`、`Folder`、`File` 组件展示文件目录结构。
+
+<Tabs items={["代码", "效果"]}>
+<Tab value="代码">
+
+```mdx
+import { File, Folder, Files } from 'fumadocs-ui/components/files';
+
+<Files>
+  <Folder name="src" defaultOpen>
+    <Folder name="components" defaultOpen>
+      <File name="button.tsx" />
+      <File name="dialog.tsx" />
+    </Folder>
+    <File name="index.ts" />
+  </Folder>
+  <File name="package.json" />
+  <File name="tsconfig.json" />
+</Files>
+```
+
+</Tab>
+<Tab value="效果">
+
+<Files>
+  <Folder name="src" defaultOpen>
+    <Folder name="components" defaultOpen>
+      <File name="button.tsx" />
+      <File name="dialog.tsx" />
+    </Folder>
+    <File name="index.ts" />
+  </Folder>
+  <File name="package.json" />
+  <File name="tsconfig.json" />
+</Files>
+
+</Tab>
+</Tabs>
+
+| 属性 | 说明 |
+| --- | --- |
+| `name` | 文件或文件夹名称 |
+| `defaultOpen` | 文件夹默认展开（仅 `Folder`） |
+
+## TypeTable 类型表格
+
+使用 `TypeTable` 组件展示 API 属性文档，适合记录组件 Props。
+
+<Tabs items={["代码", "效果"]}>
+<Tab value="代码">
+
+```mdx
+import { TypeTable } from 'fumadocs-ui/components/type-table';
+
+<TypeTable
+  type={{
+    name: {
+      description: '组件名称',
+      type: 'string',
+      default: '"Button"',
+    },
+    disabled: {
+      description: '是否禁用',
+      type: 'boolean',
+      default: 'false',
+    },
+    size: {
+      description: '组件尺寸',
+      type: '"sm" | "md" | "lg"',
+      default: '"md"',
+    },
+  }}
+/>
+```
+
+</Tab>
+<Tab value="效果">
+
+<TypeTable
+  type={{
+    name: {
+      description: '组件名称',
+      type: 'string',
+      default: '"Button"',
+    },
+    disabled: {
+      description: '是否禁用',
+      type: 'boolean',
+      default: 'false',
+    },
+    size: {
+      description: '组件尺寸',
+      type: '"sm" | "md" | "lg"',
+      default: '"md"',
+    },
+  }}
+/>
+
+</Tab>
+</Tabs>
+
+## 图片缩放
+
+项目已在 MDX 组件中配置 `ImageZoom`，所有通过 Markdown 语法插入的图片自动支持点击缩放：
+
+```mdx
+![图片描述](/path/to/image.png)
+```
+
+## 参考
+
+- [Fumadocs Markdown 文档](https://fumadocs.dev/docs/ui/markdown) - 官方 Markdown / MDX 语法参考
+- [Fumadocs 组件文档](https://fumadocs.dev/docs/ui/components) - 所有内置 UI 组件
+- [Shiki 文档](https://shiki.style/) - 代码高亮引擎

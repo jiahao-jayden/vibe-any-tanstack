@@ -2,3 +2,151 @@
 title: PayPal
 description: PayPal 覆盖 200+ 国家和地区，支持 PayPal、Venmo、信用卡等支付方式，拥有超过 4 亿活跃用户
 ---
+
+<Callout type="warn" title="开发中">
+  PayPal 适配器正在开发中，当前版本尚不可用。你可以先完成以下配置，待适配器发布后即可直接使用。
+</Callout>
+
+## 快速开始
+<div className="fd-steps">
+  <div className="fd-step">
+    ### 创建 PayPal 开发者账户
+    前往 [PayPal Developer](https://developer.paypal.com/dashboard/) 注册账号，登录后进入 Dashboard。
+  </div>
+  <div className="fd-step">
+    ### 创建 REST API 应用
+    1. 打开 [Apps & Credentials](https://developer.paypal.com/dashboard/applications/live) 页面，点击 `Create App`
+    2. 填写应用名称，选择 `Merchant` 类型，点击创建
+    3. 复制 `Client ID` 和 `Client Secret` 到 `.env`
+    ![PayPal Client ID and Client Secret](/docs/integration/payment/paypal-api-key.webp)
+    ```bash
+    PAYPAL_CLIENT_ID=your_client_id
+    PAYPAL_CLIENT_SECRET=your_client_secret
+    ```
+    也可以在后台配置面板填写。
+    <Callout type="warn" title="注意">
+     `PAYPAL_CLIENT_SECRET` 是敏感信息，不要提交到代码仓库。
+    </Callout>
+  </div>
+  <div className="fd-step">
+    ### 配置 Webhook
+    1. 在`Apps & Credentials`页面，进入`Applications`
+    ![PayPal Applications](/docs/integration/payment/paypal-application.webp)
+    2. 下滑找到`Webhooks`标签，点击`Add Webhook`
+    2. 填写回调地址：
+    ```
+    https://your-domain.com/api/payment/webhook/paypal
+    ```
+    3. 选择需要监听的事件：
+    - `CHECKOUT.ORDER.APPROVED`
+    - `CHECKOUT.ORDER.COMPLETED`
+    - `BILLING.SUBSCRIPTION.ACTIVATED`
+    - `BILLING.SUBSCRIPTION.CANCELLED`
+    - `BILLING.SUBSCRIPTION.PAYMENT.FAILED`
+    - `PAYMENT.SALE.COMPLETED`
+    - `PAYMENT.CAPTURE.REFUNDED`
+    - `PAYMENT.SALE.REFUNDED`
+    4. 创建完成后，复制 Webhook ID 到 `.env`，或者在后台配置面板中配置：
+    ![PayPal Webhook ID](/docs/integration/payment/paypal-copy-webhook.webp)
+    ```bash
+    PAYPAL_WEBHOOK_ID=your_webhook_id
+    ```
+  </div>
+</div>
+
+
+## 沙盒模式
+
+PayPal 提供独立的 Sandbox 环境用于测试，不会产生真实扣款。
+
+1. 在 [PayPal Dashboard](https://developer.paypal.com/dashboard/) 页面，切换到 `Sandbox` 标签
+![PayPal Sandbox](/docs/integration/payment/paypal-sandbox.webp)
+
+2. PayPal 会自动提供测试账号，在 [Sandbox Accounts](https://developer.paypal.com/dashboard/accounts) 页面查看。测试买家账号可用于模拟付款
+
+![PayPal Sandbox Accounts](/docs/integration/payment/paypal-test-account.webp)
+<Callout type="info" title="提示">
+沙盒环境的 Webhook 需要公网可访问的回调地址。本地开发时可使用 Ngrok 等反向代理工具，配置方式参考 [Stripe 文档中的反向代理部分](/docs/integration/payment/stripe#如何使用反向代理测试线上支付)。
+</Callout>
+
+
+## 验证配置
+
+打开首页，下拉到 pricing 模块，点击购买按钮，能跳转到 PayPal 支付页面就说明配置成功。
+
+
+## 配置价格
+
+PayPal 的订阅需要先在后台创建 Product 和 Plan。
+
+1. 打开 [PayPal Subscriptions](https://developer.paypal.com/dashboard/subscriptionPlans)，创建 Product
+2. 在 Product 下创建 Plan，设置价格和计费周期
+3. 复制 Plan ID（格式 `P-xxx`）到 `.env`，根据需要修改环境变量名称，但需与代码中保持一致：
+```bash
+VITE_PAYPAL_PRO_MONTHLY_PRICE_ID=P-xxx
+VITE_PAYPAL_PRO_YEARLY_PRICE_ID=P-xxx
+VITE_PAYPAL_LIFETIME_PRICE_ID=P-xxx
+```
+4. 修改 `src/config/payment-config.ts`，金额和周期需与 PayPal 后台一致：
+```ts
+export const paymentConfig: PlanWithPrice[] = [
+  {
+    id: "pro",
+    planType: "subscription",
+    credit: {
+      amount: 100,
+      expireDays: 31,
+    },
+    prices: [
+      {
+        priceId: import.meta.env.VITE_PAYPAL_PRO_MONTHLY_PRICE_ID!,
+        amount: 990,              // 单位是分，990 = $9.90
+        currency,
+        interval: "month",
+        trialPeriodDays: 7,
+      },
+      {
+        priceId: import.meta.env.VITE_PAYPAL_PRO_YEARLY_PRICE_ID!,
+        amount: 9900,
+        currency,
+        interval: "year",
+      },
+    ],
+    display: {
+      isRecommended: true,
+      group: "subscription",
+    },
+  },
+  {
+    id: "lifetime",
+    planType: "lifetime",
+    prices: [
+      {
+        priceId: import.meta.env.VITE_PAYPAL_LIFETIME_PRICE_ID!,
+        amount: 19900,
+        currency,
+      },
+    ],
+    display: {
+      originalPrice: 29900,
+      group: "one-time",
+    },
+  },
+]
+```
+
+### 字段说明
+
+| 字段 | 说明 |
+|------|------|
+| `id` | 计划标识，代码中通过它查找计划 |
+| `planType` | `free` 免费 / `subscription` 订阅 / `lifetime` 买断 |
+| `credit.amount` | 订阅生效后发放的积分数量 |
+| `credit.expireDays` | 积分过期天数，不设置则永不过期 |
+| `priceId` | PayPal Plan ID，从 Dashboard 复制 |
+| `amount` | 价格，单位是分（cent），990 = $9.90 |
+| `interval` | 订阅周期，`month` 或 `year` |
+| `trialPeriodDays` | 免费试用天数 |
+| `display.isRecommended` | 是否显示推荐标签 |
+| `display.originalPrice` | 原价，用于显示划线价 |
+| `display.group` | 分组标识，用于 UI 分类展示 |

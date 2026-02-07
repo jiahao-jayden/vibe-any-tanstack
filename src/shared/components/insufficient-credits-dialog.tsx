@@ -28,7 +28,11 @@ export const InsufficientCreditsDialog = ({
 }: InsufficientCreditsDialogProps) => {
   const content = useIntlayer("user-dashboard")
   const creditPackagesDict = useIntlayer("credit-packages")
-  const { credits } = useGlobalContext()
+  const { credits, config, userInfo } = useGlobalContext()
+
+  const isFreeUser = !userInfo?.payment?.activePlan
+  const allowFreePurchase = config?.public_credit_allow_free_user_purchase ?? false
+  const canPurchase = allowFreePurchase || !isFreeUser
 
   const { data: packages } = useQuery({
     queryKey: ["credit-packages"],
@@ -109,8 +113,8 @@ export const InsufficientCreditsDialog = ({
               <button
                 type="button"
                 key={pkg.id}
-                onClick={() => handlePurchase(pkg.id)}
-                disabled={isPending}
+                onClick={() => canPurchase && handlePurchase(pkg.id)}
+                disabled={isPending || !canPurchase}
                 className="flex w-full items-center justify-between rounded-lg border p-3 text-left transition-colors hover:bg-muted/50 disabled:opacity-50"
               >
                 <div className="flex items-center gap-3">
@@ -147,9 +151,15 @@ export const InsufficientCreditsDialog = ({
           })}
         </div>
 
-        <div className="flex justify-end">
+        <div className="flex items-center justify-between">
+          {!canPurchase && (
+            <p className="text-sm text-muted-foreground">
+              {content.packages.subscribeToPurchase}
+            </p>
+          )}
           <Button
             variant="outline"
+            className="ml-auto"
             onClick={() => onOpenChange(false)}
           >
             {content.insufficientCredits.cancel}

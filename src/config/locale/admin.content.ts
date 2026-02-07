@@ -81,6 +81,11 @@ export default {
         actions: t({ en: "Actions", zh: "操作" }),
         ban: t({ en: "Ban User", zh: "禁用用户" }),
         unban: t({ en: "Unban User", zh: "解除禁用" }),
+        grantCredits: t({ en: "Grant", zh: "赠送" }),
+        grantAmount: t({ en: "Amount", zh: "数量" }),
+        grantDescription: t({ en: "Note (optional)", zh: "备注（可选）" }),
+        grantDescriptionPlaceholder: t({ en: "e.g. Compensation for issue", zh: "例如：问题补偿" }),
+        grantConfirm: t({ en: "Grant", zh: "确认赠送" }),
       },
       assignRole: {
         title: t({ en: "Assign Role", zh: "分配角色" }),

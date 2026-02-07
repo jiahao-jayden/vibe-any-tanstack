@@ -12,7 +12,11 @@ import type { CreditPackage } from "@/shared/types/payment"
 export const CreditPackagesPanel = () => {
   const content = useIntlayer("user-dashboard")
   const creditPackagesDict = useIntlayer("credit-packages")
-  const { credits } = useGlobalContext()
+  const { credits, config, userInfo } = useGlobalContext()
+
+  const isFreeUser = !userInfo?.payment?.activePlan
+  const allowFreePurchase = config?.public_credit_allow_free_user_purchase ?? false
+  const canPurchase = allowFreePurchase || !isFreeUser
 
   const { data: packages, isLoading } = useQuery({
     queryKey: ["credit-packages"],
@@ -97,7 +101,7 @@ export const CreditPackagesPanel = () => {
           </div>
         ) : (
           <div className="grid gap-4 sm:grid-cols-2">
-            {packages.map((pkg, index) => {
+            {packages.map((pkg) => {
               const pkgContent = getPackageContent(pkg.name)
 
               return (
@@ -138,13 +142,15 @@ export const CreditPackagesPanel = () => {
                       className="w-full"
                       variant="default"
                       onClick={() => handlePurchase(pkg.id)}
-                      disabled={isPending}
+                      disabled={isPending || !canPurchase}
                     >
                       {isPending ? (
                         <>
                           <Loader2 className="mr-2 size-4 animate-spin" />
                           {content.packages.processing}
                         </>
+                      ) : !canPurchase ? (
+                        content.packages.subscribeToPurchase
                       ) : (
                         content.packages.buy
                       )}

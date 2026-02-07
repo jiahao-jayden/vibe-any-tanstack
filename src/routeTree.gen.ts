@@ -51,6 +51,7 @@ import { Route as Char123LocaleChar125MainLandingBlogIndexRouteImport } from './
 import { Route as Char123LocaleChar125MainLandingLegalSlugRouteImport } from './routes/{-$locale}/_main/_landing/legal.$slug'
 import { Route as Char123LocaleChar125MainLandingBlogSlugRouteImport } from './routes/{-$locale}/_main/_landing/blog/$slug'
 import { Route as ApiAdminUsersIdRolesRouteImport } from './routes/api/admin/users/$id/roles'
+import { Route as ApiAdminUsersIdCreditsRouteImport } from './routes/api/admin/users/$id/credits'
 import { Route as ApiAdminUsersIdBanRouteImport } from './routes/api/admin/users/$id/ban'
 
 const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
@@ -287,6 +288,11 @@ const ApiAdminUsersIdRolesRoute = ApiAdminUsersIdRolesRouteImport.update({
   path: '/roles',
   getParentRoute: () => ApiAdminUsersIdRoute,
 } as any)
+const ApiAdminUsersIdCreditsRoute = ApiAdminUsersIdCreditsRouteImport.update({
+  id: '/credits',
+  path: '/credits',
+  getParentRoute: () => ApiAdminUsersIdRoute,
+} as any)
 const ApiAdminUsersIdBanRoute = ApiAdminUsersIdBanRouteImport.update({
   id: '/ban',
   path: '/ban',
@@ -331,6 +337,7 @@ export interface FileRoutesByFullPath {
   '/{-$locale}/admin/': typeof Char123LocaleChar125MainAdminIndexRoute
   '/{-$locale}/chat/': typeof Char123LocaleChar125MainChatIndexRoute
   '/api/admin/users/$id/ban': typeof ApiAdminUsersIdBanRoute
+  '/api/admin/users/$id/credits': typeof ApiAdminUsersIdCreditsRoute
   '/api/admin/users/$id/roles': typeof ApiAdminUsersIdRolesRoute
   '/{-$locale}/blog/$slug': typeof Char123LocaleChar125MainLandingBlogSlugRoute
   '/{-$locale}/legal/$slug': typeof Char123LocaleChar125MainLandingLegalSlugRoute
@@ -371,6 +378,7 @@ export interface FileRoutesByTo {
   '/{-$locale}/admin/users': typeof Char123LocaleChar125MainAdminUsersRoute
   '/{-$locale}/admin': typeof Char123LocaleChar125MainAdminIndexRoute
   '/api/admin/users/$id/ban': typeof ApiAdminUsersIdBanRoute
+  '/api/admin/users/$id/credits': typeof ApiAdminUsersIdCreditsRoute
   '/api/admin/users/$id/roles': typeof ApiAdminUsersIdRolesRoute
   '/{-$locale}/blog/$slug': typeof Char123LocaleChar125MainLandingBlogSlugRoute
   '/{-$locale}/legal/$slug': typeof Char123LocaleChar125MainLandingLegalSlugRoute
@@ -417,6 +425,7 @@ export interface FileRoutesById {
   '/{-$locale}/_main/admin/': typeof Char123LocaleChar125MainAdminIndexRoute
   '/{-$locale}/_main/chat/': typeof Char123LocaleChar125MainChatIndexRoute
   '/api/admin/users/$id/ban': typeof ApiAdminUsersIdBanRoute
+  '/api/admin/users/$id/credits': typeof ApiAdminUsersIdCreditsRoute
   '/api/admin/users/$id/roles': typeof ApiAdminUsersIdRolesRoute
   '/{-$locale}/_main/_landing/blog/$slug': typeof Char123LocaleChar125MainLandingBlogSlugRoute
   '/{-$locale}/_main/_landing/legal/$slug': typeof Char123LocaleChar125MainLandingLegalSlugRoute
@@ -462,6 +471,7 @@ export interface FileRouteTypes {
     | '/{-$locale}/admin/'
     | '/{-$locale}/chat/'
     | '/api/admin/users/$id/ban'
+    | '/api/admin/users/$id/credits'
     | '/api/admin/users/$id/roles'
     | '/{-$locale}/blog/$slug'
     | '/{-$locale}/legal/$slug'
@@ -502,6 +512,7 @@ export interface FileRouteTypes {
     | '/{-$locale}/admin/users'
     | '/{-$locale}/admin'
     | '/api/admin/users/$id/ban'
+    | '/api/admin/users/$id/credits'
     | '/api/admin/users/$id/roles'
     | '/{-$locale}/blog/$slug'
     | '/{-$locale}/legal/$slug'
@@ -547,6 +558,7 @@ export interface FileRouteTypes {
     | '/{-$locale}/_main/admin/'
     | '/{-$locale}/_main/chat/'
     | '/api/admin/users/$id/ban'
+    | '/api/admin/users/$id/credits'
     | '/api/admin/users/$id/roles'
     | '/{-$locale}/_main/_landing/blog/$slug'
     | '/{-$locale}/_main/_landing/legal/$slug'
@@ -864,6 +876,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiAdminUsersIdRolesRouteImport
       parentRoute: typeof ApiAdminUsersIdRoute
     }
+    '/api/admin/users/$id/credits': {
+      id: '/api/admin/users/$id/credits'
+      path: '/credits'
+      fullPath: '/api/admin/users/$id/credits'
+      preLoaderRoute: typeof ApiAdminUsersIdCreditsRouteImport
+      parentRoute: typeof ApiAdminUsersIdRoute
+    }
     '/api/admin/users/$id/ban': {
       id: '/api/admin/users/$id/ban'
       path: '/ban'
@@ -1000,11 +1019,13 @@ const Char123LocaleChar125RouteRouteWithChildren =
 
 interface ApiAdminUsersIdRouteChildren {
   ApiAdminUsersIdBanRoute: typeof ApiAdminUsersIdBanRoute
+  ApiAdminUsersIdCreditsRoute: typeof ApiAdminUsersIdCreditsRoute
   ApiAdminUsersIdRolesRoute: typeof ApiAdminUsersIdRolesRoute
 }
 
 const ApiAdminUsersIdRouteChildren: ApiAdminUsersIdRouteChildren = {
   ApiAdminUsersIdBanRoute: ApiAdminUsersIdBanRoute,
+  ApiAdminUsersIdCreditsRoute: ApiAdminUsersIdCreditsRoute,
   ApiAdminUsersIdRolesRoute: ApiAdminUsersIdRolesRoute,
 }
 

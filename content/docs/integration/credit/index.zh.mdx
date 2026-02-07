@@ -1,4 +1,133 @@
 ---
 title: 积分系统
-description: 积分系统
+description: 通过积分控制 AI 功能的使用量，支持注册赠送、每日领取、订阅发放和独立购买
 ---
+
+积分是用户调用 AI 功能（文本生成、图片生成、语音合成、视频生成等）的消耗凭证。每次调用扣除对应积分，余额不足时无法使用。
+
+## 开启积分
+
+在 `.env` 中添加：
+
+```bash
+VITE_CREDIT_ENABLE=true
+```
+
+或者在后台配置面板中开启。
+
+## 积分来源
+
+用户可以通过以下方式获得积分：
+
+| 来源 | 说明 |
+|------|------|
+| 注册赠送 | 新用户注册时自动发放，可设置数量和过期天数 |
+| 每日领取 | 每天登录后自动领取，余额叠加 |
+| 订阅发放 | 订阅计划生效或续费时发放，在 `payment-config.ts` 中配置 |
+| 积分包购买 | 用户在积分商店单独购买，在后台管理积分包 |
+| 管理员发放 | 后台手动给指定用户增加积分 |
+
+## 注册赠送
+
+```bash
+VITE_CREDIT_SIGNUP_BONUS_ENABLED=true
+VITE_CREDIT_SIGNUP_BONUS_AMOUNT=100
+VITE_CREDIT_SIGNUP_BONUS_EXPIRE_DAYS=30
+```
+
+新用户注册后自动获得 100 积分，30 天后过期。`EXPIRE_DAYS` 不设置则永不过期。
+
+## 每日领取
+
+```bash
+VITE_CREDIT_DAILY_ENABLED=true
+VITE_CREDIT_DAILY_AMOUNT=10
+```
+
+用户每天可以领取 10 积分。系统会在用户访问时自动判断是否已领取。
+
+## 积分包
+
+积分包让用户按需购买积分，在后台管理页面创建和编辑。
+
+<div className="fd-steps">
+  <div className="fd-step">
+    ### 定义翻译
+    在 `src/config/locale/credit-packages.content.ts` 中添加积分包的多语言文案：
+    ```ts
+    credit_100: {
+      name: t({ en: "100 Credits", zh: "100 积分" }),
+      description: t({ en: "Perfect for temporary testing", zh: "适合临时测试" }),
+    },
+    ```
+    key 名称自定义（如 `credit_100`），后续在后台创建积分包时填入这个 key。
+  </div>
+  <div className="fd-step">
+    ### 创建积分包
+    登录管理员账号，打开后台的「积分包管理」页面，点击添加。先输入上一步定义的翻译 key，校验通过后填写积分数量、价格、Price ID 等信息。
+
+    Price ID 需要先在支付平台（Stripe 等）创建对应的 Price，再复制过来。
+  </div>
+  <div className="fd-step">
+    ### 上架
+    将 Active 开关打开，积分包会出现在用户的积分商店中。
+
+    ![Credit Package Management](/docs/integration/credit/credit-package.webp)
+  </div>
+</div>
+
+<Callout type="warn" title="注意">
+  积分包依赖支付系统。请先完成 [Stripe](/docs/integration/payment/stripe) 或其他支付渠道的配置。
+</Callout>
+
+### 允许免费用户购买
+
+默认只有订阅用户可以购买积分包。如果希望免费用户也能购买：
+
+```bash
+VITE_CREDIT_ALLOW_FREE_USER_PURCHASE=true
+```
+
+## 订阅计划中的积分
+
+订阅计划可以配置每次付费后自动发放积分。在 `src/config/payment-config.ts` 中设置：
+
+```ts
+{
+  id: "pro",
+  planType: "subscription",
+  credit: {
+    amount: 100,       // 每次付费发放 100 积分
+    expireDays: 31,    // 31 天后过期
+  },
+  // ...prices
+}
+```
+
+订阅用户每次续费都会收到新的积分，过期时间对齐计费周期。
+
+## 消耗规则
+
+扣除积分时按以下优先级消耗：
+
+1. 每日领取的积分（最先消耗）
+2. 有过期时间的积分（按过期时间从近到远）
+3. 永久积分（最后消耗）
+
+余额不足时，系统会弹出积分不足的提示，引导用户购买积分包。
+
+## 配置参考
+
+所有积分相关的环境变量，也可以在后台配置面板中修改。
+
+![Credit Configuration](/docs/integration/credit/backstage.webp)
+
+| 环境变量 | 类型 | 默认值 | 说明 |
+|---------|------|-------|------|
+| `VITE_CREDIT_ENABLE` | boolean | `false` | 开启积分系统 |
+| `VITE_CREDIT_ALLOW_FREE_USER_PURCHASE` | boolean | `false` | 允许免费用户购买积分包 |
+| `VITE_CREDIT_SIGNUP_BONUS_ENABLED` | boolean | `false` | 开启注册赠送 |
+| `VITE_CREDIT_SIGNUP_BONUS_AMOUNT` | number | `0` | 注册赠送数量 |
+| `VITE_CREDIT_SIGNUP_BONUS_EXPIRE_DAYS` | number | `30` | 注册赠送过期天数 |
+| `VITE_CREDIT_DAILY_ENABLED` | boolean | `false` | 开启每日领取 |
+| `VITE_CREDIT_DAILY_AMOUNT` | number | `0` | 每日领取数量 |

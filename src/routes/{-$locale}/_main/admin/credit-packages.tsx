@@ -86,10 +86,9 @@ function CreditPackagesPage() {
     return { valid: nameExists && descExists, nameExists, descExists }
   }, [formData.name, formData.description, creditPackagesDict])
 
-  const { data: packages, isLoading } = useQuery({
+  const { data: packages = [], isLoading } = useQuery({
     queryKey: ["admin", "credit-packages"],
     queryFn: () => http<CreditPackage[]>("/api/admin/credit-packages"),
-    initialData: [],
   })
 
   const createMutation = useMutation({
