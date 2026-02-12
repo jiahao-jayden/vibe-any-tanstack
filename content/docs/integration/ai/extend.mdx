@@ -1,0 +1,141 @@
+---
+title: Extend
+description: How to add new AI providers and models
+---
+
+## Add a New Provider
+
+### 1. Types (`types.ts`)
+
+Add the provider to `AIProviderKey`:
+
+```ts
+export type AIProviderKey =
+  | "openai"
+  | "newprovider"  // add
+  | ...
+```
+
+`AIProviderConfigs` already uses `Partial<Record<AIProviderKey, AIProviderConfig>>`, so no change needed there.
+
+### 2. Provider Instance (`providers.ts`)
+
+In `createProviderInstances`:
+
+```ts
+const newprovider = configs.newprovider?.apiKey
+  ? createOpenAICompatible({
+      name: "newprovider",
+      baseURL: configs.newprovider.baseUrl || "https://api.newprovider.com/v1",
+      apiKey: configs.newprovider.apiKey,
+    })
+  : null
+```
+
+In `languageModels`:
+
+```ts
+...(p.newprovider && {
+  "newprovider/model-id": p.newprovider.chatModel("actual-model-id"),
+}),
+```
+
+For reasoning models, wrap with `extractReasoningMiddleware`:
+
+```ts
+"newprovider/reasoning-model": wrapLanguageModel({
+  model: p.newprovider.chatModel("actual-model-id"),
+  middleware: [reasoningMiddleware],
+}),
+```
+
+### 3. Config (`dynamic-config.ts`)
+
+Add config keys:
+
+```ts
+ai_newprovider_api_key: {
+  type: "string",
+  default: "",
+  env: "NEWPROVIDER_API_KEY",
+  labelKey: "aiNewproviderApiKey",
+  descriptionKey: "aiNewproviderApiKey",
+},
+// optional: custom base URL
+ai_newprovider_base_url: {
+  type: "string",
+  default: "",
+  env: "NEWPROVIDER_BASE_URL",
+  labelKey: "aiNewproviderBaseUrl",
+  descriptionKey: "aiNewproviderBaseUrl",
+},
+```
+
+Add sub-group in `aiConfigGroups`:
+
+```ts
+defineSubGroup({
+  id: "ai-newprovider",
+  labelKey: "aiNewprovider",
+  keys: ["ai_newprovider_api_key", "ai_newprovider_base_url"],
+}),
+```
+
+### 4. i18n (`config.content.ts`)
+
+Add `fields` entries for labels and descriptions, and `groups.subGroups` for the sub-group title.
+
+### 5. Config Extraction (`index.ts`)
+
+In `extractProviderConfigs`:
+
+```ts
+newprovider: configs.ai_newprovider_api_key
+  ? {
+      apiKey: configs.ai_newprovider_api_key as string,
+      baseUrl: (configs.ai_newprovider_base_url as string) || undefined,
+    }
+  : undefined,
+```
+
+---
+
+## Add a New Model (Existing Provider)
+
+### 1. Provider (`providers.ts`)
+
+Add model to `languageModels` under the provider:
+
+```ts
+"openai/new-model": p.openai("openai-actual-model-name"),
+```
+
+### 2. Model Metadata (`models.ts`)
+
+```ts
+{
+  id: "openai/new-model",
+  label: "New Model Name",
+  provider: "openai",
+  providerModelId: "openai-actual-model-name",
+  description: "Model description",
+  capabilities: { vision: false, reasoning: false, pdf: false },
+  tier: "free",
+  maxOutputTokens: 16384,
+  creditCost: 1,
+  parameters?: { temperature: 0.7, topP: 0.8 },
+},
+```
+
+---
+
+## Checklist
+
+| Step | New Provider | New Model |
+|------|--------------|-----------|
+| `types.ts` | Add to `AIProviderKey` | — |
+| `providers.ts` | Instance + `languageModels` | Add to `languageModels` |
+| `models.ts` | — | Add metadata |
+| `dynamic-config.ts` | Config keys + sub-group | — |
+| `config.content.ts` | i18n | — |
+| `index.ts` | `extractProviderConfigs` | — |

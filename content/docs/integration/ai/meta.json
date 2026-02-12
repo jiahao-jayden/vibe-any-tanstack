@@ -1,9 +1,1 @@
-{
-  "title": "AI",
-  "pages": [
-    "text",
-    "image",
-    "video",
-    "speech"
-  ]
-}
+{"title":"AI","pages":["index","text","extend"]}

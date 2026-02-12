@@ -231,7 +231,80 @@ export default {
         en: "Custom domain for public file access, e.g. https://cdn.example.com",
       }),
     },
+    // AI Providers
+    aiOpenaiApiKey: {
+      label: t({ zh: "OpenAI API Key", en: "OpenAI API Key" }),
+      description: t({ zh: "用于 OpenAI 模型的 API Key", en: "API Key for OpenAI models" }),
+    },
+    aiOpenaiBaseUrl: {
+      label: t({ zh: "OpenAI Base URL", en: "OpenAI Base URL" }),
+      description: t({
+        zh: "自定义 OpenAI API 地址（可选，用于代理）",
+        en: "Custom OpenAI API endpoint (optional, for proxy)",
+      }),
+    },
+    aiAnthropicApiKey: {
+      label: t({ zh: "Anthropic API Key", en: "Anthropic API Key" }),
+      description: t({ zh: "用于 Claude 模型的 API Key", en: "API Key for Claude models" }),
+    },
+    aiGoogleApiKey: {
+      label: t({ zh: "Google AI API Key", en: "Google AI API Key" }),
+      description: t({ zh: "用于 Gemini 模型的 API Key", en: "API Key for Gemini models" }),
+    },
+    aiXaiApiKey: {
+      label: t({ zh: "xAI API Key", en: "xAI API Key" }),
+      description: t({ zh: "用于 Grok 模型的 API Key", en: "API Key for Grok models" }),
+    },
+    aiGroqApiKey: {
+      label: t({ zh: "Groq API Key", en: "Groq API Key" }),
+      description: t({ zh: "用于 Groq 推理加速的 API Key", en: "API Key for Groq inference" }),
+    },
+    aiMistralApiKey: {
+      label: t({ zh: "Mistral API Key", en: "Mistral API Key" }),
+      description: t({ zh: "用于 Mistral 模型的 API Key", en: "API Key for Mistral models" }),
+    },
+    aiCohereApiKey: {
+      label: t({ zh: "Cohere API Key", en: "Cohere API Key" }),
+      description: t({ zh: "用于 Cohere 模型的 API Key", en: "API Key for Cohere models" }),
+    },
+    aiDeepseekApiKey: {
+      label: t({ zh: "DeepSeek API Key", en: "DeepSeek API Key" }),
+      description: t({ zh: "用于 DeepSeek 模型的 API Key", en: "API Key for DeepSeek models" }),
+    },
+    aiDeepseekBaseUrl: {
+      label: t({ zh: "DeepSeek Base URL", en: "DeepSeek Base URL" }),
+      description: t({
+        zh: "自定义 DeepSeek API 地址（可选）",
+        en: "Custom DeepSeek API endpoint (optional)",
+      }),
+    },
+    aiHuggingfaceApiKey: {
+      label: t({ zh: "HuggingFace Token", en: "HuggingFace Token" }),
+      description: t({
+        zh: "用于 HuggingFace 推理的 Token",
+        en: "Token for HuggingFace inference",
+      }),
+    },
+    aiNovitaApiKey: {
+      label: t({ zh: "Novita API Key", en: "Novita API Key" }),
+      description: t({ zh: "用于 Novita 推理的 API Key", en: "API Key for Novita inference" }),
+    },
+    aiSiliconflowApiKey: {
+      label: t({ zh: "SiliconFlow API Key", en: "SiliconFlow API Key" }),
+      description: t({ zh: "用于硅基流动推理的 API Key", en: "API Key for SiliconFlow inference" }),
+    },
+    aiBasetenApiKey: {
+      label: t({ zh: "Baseten API Key", en: "Baseten API Key" }),
+      description: t({ zh: "用于 Baseten 推理的 API Key", en: "API Key for Baseten inference" }),
+    },
     groups: {
+      ai: {
+        title: t({ zh: "AI 提供商", en: "AI Providers" }),
+        description: t({
+          zh: "配置各 AI 服务商的 API 密钥",
+          en: "Configure API keys for AI providers",
+        }),
+      },
       storage: {
         title: t({ zh: "存储设置", en: "Storage Settings" }),
         description: t({
@@ -276,6 +349,42 @@ export default {
       },
       creditDaily: {
         title: t({ zh: "每日赠送", en: "Daily Bonus" }),
+      },
+      aiOpenai: {
+        title: t({ zh: "OpenAI", en: "OpenAI" }),
+      },
+      aiAnthropic: {
+        title: t({ zh: "Anthropic", en: "Anthropic" }),
+      },
+      aiGoogle: {
+        title: t({ zh: "Google AI", en: "Google AI" }),
+      },
+      aiXai: {
+        title: t({ zh: "xAI", en: "xAI" }),
+      },
+      aiGroq: {
+        title: t({ zh: "Groq", en: "Groq" }),
+      },
+      aiMistral: {
+        title: t({ zh: "Mistral", en: "Mistral" }),
+      },
+      aiCohere: {
+        title: t({ zh: "Cohere", en: "Cohere" }),
+      },
+      aiDeepseek: {
+        title: t({ zh: "DeepSeek", en: "DeepSeek" }),
+      },
+      aiHuggingface: {
+        title: t({ zh: "HuggingFace", en: "HuggingFace" }),
+      },
+      aiNovita: {
+        title: t({ zh: "Novita", en: "Novita" }),
+      },
+      aiSiliconflow: {
+        title: t({ zh: "硅基流动", en: "SiliconFlow" }),
+      },
+      aiBaseten: {
+        title: t({ zh: "Baseten", en: "Baseten" }),
       },
     },
   },

@@ -13,6 +13,7 @@ export default {
       products: t({ en: "Products", zh: "产品管理" }),
       creditPackages: t({ en: "Credit Packages", zh: "积分包" }),
       config: t({ en: "Settings", zh: "系统设置" }),
+      aiConfig: t({ en: "AI Config", zh: "AI 配置" }),
       logout: t({ en: "Logout", zh: "退出登录" }),
     },
     users: {

@@ -1,0 +1,57 @@
+---
+title: Text / LLM
+description: LLM text generation, supported models, capabilities, and configuration
+---
+
+## Model Capabilities
+
+Each model has metadata describing its capabilities:
+
+| Capability | Description |
+|------------|-------------|
+| `vision` | Can process images (multimodal) |
+| `reasoning` | Extended thinking / chain-of-thought |
+| `pdf` | Can process PDF documents |
+
+## Utils Reference
+
+| Function | Description |
+|----------|-------------|
+| `getModelConfig(modelId)` | Get model metadata by ID |
+| `canUseModel(modelId, isProUser)` | Check if user can use model (tier check) |
+| `hasVisionSupport(modelId)` | Check vision capability |
+| `hasReasoningSupport(modelId)` | Check reasoning capability |
+| `hasPdfSupport(modelId)` | Check PDF capability |
+| `getMaxOutputTokens(modelId)` | Get max output tokens |
+| `getModelParameters(modelId)` | Get default parameters (temperature, topP, etc.) |
+| `getCreditCost(modelId)` | Get credit cost per call |
+| `getModelsByProvider(provider)` | List models for a provider |
+| `getModelsByTier(tier)` | List models by tier (free/pro) |
+| `getAvailableProviders()` | List all providers with models |
+| `getAllModels()` | List all models |
+
+## Model Tier
+
+- **free**: Available to all users
+- **pro**: Requires Pro subscription (`canUseModel` enforces this)
+
+## Model List (Summary)
+
+| Provider | Count | Examples |
+|----------|-------|----------|
+| OpenAI | 22 | gpt-4o, gpt-5, o3, o4-mini, gpt-5.1-codex, gpt-oss-20b |
+| Anthropic | 5 | claude-haiku-4-5, claude-sonnet-4-5, claude-opus-4-5 |
+| Google | 10 | gemini-2.0-flash, gemini-2.5-pro, gemini-3-flash |
+| xAI | 9 | grok-3-mini, grok-4, grok-4-fast-thinking, grok-code |
+| Groq | 6 | llama-3.3-70b, qwen3-32b, kimi-k2 |
+| Mistral | 11 | ministral-3b, mistral-large, codestral, devstral |
+| Cohere | 3 | command-a, command-a-thinking, command-r-plus |
+| DeepSeek | 2 | deepseek-chat, deepseek-reasoner |
+| HuggingFace | 11 | qwen3-4b, qwen3-30b, qwen3-235b |
+| Novita | 21 | deepseek-v3.2, qwen3-coder-30b, glm-4.5, minimax-m2 |
+| SiliconFlow | 2 | deepseek-v3, qwen-2.5-72b |
+| Baseten | 6 | deepseek-v3, qwen3-coder-480b, glm-4.7, kimi-k2 |
+
+## Reasoning Models
+
+Models with `capabilities.reasoning: true` use `extractReasoningMiddleware` — reasoning content is wrapped in `<think>` tags and stripped from the final output. Use `getModelParameters` for recommended settings when available.

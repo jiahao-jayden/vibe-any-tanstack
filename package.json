@@ -9,6 +9,7 @@
     "test": "vitest run",
     "format": "biome format",
     "lint": "biome lint",
+    "lint:fix": "biome lint --fix",
     "check": "biome check",
     "rbac": "tsx scripts/rbac.ts",
     "email": "email dev --port ${PORT:-3006} --dir src/components/email",
@@ -19,7 +20,15 @@
     "db:studio": "drizzle-kit studio"
   },
   "dependencies": {
+    "@ai-sdk/anthropic": "^3.0.42",
+    "@ai-sdk/cohere": "^3.0.20",
+    "@ai-sdk/google": "^3.0.26",
+    "@ai-sdk/groq": "^3.0.23",
+    "@ai-sdk/mistral": "^3.0.19",
+    "@ai-sdk/openai": "^3.0.27",
+    "@ai-sdk/openai-compatible": "^2.0.29",
     "@ai-sdk/react": "^3.0.52",
+    "@ai-sdk/xai": "^3.0.54",
     "@marsidev/react-turnstile": "^1.4.1",
     "@radix-ui/react-accordion": "^1.2.12",
     "@radix-ui/react-alert-dialog": "^1.1.15",

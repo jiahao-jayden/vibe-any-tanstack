@@ -4,6 +4,7 @@ import { createFileRoute } from "@tanstack/react-router"
 import { getStorageProvider } from "@/integrations/storage"
 import { logger } from "@/shared/lib/tools/logger"
 import { Resp } from "@/shared/lib/tools/response"
+import { apiAuthMiddleware } from "@/shared/middleware/auth.middleware"
 
 const ALLOWED_MIME_TYPES = [
   "image/jpeg",
@@ -21,6 +22,7 @@ const MAX_FILE_SIZE = 10 * 1024 * 1024 // 10MB
 
 export const Route = createFileRoute("/api/file/upload")({
   server: {
+    middleware: [apiAuthMiddleware],
     handlers: {
       POST: async ({ request }) => {
         try {

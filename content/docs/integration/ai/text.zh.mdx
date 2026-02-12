@@ -1,0 +1,57 @@
+---
+title: 文本 / LLM
+description: LLM 文本生成、支持的模型、能力与配置
+---
+
+## 模型能力
+
+每个模型包含以下能力元数据：
+
+| 能力 | 说明 |
+|------|------|
+| `vision` | 支持图片输入（多模态）|
+| `reasoning` | 支持扩展思考 / 链式推理 |
+| `pdf` | 支持 PDF 文档处理 |
+
+## 工具函数参考
+
+| 函数 | 说明 |
+|------|------|
+| `getModelConfig(modelId)` | 根据 ID 获取模型元数据 |
+| `canUseModel(modelId, isProUser)` | 检查用户是否可使用该模型（层级校验）|
+| `hasVisionSupport(modelId)` | 是否支持 vision |
+| `hasReasoningSupport(modelId)` | 是否支持 reasoning |
+| `hasPdfSupport(modelId)` | 是否支持 PDF |
+| `getMaxOutputTokens(modelId)` | 最大输出 token 数 |
+| `getModelParameters(modelId)` | 默认参数（temperature、topP 等）|
+| `getCreditCost(modelId)` | 单次调用积分消耗 |
+| `getModelsByProvider(provider)` | 按厂商列出模型 |
+| `getModelsByTier(tier)` | 按层级列出模型（free/pro）|
+| `getAvailableProviders()` | 列出所有有模型的厂商 |
+| `getAllModels()` | 列出所有模型 |
+
+## 模型层级
+
+- **free**: 所有用户可用
+- **pro**: 需要 Pro 订阅（`canUseModel` 会校验）
+
+## 模型列表（概览）
+
+| 厂商 | 数量 | 示例 |
+|------|------|------|
+| OpenAI | 22 | gpt-4o, gpt-5, o3, o4-mini, gpt-5.1-codex, gpt-oss-20b |
+| Anthropic | 5 | claude-haiku-4-5, claude-sonnet-4-5, claude-opus-4-5 |
+| Google | 10 | gemini-2.0-flash, gemini-2.5-pro, gemini-3-flash |
+| xAI | 9 | grok-3-mini, grok-4, grok-4-fast-thinking, grok-code |
+| Groq | 6 | llama-3.3-70b, qwen3-32b, kimi-k2 |
+| Mistral | 11 | ministral-3b, mistral-large, codestral, devstral |
+| Cohere | 3 | command-a, command-a-thinking, command-r-plus |
+| DeepSeek | 2 | deepseek-chat, deepseek-reasoner |
+| HuggingFace | 11 | qwen3-4b, qwen3-30b, qwen3-235b |
+| Novita | 21 | deepseek-v3.2, qwen3-coder-30b, glm-4.5, minimax-m2 |
+| SiliconFlow | 2 | deepseek-v3, qwen-2.5-72b |
+| Baseten | 6 | deepseek-v3, qwen3-coder-480b, glm-4.7, kimi-k2 |
+
+## Reasoning 模型
+
+`capabilities.reasoning: true` 的模型会使用 `extractReasoningMiddleware`，推理内容会包裹在 `<think>` 标签中并在最终输出中移除。如有推荐参数，可通过 `getModelParameters` 获取。

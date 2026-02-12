@@ -1,9 +1,1 @@
-{
-  "title": "AI 集成",
-  "pages": [
-    "text",
-    "image",
-    "video",
-    "speech"
-  ]
-}
+{"title":"AI 集成","pages":["index","text","extend"]}

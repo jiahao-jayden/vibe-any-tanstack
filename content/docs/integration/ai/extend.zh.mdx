@@ -1,0 +1,141 @@
+---
+title: 扩展
+description: 如何接入新厂商和新模型
+---
+
+## 接入新厂商
+
+### 1. 类型 (`types.ts`)
+
+在 `AIProviderKey` 中新增：
+
+```ts
+export type AIProviderKey =
+  | "openai"
+  | "newprovider"  // 新增
+  | ...
+```
+
+`AIProviderConfigs` 已通过 `Partial<Record<AIProviderKey, AIProviderConfig>>` 推导，无需额外修改。
+
+### 2. Provider 实例 (`providers.ts`)
+
+在 `createProviderInstances` 中初始化：
+
+```ts
+const newprovider = configs.newprovider?.apiKey
+  ? createOpenAICompatible({
+      name: "newprovider",
+      baseURL: configs.newprovider.baseUrl || "https://api.newprovider.com/v1",
+      apiKey: configs.newprovider.apiKey,
+    })
+  : null
+```
+
+在 `languageModels` 中注册模型：
+
+```ts
+...(p.newprovider && {
+  "newprovider/model-id": p.newprovider.chatModel("厂商实际模型ID"),
+}),
+```
+
+Reasoning 模型需包裹 `extractReasoningMiddleware`：
+
+```ts
+"newprovider/reasoning-model": wrapLanguageModel({
+  model: p.newprovider.chatModel("厂商实际模型ID"),
+  middleware: [reasoningMiddleware],
+}),
+```
+
+### 3. 配置 (`dynamic-config.ts`)
+
+新增配置项：
+
+```ts
+ai_newprovider_api_key: {
+  type: "string",
+  default: "",
+  env: "NEWPROVIDER_API_KEY",
+  labelKey: "aiNewproviderApiKey",
+  descriptionKey: "aiNewproviderApiKey",
+},
+// 可选：自定义 base URL
+ai_newprovider_base_url: {
+  type: "string",
+  default: "",
+  env: "NEWPROVIDER_BASE_URL",
+  labelKey: "aiNewproviderBaseUrl",
+  descriptionKey: "aiNewproviderBaseUrl",
+},
+```
+
+在 `aiConfigGroups` 的 `subGroups` 中新增：
+
+```ts
+defineSubGroup({
+  id: "ai-newprovider",
+  labelKey: "aiNewprovider",
+  keys: ["ai_newprovider_api_key", "ai_newprovider_base_url"],
+}),
+```
+
+### 4. 国际化 (`config.content.ts`)
+
+在 `fields` 中补充字段标签和描述，在 `groups.subGroups` 中补充分组标题。
+
+### 5. 配置提取 (`index.ts`)
+
+在 `extractProviderConfigs` 中新增：
+
+```ts
+newprovider: configs.ai_newprovider_api_key
+  ? {
+      apiKey: configs.ai_newprovider_api_key as string,
+      baseUrl: (configs.ai_newprovider_base_url as string) || undefined,
+    }
+  : undefined,
+```
+
+---
+
+## 接入新模型（已有厂商）
+
+### 1. Provider (`providers.ts`)
+
+在对应厂商的 `languageModels` 中新增：
+
+```ts
+"openai/new-model": p.openai("openai实际模型名"),
+```
+
+### 2. 模型元数据 (`models.ts`)
+
+```ts
+{
+  id: "openai/new-model",
+  label: "New Model Name",
+  provider: "openai",
+  providerModelId: "openai实际模型名",
+  description: "模型描述",
+  capabilities: { vision: false, reasoning: false, pdf: false },
+  tier: "free",
+  maxOutputTokens: 16384,
+  creditCost: 1,
+  parameters?: { temperature: 0.7, topP: 0.8 },
+},
+```
+
+---
+
+## 检查清单
+
+| 步骤 | 新厂商 | 新模型 |
+|------|--------|--------|
+| `types.ts` | 补充 `AIProviderKey` | — |
+| `providers.ts` | 实例 + `languageModels` | 补充 `languageModels` |
+| `models.ts` | — | 补充元数据 |
+| `dynamic-config.ts` | 配置项 + 子分组 | — |
+| `config.content.ts` | 国际化 | — |
+| `index.ts` | `extractProviderConfigs` | — |

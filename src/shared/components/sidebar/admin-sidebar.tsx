@@ -1,6 +1,7 @@
 import { useLocation, useRouterState } from "@tanstack/react-router"
 import { getLocaleName, getPathWithoutLocale, getPrefix } from "intlayer"
 import {
+  BrainCircuit,
   Check,
   ChevronsUpDown,
   Cog,
@@ -8,7 +9,6 @@ import {
   Home,
   Languages,
   LogOut,
-  Package,
   ReceiptIcon,
   Users,
 } from "lucide-react"
@@ -83,7 +83,9 @@ export default function AdminSidebar() {
     },
   ]
 
-  const isConfigActive = currentPath.includes("/admin/config")
+  const isConfigActive =
+    currentPath.includes("/admin/config") && !currentPath.includes("/admin/ai-config")
+  const isAIConfigActive = currentPath.includes("/admin/ai-config")
 
   return (
     <Sidebar collapsible="icon">
@@ -148,6 +150,22 @@ export default function AdminSidebar() {
           <SidebarGroupLabel>{content.sidebar.system}</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
+              <SidebarMenuItem>
+                <SidebarMenuButton
+                  asChild
+                  isActive={isAIConfigActive}
+                  tooltip={String(content.sidebar.aiConfig.value)}
+                  className={cn(
+                    isAIConfigActive && "border",
+                    !isAIConfigActive && "hover:border-border text-primary/80"
+                  )}
+                >
+                  <LocalizedLink to="/admin/ai-config">
+                    <BrainCircuit className="size-4" />
+                    <span>{content.sidebar.aiConfig}</span>
+                  </LocalizedLink>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
               <SidebarMenuItem>
                 <SidebarMenuButton
                   asChild

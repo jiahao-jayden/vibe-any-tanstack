@@ -4,38 +4,34 @@ import { Eye, EyeOff } from "lucide-react"
 import { useState } from "react"
 import { useIntlayer } from "react-intlayer"
 import { toast } from "sonner"
-import { configGroups } from "@/config/dynamic-config"
+import { aiConfigGroups } from "@/config/dynamic-config"
 import { PageHeader } from "@/shared/components/admin"
 import { ConfigGroupCard } from "@/shared/components/admin/config-field"
 import { Button } from "@/shared/components/ui/button"
-import {
-  Card,
-  CardContent,
-  CardHeader,
-} from "@/shared/components/ui/card"
+import { Card, CardContent, CardHeader } from "@/shared/components/ui/card"
 import { Skeleton } from "@/shared/components/ui/skeleton"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/shared/components/ui/tooltip"
 import type { ConfigMeta } from "@/shared/lib/config/helper"
 import { http } from "@/shared/lib/tools/http-client"
 
-export const Route = createFileRoute("/{-$locale}/_main/admin/config")({
-  component: ConfigPage,
+export const Route = createFileRoute("/{-$locale}/_main/admin/ai-config")({
+  component: AIConfigPage,
 })
 
-function ConfigPage() {
+function AIConfigPage() {
   const queryClient = useQueryClient()
   const configI18n = useIntlayer("admin-config")
   const content = useIntlayer("admin")
   const [pendingChanges, setPendingChanges] = useState<Record<string, unknown>>({})
   const [showValues, setShowValues] = useState(() => {
-    const saved = localStorage.getItem("admin-config-show-values")
+    const saved = localStorage.getItem("admin-ai-config-show-values")
     return saved === null ? true : saved === "true"
   })
 
   const toggleShowValues = () => {
     setShowValues((prev) => {
       const next = !prev
-      localStorage.setItem("admin-config-show-values", String(next))
+      localStorage.setItem("admin-ai-config-show-values", String(next))
       return next
     })
   }
@@ -67,7 +63,6 @@ function ConfigPage() {
         }
         return next
       })
-
       toast.success(content.config.saveSuccess)
     },
   })
@@ -118,10 +113,10 @@ function ConfigPage() {
     return (
       <>
         <PageHeader
-          title={content.config.title.value}
-          description={content.config.description.value}
+          title="AI Config"
+          description="Configure AI provider API keys"
         />
-        <ConfigSkeleton />
+        <AIConfigSkeleton />
       </>
     )
   }
@@ -129,8 +124,8 @@ function ConfigPage() {
   return (
     <>
       <PageHeader
-        title={content.config.title.value}
-        description={content.config.description.value}
+        title="AI Config"
+        description="Configure AI provider API keys"
       >
         <Tooltip>
           <TooltipTrigger asChild>
@@ -148,7 +143,7 @@ function ConfigPage() {
         </Tooltip>
       </PageHeader>
       <div className="grid gap-6">
-        {configGroups.map((group) => {
+        {aiConfigGroups.map((group) => {
           const items = getGroupConfigs(group.prefixes)
           if (items.length === 0) return null
 
@@ -179,7 +174,7 @@ function ConfigPage() {
   )
 }
 
-function ConfigSkeleton() {
+function AIConfigSkeleton() {
   return (
     <Card>
       <CardHeader>

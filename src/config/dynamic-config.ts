@@ -296,6 +296,105 @@ export const configSchema = defineConfig({
     labelKey: "storagePublicUrl",
     descriptionKey: "storagePublicUrl",
   },
+  // AI Providers
+  ai_openai_api_key: {
+    type: "string",
+    default: "",
+    env: "OPENAI_API_KEY",
+    labelKey: "aiOpenaiApiKey",
+    descriptionKey: "aiOpenaiApiKey",
+  },
+  ai_openai_base_url: {
+    type: "string",
+    default: "",
+    env: "OPENAI_BASE_URL",
+    labelKey: "aiOpenaiBaseUrl",
+    descriptionKey: "aiOpenaiBaseUrl",
+  },
+  ai_anthropic_api_key: {
+    type: "string",
+    default: "",
+    env: "ANTHROPIC_API_KEY",
+    labelKey: "aiAnthropicApiKey",
+    descriptionKey: "aiAnthropicApiKey",
+  },
+  ai_google_api_key: {
+    type: "string",
+    default: "",
+    env: "GOOGLE_GENERATIVE_AI_API_KEY",
+    labelKey: "aiGoogleApiKey",
+    descriptionKey: "aiGoogleApiKey",
+  },
+  ai_xai_api_key: {
+    type: "string",
+    default: "",
+    env: "XAI_API_KEY",
+    labelKey: "aiXaiApiKey",
+    descriptionKey: "aiXaiApiKey",
+  },
+  ai_groq_api_key: {
+    type: "string",
+    default: "",
+    env: "GROQ_API_KEY",
+    labelKey: "aiGroqApiKey",
+    descriptionKey: "aiGroqApiKey",
+  },
+  ai_mistral_api_key: {
+    type: "string",
+    default: "",
+    env: "MISTRAL_API_KEY",
+    labelKey: "aiMistralApiKey",
+    descriptionKey: "aiMistralApiKey",
+  },
+  ai_cohere_api_key: {
+    type: "string",
+    default: "",
+    env: "COHERE_API_KEY",
+    labelKey: "aiCohereApiKey",
+    descriptionKey: "aiCohereApiKey",
+  },
+  ai_deepseek_api_key: {
+    type: "string",
+    default: "",
+    env: "DEEPSEEK_API_KEY",
+    labelKey: "aiDeepseekApiKey",
+    descriptionKey: "aiDeepseekApiKey",
+  },
+  ai_deepseek_base_url: {
+    type: "string",
+    default: "",
+    env: "DEEPSEEK_BASE_URL",
+    labelKey: "aiDeepseekBaseUrl",
+    descriptionKey: "aiDeepseekBaseUrl",
+  },
+  ai_huggingface_api_key: {
+    type: "string",
+    default: "",
+    env: "HF_TOKEN",
+    labelKey: "aiHuggingfaceApiKey",
+    descriptionKey: "aiHuggingfaceApiKey",
+  },
+  ai_novita_api_key: {
+    type: "string",
+    default: "",
+    env: "NOVITA_API_KEY",
+    labelKey: "aiNovitaApiKey",
+    descriptionKey: "aiNovitaApiKey",
+  },
+  ai_siliconflow_api_key: {
+    type: "string",
+    default: "",
+    env: "SILICONFLOW_API_KEY",
+    labelKey: "aiSiliconflowApiKey",
+    descriptionKey: "aiSiliconflowApiKey",
+  },
+  ai_baseten_api_key: {
+    type: "string",
+    default: "",
+    env: "BASETEN_API_KEY",
+    labelKey: "aiBasetenApiKey",
+    descriptionKey: "aiBasetenApiKey",
+  },
 })
 
 export const configGroups = [
@@ -394,6 +493,76 @@ export const configGroups = [
         id: "credit-daily",
         labelKey: "creditDaily",
         keys: ["public_credit_daily_enabled", "public_credit_daily_amount"],
+      }),
+    ],
+  }),
+]
+
+export const aiConfigGroups = [
+  defineGroup({
+    id: "ai",
+    labelKey: "ai",
+    prefixes: ["ai_"],
+    subGroups: [
+      defineSubGroup({
+        id: "ai-openai",
+        labelKey: "aiOpenai",
+        keys: ["ai_openai_api_key", "ai_openai_base_url"],
+      }),
+      defineSubGroup({
+        id: "ai-anthropic",
+        labelKey: "aiAnthropic",
+        keys: ["ai_anthropic_api_key"],
+      }),
+      defineSubGroup({
+        id: "ai-google",
+        labelKey: "aiGoogle",
+        keys: ["ai_google_api_key"],
+      }),
+      defineSubGroup({
+        id: "ai-xai",
+        labelKey: "aiXai",
+        keys: ["ai_xai_api_key"],
+      }),
+      defineSubGroup({
+        id: "ai-groq",
+        labelKey: "aiGroq",
+        keys: ["ai_groq_api_key"],
+      }),
+      defineSubGroup({
+        id: "ai-mistral",
+        labelKey: "aiMistral",
+        keys: ["ai_mistral_api_key"],
+      }),
+      defineSubGroup({
+        id: "ai-cohere",
+        labelKey: "aiCohere",
+        keys: ["ai_cohere_api_key"],
+      }),
+      defineSubGroup({
+        id: "ai-deepseek",
+        labelKey: "aiDeepseek",
+        keys: ["ai_deepseek_api_key", "ai_deepseek_base_url"],
+      }),
+      defineSubGroup({
+        id: "ai-huggingface",
+        labelKey: "aiHuggingface",
+        keys: ["ai_huggingface_api_key"],
+      }),
+      defineSubGroup({
+        id: "ai-novita",
+        labelKey: "aiNovita",
+        keys: ["ai_novita_api_key"],
+      }),
+      defineSubGroup({
+        id: "ai-siliconflow",
+        labelKey: "aiSiliconflow",
+        keys: ["ai_siliconflow_api_key"],
+      }),
+      defineSubGroup({
+        id: "ai-baseten",
+        labelKey: "aiBaseten",
+        keys: ["ai_baseten_api_key"],
       }),
     ],
   }),

@@ -40,6 +40,7 @@ import { Route as Char123LocaleChar125MainAdminUsersRouteImport } from './routes
 import { Route as Char123LocaleChar125MainAdminOrdersRouteImport } from './routes/{-$locale}/_main/admin/orders'
 import { Route as Char123LocaleChar125MainAdminCreditPackagesRouteImport } from './routes/{-$locale}/_main/admin/credit-packages'
 import { Route as Char123LocaleChar125MainAdminConfigRouteImport } from './routes/{-$locale}/_main/admin/config'
+import { Route as Char123LocaleChar125MainAdminAiConfigRouteImport } from './routes/{-$locale}/_main/admin/ai-config'
 import { Route as Char123LocaleChar125MainLandingWaitlistRouteImport } from './routes/{-$locale}/_main/_landing/waitlist'
 import { Route as Char123LocaleChar125MainLandingRoadmapRouteImport } from './routes/{-$locale}/_main/_landing/roadmap'
 import { Route as Char123LocaleChar125MainLandingChatRouteImport } from './routes/{-$locale}/_main/_landing/chat'
@@ -224,6 +225,12 @@ const Char123LocaleChar125MainAdminConfigRoute =
     path: '/config',
     getParentRoute: () => Char123LocaleChar125MainAdminRouteRoute,
   } as any)
+const Char123LocaleChar125MainAdminAiConfigRoute =
+  Char123LocaleChar125MainAdminAiConfigRouteImport.update({
+    id: '/ai-config',
+    path: '/ai-config',
+    getParentRoute: () => Char123LocaleChar125MainAdminRouteRoute,
+  } as any)
 const Char123LocaleChar125MainLandingWaitlistRoute =
   Char123LocaleChar125MainLandingWaitlistRouteImport.update({
     id: '/waitlist',
@@ -329,6 +336,7 @@ export interface FileRoutesByFullPath {
   '/{-$locale}/chat': typeof Char123LocaleChar125MainLandingChatRoute
   '/{-$locale}/roadmap': typeof Char123LocaleChar125MainLandingRoadmapRoute
   '/{-$locale}/waitlist': typeof Char123LocaleChar125MainLandingWaitlistRoute
+  '/{-$locale}/admin/ai-config': typeof Char123LocaleChar125MainAdminAiConfigRoute
   '/{-$locale}/admin/config': typeof Char123LocaleChar125MainAdminConfigRoute
   '/{-$locale}/admin/credit-packages': typeof Char123LocaleChar125MainAdminCreditPackagesRoute
   '/{-$locale}/admin/orders': typeof Char123LocaleChar125MainAdminOrdersRoute
@@ -372,6 +380,7 @@ export interface FileRoutesByTo {
   '/{-$locale}/chat': typeof Char123LocaleChar125MainChatIndexRoute
   '/{-$locale}/roadmap': typeof Char123LocaleChar125MainLandingRoadmapRoute
   '/{-$locale}/waitlist': typeof Char123LocaleChar125MainLandingWaitlistRoute
+  '/{-$locale}/admin/ai-config': typeof Char123LocaleChar125MainAdminAiConfigRoute
   '/{-$locale}/admin/config': typeof Char123LocaleChar125MainAdminConfigRoute
   '/{-$locale}/admin/credit-packages': typeof Char123LocaleChar125MainAdminCreditPackagesRoute
   '/{-$locale}/admin/orders': typeof Char123LocaleChar125MainAdminOrdersRoute
@@ -417,6 +426,7 @@ export interface FileRoutesById {
   '/{-$locale}/_main/_landing/chat': typeof Char123LocaleChar125MainLandingChatRoute
   '/{-$locale}/_main/_landing/roadmap': typeof Char123LocaleChar125MainLandingRoadmapRoute
   '/{-$locale}/_main/_landing/waitlist': typeof Char123LocaleChar125MainLandingWaitlistRoute
+  '/{-$locale}/_main/admin/ai-config': typeof Char123LocaleChar125MainAdminAiConfigRoute
   '/{-$locale}/_main/admin/config': typeof Char123LocaleChar125MainAdminConfigRoute
   '/{-$locale}/_main/admin/credit-packages': typeof Char123LocaleChar125MainAdminCreditPackagesRoute
   '/{-$locale}/_main/admin/orders': typeof Char123LocaleChar125MainAdminOrdersRoute
@@ -463,6 +473,7 @@ export interface FileRouteTypes {
     | '/{-$locale}/chat'
     | '/{-$locale}/roadmap'
     | '/{-$locale}/waitlist'
+    | '/{-$locale}/admin/ai-config'
     | '/{-$locale}/admin/config'
     | '/{-$locale}/admin/credit-packages'
     | '/{-$locale}/admin/orders'
@@ -506,6 +517,7 @@ export interface FileRouteTypes {
     | '/{-$locale}/chat'
     | '/{-$locale}/roadmap'
     | '/{-$locale}/waitlist'
+    | '/{-$locale}/admin/ai-config'
     | '/{-$locale}/admin/config'
     | '/{-$locale}/admin/credit-packages'
     | '/{-$locale}/admin/orders'
@@ -550,6 +562,7 @@ export interface FileRouteTypes {
     | '/{-$locale}/_main/_landing/chat'
     | '/{-$locale}/_main/_landing/roadmap'
     | '/{-$locale}/_main/_landing/waitlist'
+    | '/{-$locale}/_main/admin/ai-config'
     | '/{-$locale}/_main/admin/config'
     | '/{-$locale}/_main/admin/credit-packages'
     | '/{-$locale}/_main/admin/orders'
@@ -799,6 +812,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof Char123LocaleChar125MainAdminConfigRouteImport
       parentRoute: typeof Char123LocaleChar125MainAdminRouteRoute
     }
+    '/{-$locale}/_main/admin/ai-config': {
+      id: '/{-$locale}/_main/admin/ai-config'
+      path: '/ai-config'
+      fullPath: '/{-$locale}/admin/ai-config'
+      preLoaderRoute: typeof Char123LocaleChar125MainAdminAiConfigRouteImport
+      parentRoute: typeof Char123LocaleChar125MainAdminRouteRoute
+    }
     '/{-$locale}/_main/_landing/waitlist': {
       id: '/{-$locale}/_main/_landing/waitlist'
       path: '/waitlist'
@@ -930,6 +950,7 @@ const Char123LocaleChar125MainLandingRouteRouteWithChildren =
   )
 
 interface Char123LocaleChar125MainAdminRouteRouteChildren {
+  Char123LocaleChar125MainAdminAiConfigRoute: typeof Char123LocaleChar125MainAdminAiConfigRoute
   Char123LocaleChar125MainAdminConfigRoute: typeof Char123LocaleChar125MainAdminConfigRoute
   Char123LocaleChar125MainAdminCreditPackagesRoute: typeof Char123LocaleChar125MainAdminCreditPackagesRoute
   Char123LocaleChar125MainAdminOrdersRoute: typeof Char123LocaleChar125MainAdminOrdersRoute
@@ -939,6 +960,8 @@ interface Char123LocaleChar125MainAdminRouteRouteChildren {
 
 const Char123LocaleChar125MainAdminRouteRouteChildren: Char123LocaleChar125MainAdminRouteRouteChildren =
   {
+    Char123LocaleChar125MainAdminAiConfigRoute:
+      Char123LocaleChar125MainAdminAiConfigRoute,
     Char123LocaleChar125MainAdminConfigRoute:
       Char123LocaleChar125MainAdminConfigRoute,
     Char123LocaleChar125MainAdminCreditPackagesRoute:
