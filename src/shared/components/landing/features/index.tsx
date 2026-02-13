@@ -10,7 +10,11 @@ const FeatureCard = ({ feature }: { feature: FeatureItem }) => {
   const descId = useId()
 
   return (
-    <article className="feature-base group" aria-labelledby={titleId} aria-describedby={descId}>
+    <article
+      className="feature-base group"
+      aria-labelledby={titleId}
+      aria-describedby={descId}
+    >
       <div
         className={cn(
           "size-16 mb-6 rounded-full border-2 border-primary/30",
@@ -38,7 +42,10 @@ const FeatureCard = ({ feature }: { feature: FeatureItem }) => {
         {feature.title}
       </h3>
 
-      <p id={descId} className="text-muted-foreground leading-relaxed">
+      <p
+        id={descId}
+        className="text-muted-foreground leading-relaxed"
+      >
         {feature.description}
       </p>
     </article>
@@ -58,7 +65,11 @@ export const Features = () => {
   }))
 
   return (
-    <section className="py-20 px-4" aria-labelledby={headingId} aria-describedby={descriptionId}>
+    <section
+      className="py-20 px-4"
+      aria-labelledby={headingId}
+      aria-describedby={descriptionId}
+    >
       <div className="max-w-7xl mx-auto">
         <header className="text-center mb-16">
           <h2

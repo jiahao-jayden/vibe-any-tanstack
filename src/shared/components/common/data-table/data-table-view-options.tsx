@@ -1,4 +1,3 @@
-
 import type { Table } from "@tanstack/react-table"
 import { Check, Settings2 } from "lucide-react"
 import * as React from "react"

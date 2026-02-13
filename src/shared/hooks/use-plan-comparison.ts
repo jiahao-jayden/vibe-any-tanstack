@@ -1,6 +1,11 @@
 import { useCallback, useMemo } from "react"
 import { useGlobalContext } from "@/shared/context/global.context"
-import type { PlanPrice, PlanWithPrice, Subscription, SubscriptionInterval } from "@/shared/types/payment"
+import type {
+  PlanPrice,
+  PlanWithPrice,
+  Subscription,
+  SubscriptionInterval,
+} from "@/shared/types/payment"
 
 /**
  * Interval to days mapping

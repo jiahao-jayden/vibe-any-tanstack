@@ -53,7 +53,10 @@ function ChangelogPage() {
   const { entries, lang } = Route.useLoaderData()
 
   return (
-    <main tabIndex={-1} className={cn("relative z-1 outline-none mb-10", "pt-6 md:pt-10")}>
+    <main
+      tabIndex={-1}
+      className={cn("relative z-1 outline-none mb-10", "pt-6 md:pt-10")}
+    >
       <div className={cn("mx-auto w-full max-w-5xl", "px-6 lg:px-8")}>
         <h1 className={cn("text-6xl leading-tight font-medium", "sm:text-4xl sm:leading-10")}>
           Changelog
@@ -63,7 +66,11 @@ function ChangelogPage() {
       <div className={cn("mx-auto w-full max-w-5xl", "px-6 lg:px-8", "mt-10")}>
         <Timeline>
           {entries.map((entry) => (
-            <ChangelogItem key={entry.slug} entry={entry} lang={lang} />
+            <ChangelogItem
+              key={entry.slug}
+              entry={entry}
+              lang={lang}
+            />
           ))}
         </Timeline>
       </div>
@@ -79,9 +86,7 @@ function ChangelogItem({ entry, lang }: { entry: ChangelogEntry; lang: string })
       title={entry.title}
       tags={entry.tags}
     >
-      <Suspense fallback={<ChangelogSkeleton />}>
-        {clientLoader.useContent(entry.path)}
-      </Suspense>
+      <Suspense fallback={<ChangelogSkeleton />}>{clientLoader.useContent(entry.path)}</Suspense>
     </TimelineItem>
   )
 }

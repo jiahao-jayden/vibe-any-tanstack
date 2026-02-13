@@ -41,13 +41,7 @@ function RoadmapPage() {
         </h1>
       </div>
 
-      <div
-        className={cn(
-          "mx-auto w-full max-w-7xl",
-          "px-6 lg:px-8",
-          "mt-6"
-        )}
-      >
+      <div className={cn("mx-auto w-full max-w-7xl", "px-6 lg:px-8", "mt-6")}>
         <Board columns={columns} />
       </div>
     </main>

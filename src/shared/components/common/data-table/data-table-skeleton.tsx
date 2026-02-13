@@ -1,4 +1,4 @@
-import { Skeleton } from "@/shared/components/ui/skeleton";
+import { Skeleton } from "@/shared/components/ui/skeleton"
 import {
   Table,
   TableBody,
@@ -6,17 +6,17 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/shared/components/ui/table";
-import { cn } from "@/shared/lib/utils";
+} from "@/shared/components/ui/table"
+import { cn } from "@/shared/lib/utils"
 
 interface DataTableSkeletonProps extends React.ComponentProps<"div"> {
-  columnCount: number;
-  rowCount?: number;
-  filterCount?: number;
-  cellWidths?: string[];
-  withViewOptions?: boolean;
-  withPagination?: boolean;
-  shrinkZero?: boolean;
+  columnCount: number
+  rowCount?: number
+  filterCount?: number
+  cellWidths?: string[]
+  withViewOptions?: boolean
+  withPagination?: boolean
+  shrinkZero?: boolean
 }
 
 export function DataTableSkeleton({
@@ -32,8 +32,8 @@ export function DataTableSkeleton({
 }: DataTableSkeletonProps) {
   const cozyCellWidths = Array.from(
     { length: columnCount },
-    (_, index) => cellWidths[index % cellWidths.length] ?? "auto",
-  );
+    (_, index) => cellWidths[index % cellWidths.length] ?? "auto"
+  )
 
   return (
     <div
@@ -44,19 +44,23 @@ export function DataTableSkeleton({
         <div className="flex flex-1 items-center gap-2">
           {filterCount > 0
             ? Array.from({ length: filterCount }).map((_, i) => (
-                <Skeleton key={i} className="h-7 w-18 border-dashed" />
+                <Skeleton
+                  key={i}
+                  className="h-7 w-18 border-dashed"
+                />
               ))
             : null}
         </div>
-        {withViewOptions ? (
-          <Skeleton className="ml-auto hidden h-7 w-18 lg:flex" />
-        ) : null}
+        {withViewOptions ? <Skeleton className="ml-auto hidden h-7 w-18 lg:flex" /> : null}
       </div>
       <div className="rounded-md border">
         <Table>
           <TableHeader>
             {Array.from({ length: 1 }).map((_, i) => (
-              <TableRow key={i} className="hover:bg-transparent">
+              <TableRow
+                key={i}
+                className="hover:bg-transparent"
+              >
                 {Array.from({ length: columnCount }).map((_, j) => (
                   <TableHead
                     key={j}
@@ -73,7 +77,10 @@ export function DataTableSkeleton({
           </TableHeader>
           <TableBody>
             {Array.from({ length: rowCount }).map((_, i) => (
-              <TableRow key={i} className="hover:bg-transparent">
+              <TableRow
+                key={i}
+                className="hover:bg-transparent"
+              >
                 {Array.from({ length: columnCount }).map((_, j) => (
                   <TableCell
                     key={j}
@@ -111,5 +118,5 @@ export function DataTableSkeleton({
         </div>
       ) : null}
     </div>
-  );
+  )
 }

@@ -60,7 +60,10 @@ export const Hero = () => {
         {/* Decorative background elements */}
         <div
           aria-hidden="true"
-          className={cn("absolute inset-0 isolate opacity-65 contain-strict pointer-events-none", "hidden lg:block")}
+          className={cn(
+            "absolute inset-0 isolate opacity-65 contain-strict pointer-events-none",
+            "hidden lg:block"
+          )}
         >
           <div
             className={cn(

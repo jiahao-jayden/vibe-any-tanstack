@@ -1,14 +1,14 @@
 import type { ColumnSort, Row, RowData } from "@tanstack/react-table"
-import type { DataTableConfig } from "@/shared/components/common/data-table/data-table"
+import type { DataTableConfig } from "@/shared/components/common/data-table/data-table-config"
 import type { FilterItemSchema } from "@/shared/lib/parsers"
 
 declare module "@tanstack/react-table" {
-  // biome-ignore lint/correctness/noUnusedVariables: TData is used in the TableMeta interface
+  // biome-ignore lint/correctness/noUnusedVariables: required by module augmentation
   interface TableMeta<TData extends RowData> {
     queryKeys?: QueryKeys
   }
 
-  // biome-ignore lint/correctness/noUnusedVariables: TData and TValue are used in the ColumnMeta interface
+  // biome-ignore lint/correctness/noUnusedVariables: required by module augmentation
   interface ColumnMeta<TData extends RowData, TValue> {
     label?: string
     placeholder?: string

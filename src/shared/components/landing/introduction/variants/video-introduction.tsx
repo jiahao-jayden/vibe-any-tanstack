@@ -8,10 +8,12 @@ import { IntroductionLayout } from "../shared/introduction-layout"
 import { VideoSection } from "../shared/video-section"
 
 export const VideoIntroduction = ({ section }: VideoIntroductionProps) => {
-  const features: IntroductionFeature[] = Object.entries(section.features || {}).map(([key, feature]) => ({
-    id: key,
-    ...feature,
-  }))
+  const features: IntroductionFeature[] = Object.entries(section.features || {}).map(
+    ([key, feature]) => ({
+      id: key,
+      ...feature,
+    })
+  )
 
   const contentSection = (
     <ContentSection

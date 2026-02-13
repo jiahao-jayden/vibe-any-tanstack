@@ -153,9 +153,7 @@ export const InsufficientCreditsDialog = ({
 
         <div className="flex items-center justify-between">
           {!canPurchase && (
-            <p className="text-sm text-muted-foreground">
-              {content.packages.subscribeToPurchase}
-            </p>
+            <p className="text-sm text-muted-foreground">{content.packages.subscribeToPurchase}</p>
           )}
           <Button
             variant="outline"

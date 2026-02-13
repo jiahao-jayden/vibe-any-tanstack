@@ -30,7 +30,10 @@ export type ConfigI18n = Record<
   | { label?: { value: string }; description?: { value: string }; title?: { value: string } }
   | undefined
 > & {
-  groups?: Record<string, { title?: { value: string }; description?: { value: string } } | undefined>
+  groups?: Record<
+    string,
+    { title?: { value: string }; description?: { value: string } } | undefined
+  >
   subGroups?: Record<string, { title?: { value: string } } | undefined>
 }
 
@@ -280,9 +283,7 @@ function SelectField({
 }) {
   const getOptionLabel = (option: SelectOption) => {
     if (!option.labelKey) return option.value
-    const optionI18n = configI18n[option.labelKey] as
-      | { label?: { value: string } }
-      | undefined
+    const optionI18n = configI18n[option.labelKey] as { label?: { value: string } } | undefined
     return optionI18n?.label?.value ?? option.value
   }
 

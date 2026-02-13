@@ -16,7 +16,10 @@ export const Cta = () => {
   const secondaryHref = cta.secondaryButtonHref.value
 
   return (
-    <section className={cn("bg-muted", "py-16 md:py-32")} aria-labelledby={headingId}>
+    <section
+      className={cn("bg-muted", "py-16 md:py-32")}
+      aria-labelledby={headingId}
+    >
       <div className="mx-auto max-w-5xl px-4">
         <div className="text-center">
           <h2
@@ -25,19 +28,35 @@ export const Cta = () => {
           >
             {title}
           </h2>
-          <p className="mt-4" aria-describedby={headingId}>
+          <p
+            className="mt-4"
+            aria-describedby={headingId}
+          >
             {description}
           </p>
 
           <div className={cn("mt-12", "flex flex-wrap justify-center gap-4")}>
-            <Button asChild size="lg">
-              <LocalizedLink to={primaryHref} aria-label={`${primaryText} - Primary action`}>
+            <Button
+              asChild
+              size="lg"
+            >
+              <LocalizedLink
+                to={primaryHref}
+                aria-label={`${primaryText} - Primary action`}
+              >
                 <span>{primaryText}</span>
               </LocalizedLink>
             </Button>
 
-            <Button asChild size="lg" variant="outline">
-              <LocalizedLink to={secondaryHref} aria-label={`${secondaryText} - Secondary action`}>
+            <Button
+              asChild
+              size="lg"
+              variant="outline"
+            >
+              <LocalizedLink
+                to={secondaryHref}
+                aria-label={`${secondaryText} - Secondary action`}
+              >
                 <span>{secondaryText}</span>
               </LocalizedLink>
             </Button>

@@ -31,11 +31,7 @@ export async function findPaymentByProviderId(providerPaymentId: string, tx?: Db
 
 export async function findPaymentById(id: string, tx?: DbTransaction) {
   const dbInstance = tx || db
-  const [result] = await dbInstance
-    .select()
-    .from(payment)
-    .where(eq(payment.id, id))
-    .limit(1)
+  const [result] = await dbInstance.select().from(payment).where(eq(payment.id, id)).limit(1)
   return result
 }
 

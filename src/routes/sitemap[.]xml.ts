@@ -39,7 +39,10 @@ const CONTENT_CONFIG: Record<string, { changeFrequency: ChangeFreq; priority: nu
 function scanContentDir(contentType: string, urlPrefix: string): PageInfo[] {
   const contentDir = path.join(process.cwd(), `content/${contentType}`)
   const pages: PageInfo[] = []
-  const config = CONTENT_CONFIG[contentType] ?? { changeFrequency: "monthly" as ChangeFreq, priority: 0.5 }
+  const config = CONTENT_CONFIG[contentType] ?? {
+    changeFrequency: "monthly" as ChangeFreq,
+    priority: 0.5,
+  }
   const seenSlugs = new Set<string>()
 
   if (!fs.existsSync(contentDir)) return pages

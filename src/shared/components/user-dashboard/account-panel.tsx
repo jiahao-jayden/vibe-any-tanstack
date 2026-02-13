@@ -1,10 +1,4 @@
-import {
-  InfoIcon,
-  LogOutIcon,
-  RefreshCwIcon,
-  SparklesIcon,
-  UserPenIcon,
-} from "lucide-react"
+import { InfoIcon, LogOutIcon, RefreshCwIcon, SparklesIcon, UserPenIcon } from "lucide-react"
 import { useState } from "react"
 import { useIntlayer } from "react-intlayer"
 import { PricingDialog } from "@/shared/components/landing/pricing/pricing-dialog"
@@ -104,11 +98,8 @@ function PlanDetail({ onUpgradeClick }: { onUpgradeClick: () => void }) {
   const totalCredits = userCredits + dailyBonusCredits
 
   const isScheduledCancel = subscription?.cancelAtPeriodEnd
-  const canCancel =
-    subscription && !isScheduledCancel && subscription.status !== "canceled"
-  const periodEnd = subscription?.currentPeriodEnd
-    ? new Date(subscription.currentPeriodEnd)
-    : null
+  const canCancel = subscription && !isScheduledCancel && subscription.status !== "canceled"
+  const periodEnd = subscription?.currentPeriodEnd ? new Date(subscription.currentPeriodEnd) : null
 
   const formatDate = (date: Date) =>
     date.toLocaleDateString(undefined, { year: "numeric", month: "long", day: "numeric" })
@@ -148,7 +139,10 @@ function PlanDetail({ onUpgradeClick }: { onUpgradeClick: () => void }) {
     <div className="rounded-lg bg-muted/50 p-4 space-y-4 border">
       <div className="flex items-center justify-between">
         <span className="font-medium capitalize">{planName}</span>
-        <Button size="sm" onClick={onUpgradeClick}>
+        <Button
+          size="sm"
+          onClick={onUpgradeClick}
+        >
           {ct.upgrade.value}
         </Button>
       </div>
@@ -237,6 +231,9 @@ function PlanDetail({ onUpgradeClick }: { onUpgradeClick: () => void }) {
 
 export function CreditDetail({
   onUpgradeClick,
-}: { planName?: string; onUpgradeClick: () => void }) {
+}: {
+  planName?: string
+  onUpgradeClick: () => void
+}) {
   return <PlanDetail onUpgradeClick={onUpgradeClick} />
 }

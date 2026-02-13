@@ -25,7 +25,10 @@ function createHeading(level: 1 | 2 | 3 | 4 | 5 | 6) {
     const text = typeof children === "string" ? children : children?.toString() || ""
     const id = slugify(text)
     return (
-      <Tag id={id} {...props}>
+      <Tag
+        id={id}
+        {...props}
+      >
         {children}
       </Tag>
     )
