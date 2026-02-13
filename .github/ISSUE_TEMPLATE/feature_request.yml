@@ -1,4 +1,4 @@
-name: Feature Request
+name: ✨ Feature Request
 description: Suggest a new feature or improvement
 title: "[Feature] "
 labels: ["enhancement"]
@@ -11,7 +11,7 @@ body:
   - type: textarea
     id: problem
     attributes:
-      label: Problem or Motivation
+      label: 💡 Problem or Motivation
       description: What problem does your suggestion solve, or what is the motivation behind it?
       placeholder: When I use ..., I find that ...
     validations:
@@ -20,7 +20,7 @@ body:
   - type: textarea
     id: solution
     attributes:
-      label: Proposed Solution
+      label: 🎯 Proposed Solution
       description: Describe the feature or improvement you'd like to see.
       placeholder: I'd like to be able to...
     validations:
@@ -29,18 +29,18 @@ body:
   - type: textarea
     id: references
     attributes:
-      label: References
+      label: 🔗 References
       description: Are there similar products or features you've seen? Please share links.
       placeholder: "e.g. https://example.com/feature"
 
   - type: textarea
     id: alternatives
     attributes:
-      label: Alternatives Considered
+      label: 🔀 Alternatives Considered
       description: Have you considered any alternative solutions?
 
   - type: textarea
     id: additional
     attributes:
-      label: Additional Context
+      label: 💬 Additional Context
       description: Any other context, screenshots, or references.

@@ -1,4 +1,4 @@
-name: Bug Report
+name: 🐛 Bug Report
 description: Report a bug
 title: "[Bug] "
 labels: ["bug"]
@@ -11,7 +11,7 @@ body:
   - type: textarea
     id: description
     attributes:
-      label: Description
+      label: 📝 Description
       description: A clear and concise description of the bug.
       placeholder: Describe the bug...
     validations:
@@ -20,7 +20,7 @@ body:
   - type: textarea
     id: reproduce
     attributes:
-      label: Steps to Reproduce
+      label: 🔄 Steps to Reproduce
       description: How can we reproduce this issue?
       placeholder: |
         1. Go to '...'
@@ -33,7 +33,7 @@ body:
   - type: textarea
     id: expected
     attributes:
-      label: Expected Behavior
+      label: ✅ Expected Behavior
       description: What did you expect to happen?
       placeholder: Describe the expected behavior...
     validations:
@@ -42,25 +42,25 @@ body:
   - type: textarea
     id: screenshots
     attributes:
-      label: Screenshots or Recordings
+      label: 📸 Screenshots or Recordings
       description: If applicable, add screenshots or screen recordings to help explain the issue.
 
   - type: input
     id: browser
     attributes:
-      label: Browser
+      label: 🌐 Browser
       description: The browser and version you are using.
       placeholder: "e.g. Chrome 120, Safari 17"
 
   - type: input
     id: os
     attributes:
-      label: Operating System
+      label: 💻 Operating System
       description: The operating system you are using.
       placeholder: "e.g. macOS 15, Windows 11"
 
   - type: textarea
     id: additional
     attributes:
-      label: Additional Context
+      label: 💬 Additional Context
       description: Any other context that might be helpful.
