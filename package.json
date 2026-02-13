@@ -2,6 +2,32 @@
   "name": "vibe-any-tanstack",
   "private": true,
   "type": "module",
+  "license": "Apache-2.0",
+  "author": "jiahao-jayden",
+  "homepage": "https://github.com/jiahao-jayden/vibe-any-tanstack#readme",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/jiahao-jayden/vibe-any-tanstack.git"
+  },
+  "bugs": {
+    "url": "https://github.com/jiahao-jayden/vibe-any-tanstack/issues"
+  },
+  "keywords": [
+    "tanstack-start",
+    "react",
+    "ai",
+    "starter",
+    "fullstack",
+    "authentication",
+    "i18n",
+    "shadcn-ui",
+    "drizzle",
+    "tailwindcss",
+    "sass template",
+    "vibeany",
+    "vibe-any",
+    "vibe-any-tanstack"
+  ],
   "scripts": {
     "dev": "rm -rf node_modules/.vite && vite dev --port 3377",
     "build": "vite build",
