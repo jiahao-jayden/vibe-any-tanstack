@@ -130,15 +130,14 @@ export function DataTableSliderFilter<TData>({ column, title }: DataTableSliderF
           className="border-dashed font-normal"
         >
           {columnFilterValue ? (
-            <div
-              role="button"
+            <button
+              type="button"
               aria-label={`Clear ${title} filter`}
-              tabIndex={0}
               className="rounded-sm opacity-70 transition-opacity hover:opacity-100 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
               onClick={onReset}
             >
               <XCircle />
-            </div>
+            </button>
           ) : (
             <PlusCircle />
           )}

@@ -73,7 +73,7 @@ export class PermissionChecker {
 
     if (pattern.endsWith(":*")) {
       const prefix = pattern.slice(0, -2)
-      return code.startsWith(prefix + ":")
+      return code.startsWith(`${prefix}:`)
     }
 
     return false

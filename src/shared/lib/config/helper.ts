@@ -76,10 +76,10 @@ export function defineSubGroup(subGroup: ConfigSubGroup) {
 // 获取环境变量值
 function getEnvValue(key: string | undefined): string | undefined {
   if (!key) return undefined
-  if (typeof process !== "undefined" && process.env?.[key]) {
+  if (process?.env?.[key]) {
     return process.env?.[key]
   }
-  if (typeof import.meta?.env !== "undefined" && import.meta.env?.[key]) {
+  if (import.meta?.env?.[key]) {
     return import.meta.env?.[key]
   }
   return undefined

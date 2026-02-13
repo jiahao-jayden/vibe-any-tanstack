@@ -1,4 +1,3 @@
-
 import type { Column } from "@tanstack/react-table"
 import { CalendarIcon, XCircle } from "lucide-react"
 import * as React from "react"
@@ -171,15 +170,14 @@ export function DataTableDateFilter<TData>({
           className="border-dashed font-normal"
         >
           {hasValue ? (
-            <div
-              role="button"
+            <button
+              type="button"
               aria-label={`Clear ${title} filter`}
-              tabIndex={0}
               onClick={onReset}
               className="rounded-sm opacity-70 transition-opacity hover:opacity-100 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
             >
               <XCircle />
-            </div>
+            </button>
           ) : (
             <CalendarIcon />
           )}
