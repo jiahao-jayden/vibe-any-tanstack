@@ -7,7 +7,9 @@
       "items": [
         { "title": "邮件模板编辑器", "description": "可视化编辑邮件模板，支持自定义样式" },
         { "title": "API 密钥管理", "description": "支持用户创建和管理 API 密钥" },
-        { "title": "Agent 代理模板修改系统", "description": "支持用户本地通过 AI Agent 快速修改模板代码" }
+        { "title": "Agent 代理模板修改系统", "description": "支持用户本地通过 AI Agent 快速修改模板代码" },
+        { "title": "Cloudflare 部署支持", "description": "支持 Cloudflare 部署VibeAny" },
+        { "title": "数据埋点支持", "description": "支持数据埋点，支持 Google Analytics、Sentry、Posthog 等众多服务商" }
       ]
     },
     {

@@ -7,7 +7,9 @@
       "items": [
         { "title": "Email Template Editor", "description": "Visual email template editor with custom styling support" },
         { "title": "API Key Management", "description": "Create and manage API keys for users" },
-        { "title": "Agent Template Modifier", "description": "Quickly modify template code locally via AI Agent" }
+        { "title": "Agent Template Modifier", "description": "Quickly modify template code locally via AI Agent" },
+        { "title": "Cloudflare Deployment Support", "description": "Support Cloudflare deployment of VibeAny" },
+        { "title": "Data Analytics", "description": "Support data analytics, support Google Analytics, Sentry, Posthog and more services" }
       ]
     },
     {
