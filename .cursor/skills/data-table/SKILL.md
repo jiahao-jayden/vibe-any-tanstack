@@ -11,9 +11,9 @@ description: Build data tables with filtering, sorting, pagination, and URL stat
 
 ```
 @/shared/components/common/data-table/   # 组件目录
+@/shared/components/common/data-table/data-table-config.ts  # 配置
 @/shared/hooks/use-data-table.ts         # hook
-@/config/data-table.ts                   # 配置
-@/types/data-table.ts                    # 类型
+@/shared/types/data-table.ts             # 类型
 @/shared/lib/data-table.ts               # 工具函数
 @/shared/lib/parsers.ts                  # URL 解析器
 ```
@@ -26,15 +26,15 @@ import { useDataTable } from "@/shared/hooks/use-data-table"
 import { parseAsInteger, parseAsString, useQueryState } from "nuqs"
 
 function MyTablePage() {
-  // 1. URL 状态管理
+  // 1. URL 状态管理（参数名需与 useDataTable 默认 queryKeys 一致：page, perPage, sort, 以及列 id 作为 filter 键）
   const [page] = useQueryState("page", parseAsInteger.withDefault(1))
   const [perPage] = useQueryState("perPage", parseAsInteger.withDefault(10))
-  const [search] = useQueryState("search", parseAsString)
+  const [name] = useQueryState("name", parseAsString)  // 列 id 为 "name" 时，filter 键为 "name"
 
   // 2. 数据获取
   const { data, isLoading } = useQuery({
-    queryKey: ["items", page, perPage, search],
-    queryFn: () => fetchItems({ page, perPage, search }),
+    queryKey: ["items", page, perPage, name],
+    queryFn: () => fetchItems({ page, perPage, search: name }),
   })
 
   // 3. 定义列
@@ -161,7 +161,7 @@ function MyTablePage() {
 
 ## 注意事项
 
-1. **URL 状态**: 使用 `nuqs` 的 `useQueryState` 直接读取 URL 参数用于 API 调用
+1. **URL 状态**: useDataTable 默认使用 `page`, `perPage`, `sort`, 以及列 id 作为 filter 键。API 调用时用 `useQueryState` 读取相同参数。若 API 需要不同参数名（如 sortBy/sortOrder），可通过 `queryKeys` 自定义
 2. **服务端分页**: `useDataTable` 已配置 `manualPagination`, `manualSorting`, `manualFiltering`
 3. **空状态**: 当 `data.length === 0 && !hasFilters` 时显示空状态，有过滤时显示表格（可能是过滤结果为空）
 4. **骨架屏**: 使用 `DataTableSkeleton` 组件，传入 `columnCount`, `rowCount`, `filterCount`

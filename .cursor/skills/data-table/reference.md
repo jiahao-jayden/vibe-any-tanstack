@@ -26,7 +26,9 @@ interface UseDataTableProps<TData> {
   throttleMs?: number                // 节流，默认 50ms
   clearOnDefault?: boolean           // 默认值时清除 URL 参数
   enableAdvancedFilter?: boolean     // 启用高级过滤
+  scroll?: boolean                  // 更新 URL 时是否滚动到顶部，默认 false
   shallow?: boolean                  // 浅层路由更新，默认 true
+  startTransition?: React.TransitionStartFunction  // 用于并发更新的 transition
 }
 
 const { table, shallow, debounceMs, throttleMs } = useDataTable(props)
