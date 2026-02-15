@@ -19,81 +19,82 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
   loader: async () => ({
     isAuthEnabled: await getIsAuthEnabled(),
   }),
-  head: () => ({
-    meta: [
-      {
-        charSet: "utf-8",
-      },
-      {
-        name: "viewport",
-        content: "width=device-width, initial-scale=1",
-      },
-      {
-        title: siteConfig.title,
-      },
-      {
-        name: "description",
-        content: siteConfig.description,
-      },
-      ...(siteConfig.robots?.meta ? [{ name: "robots", content: siteConfig.robots.meta }] : []),
-      ...(siteConfig.keywords?.length
-        ? [
-            {
-              name: "keywords",
-              content: siteConfig.keywords.join(", "),
-            },
-          ]
-        : []),
-      // Open Graph
-      {
-        property: "og:title",
-        content: siteConfig.title,
-      },
-      {
-        property: "og:description",
-        content: siteConfig.description,
-      },
-      {
-        property: "og:image",
-        content: `${import.meta.env.VITE_APP_URL}${siteConfig.images.ogImage}`,
-      },
-      {
-        property: "og:url",
-        content: import.meta.env.VITE_APP_URL,
-      },
-      {
-        property: "og:type",
-        content: "website",
-      },
-      // Twitter Card
-      {
-        name: "twitter:card",
-        content: "summary_large_image",
-      },
-      {
-        name: "twitter:title",
-        content: siteConfig.title,
-      },
-      {
-        name: "twitter:description",
-        content: siteConfig.description,
-      },
-      {
-        name: "twitter:image",
-        content: `${import.meta.env.VITE_APP_URL}${siteConfig.images.ogImage}`,
-      },
-      {
-        name: "twitter:url",
-        content: import.meta.env.VITE_APP_URL,
-      },
-    ],
-    links: [
-      {
-        rel: "stylesheet",
-        href: appCss,
-      },
-    ],
-  }),
+  head: ({ matches }) => {
+    const pathname = matches[matches.length - 1]?.pathname ?? "/"
+    const baseUrl = import.meta.env.VITE_APP_URL ?? ""
+    const canonical = pathname === "/" ? baseUrl || "/" : `${baseUrl}${pathname}`
+
+    return {
+      meta: [
+        {
+          charSet: "utf-8",
+        },
+        {
+          name: "viewport",
+          content: "width=device-width, initial-scale=1",
+        },
+        {
+          title: siteConfig.title,
+        },
+        {
+          name: "description",
+          content: siteConfig.description,
+        },
+        ...(siteConfig.robots?.meta ? [{ name: "robots", content: siteConfig.robots.meta }] : []),
+        ...(siteConfig.keywords?.length
+          ? [
+              {
+                name: "keywords",
+                content: siteConfig.keywords.join(", "),
+              },
+            ]
+          : []),
+        // Open Graph
+        {
+          property: "og:title",
+          content: siteConfig.title,
+        },
+        {
+          property: "og:description",
+          content: siteConfig.description,
+        },
+        {
+          property: "og:image",
+          content: `${import.meta.env.VITE_APP_URL}${siteConfig.images.ogImage}`,
+        },
+        ...(baseUrl ? [{ property: "og:url", content: canonical }] : []),
+        {
+          property: "og:type",
+          content: "website",
+        },
+        // Twitter Card
+        {
+          name: "twitter:card",
+          content: "summary_large_image",
+        },
+        {
+          name: "twitter:title",
+          content: siteConfig.title,
+        },
+        {
+          name: "twitter:description",
+          content: siteConfig.description,
+        },
+        {
+          name: "twitter:image",
+          content: `${import.meta.env.VITE_APP_URL}${siteConfig.images.ogImage}`,
+        },
+        ...(baseUrl ? [{ name: "twitter:url", content: canonical }] : []),
+      ],
+      links: [
+        ...(baseUrl ? [{ rel: "canonical", href: canonical }] : []),
+        {
+          rel: "stylesheet",
+          href: appCss,
+        },
+      ],
+    }
+  },
   shellComponent: RootDocument,
 })
 
