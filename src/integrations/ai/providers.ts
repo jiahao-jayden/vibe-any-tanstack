@@ -1,11 +1,3 @@
-import { createAnthropic } from "@ai-sdk/anthropic"
-import { createCohere } from "@ai-sdk/cohere"
-import { createGoogleGenerativeAI } from "@ai-sdk/google"
-import { createGroq } from "@ai-sdk/groq"
-import { createMistral } from "@ai-sdk/mistral"
-import { createOpenAI } from "@ai-sdk/openai"
-import { createOpenAICompatible } from "@ai-sdk/openai-compatible"
-import { createXai } from "@ai-sdk/xai"
 import { customProvider, extractReasoningMiddleware, wrapLanguageModel } from "ai"
 import type { AIProviderConfigs } from "./types"
 
@@ -15,77 +7,103 @@ const reasoningMiddlewareStartWith = extractReasoningMiddleware({
   startWithReasoning: true,
 })
 
-function createProviderInstances(configs: AIProviderConfigs) {
+async function createProviderInstances(configs: AIProviderConfigs) {
   const openai = configs.openai?.apiKey
-    ? createOpenAI({
+    ? (await import("@ai-sdk/openai")).createOpenAI({
         apiKey: configs.openai.apiKey,
         ...(configs.openai.baseUrl && { baseURL: configs.openai.baseUrl }),
       })
     : null
 
   const anthropic = configs.anthropic?.apiKey
-    ? createAnthropic({ apiKey: configs.anthropic.apiKey })
+    ? (await import("@ai-sdk/anthropic")).createAnthropic({ apiKey: configs.anthropic.apiKey })
     : null
 
   const google = configs.google?.apiKey
-    ? createGoogleGenerativeAI({ apiKey: configs.google.apiKey })
+    ? (await import("@ai-sdk/google")).createGoogleGenerativeAI({ apiKey: configs.google.apiKey })
     : null
 
-  const xai = configs.xai?.apiKey ? createXai({ apiKey: configs.xai.apiKey }) : null
-
-  const groq = configs.groq?.apiKey ? createGroq({ apiKey: configs.groq.apiKey }) : null
-
-  const mistral = configs.mistral?.apiKey ? createMistral({ apiKey: configs.mistral.apiKey }) : null
-
-  const cohere = configs.cohere?.apiKey ? createCohere({ apiKey: configs.cohere.apiKey }) : null
-
-  const deepseek = configs.deepseek?.apiKey
-    ? createOpenAICompatible({
-        name: "deepseek",
-        baseURL: configs.deepseek.baseUrl || "https://api.deepseek.com/v1",
-        apiKey: configs.deepseek.apiKey,
-      })
+  const xai = configs.xai?.apiKey
+    ? (await import("@ai-sdk/xai")).createXai({ apiKey: configs.xai.apiKey })
     : null
 
-  const huggingface = configs.huggingface?.apiKey
-    ? createOpenAICompatible({
-        name: "huggingface",
-        baseURL: "https://router.huggingface.co/v1",
-        apiKey: configs.huggingface.apiKey,
-      })
+  const groq = configs.groq?.apiKey
+    ? (await import("@ai-sdk/groq")).createGroq({ apiKey: configs.groq.apiKey })
     : null
 
-  const novita = configs.novita?.apiKey
-    ? createOpenAICompatible({
-        name: "novita",
-        baseURL: "https://api.novita.ai/openai",
-        apiKey: configs.novita.apiKey,
-      })
+  const mistral = configs.mistral?.apiKey
+    ? (await import("@ai-sdk/mistral")).createMistral({ apiKey: configs.mistral.apiKey })
     : null
 
-  const siliconflow = configs.siliconflow?.apiKey
-    ? createOpenAICompatible({
-        name: "siliconflow",
-        baseURL: "https://api.siliconflow.cn/v1",
-        apiKey: configs.siliconflow.apiKey,
-      })
+  const cohere = configs.cohere?.apiKey
+    ? (await import("@ai-sdk/cohere")).createCohere({ apiKey: configs.cohere.apiKey })
     : null
 
-  const baseten = configs.baseten?.apiKey
-    ? createOpenAICompatible({
-        name: "baseten",
-        baseURL: "https://inference.baseten.co/v1",
-        apiKey: configs.baseten.apiKey,
-      })
+  const needsOpenAICompatible =
+    configs.deepseek?.apiKey ||
+    configs.huggingface?.apiKey ||
+    configs.novita?.apiKey ||
+    configs.siliconflow?.apiKey ||
+    configs.baseten?.apiKey ||
+    configs.volcengine?.apiKey
+
+  const createOpenAICompatible = needsOpenAICompatible
+    ? (await import("@ai-sdk/openai-compatible")).createOpenAICompatible
     : null
 
-  const volcengine = configs.volcengine?.apiKey
-    ? createOpenAICompatible({
-        name: "volcengine",
-        baseURL: "https://ark.cn-beijing.volces.com/api/v3",
-        apiKey: configs.volcengine.apiKey,
-      })
-    : null
+  const deepseek =
+    configs.deepseek?.apiKey && createOpenAICompatible
+      ? createOpenAICompatible({
+          name: "deepseek",
+          baseURL: configs.deepseek.baseUrl || "https://api.deepseek.com/v1",
+          apiKey: configs.deepseek.apiKey,
+        })
+      : null
+
+  const huggingface =
+    configs.huggingface?.apiKey && createOpenAICompatible
+      ? createOpenAICompatible({
+          name: "huggingface",
+          baseURL: "https://router.huggingface.co/v1",
+          apiKey: configs.huggingface.apiKey,
+        })
+      : null
+
+  const novita =
+    configs.novita?.apiKey && createOpenAICompatible
+      ? createOpenAICompatible({
+          name: "novita",
+          baseURL: "https://api.novita.ai/openai",
+          apiKey: configs.novita.apiKey,
+        })
+      : null
+
+  const siliconflow =
+    configs.siliconflow?.apiKey && createOpenAICompatible
+      ? createOpenAICompatible({
+          name: "siliconflow",
+          baseURL: "https://api.siliconflow.cn/v1",
+          apiKey: configs.siliconflow.apiKey,
+        })
+      : null
+
+  const baseten =
+    configs.baseten?.apiKey && createOpenAICompatible
+      ? createOpenAICompatible({
+          name: "baseten",
+          baseURL: "https://inference.baseten.co/v1",
+          apiKey: configs.baseten.apiKey,
+        })
+      : null
+
+  const volcengine =
+    configs.volcengine?.apiKey && createOpenAICompatible
+      ? createOpenAICompatible({
+          name: "volcengine",
+          baseURL: "https://ark.cn-beijing.volces.com/api/v3",
+          apiKey: configs.volcengine.apiKey,
+        })
+      : null
 
   return {
     openai,
@@ -104,8 +122,8 @@ function createProviderInstances(configs: AIProviderConfigs) {
   }
 }
 
-export function createAIProvider(configs: AIProviderConfigs) {
-  const p = createProviderInstances(configs)
+export async function createAIProvider(configs: AIProviderConfigs) {
+  const p = await createProviderInstances(configs)
 
   return customProvider({
     languageModels: {

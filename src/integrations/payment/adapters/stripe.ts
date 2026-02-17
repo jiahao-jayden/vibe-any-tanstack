@@ -1,4 +1,4 @@
-import Stripe from "stripe"
+import type StripeNamespace from "stripe"
 import { CURRENCY } from "@/config/payment-config"
 import type { PaymentProvider, PaymentStatus, SubscriptionStatus } from "@/shared/types/payment"
 import type {
@@ -28,7 +28,8 @@ export class StripeAdapter implements PaymentAdapter {
     refund: false,
   }
 
-  private stripe: Stripe
+  private stripeInstance: StripeNamespace | null = null
+  private secretKey: string
   private webhookSecret: string
 
   constructor(config: StripeAdapterConfig) {
@@ -39,8 +40,16 @@ export class StripeAdapter implements PaymentAdapter {
       throw new Error("Stripe webhook secret is required")
     }
 
-    this.stripe = new Stripe(config.secretKey)
+    this.secretKey = config.secretKey
     this.webhookSecret = config.webhookSecret
+  }
+
+  private async getStripe(): Promise<StripeNamespace> {
+    if (!this.stripeInstance) {
+      const { default: Stripe } = await import("stripe")
+      this.stripeInstance = new Stripe(this.secretKey)
+    }
+    return this.stripeInstance
   }
 
   async createCheckout(params: CreateCheckoutParams): Promise<CheckoutResult> {
@@ -57,7 +66,7 @@ export class StripeAdapter implements PaymentAdapter {
       priceId,
     }
 
-    const sessionParams: Stripe.Checkout.SessionCreateParams = {
+    const sessionParams: StripeNamespace.Checkout.SessionCreateParams = {
       customer: customerId,
       mode: type === "subscription" ? "subscription" : "payment",
       line_items: [{ price: priceId, quantity: 1 }],
@@ -77,7 +86,7 @@ export class StripeAdapter implements PaymentAdapter {
       sessionParams.invoice_creation = { enabled: true }
     }
 
-    const session = await this.stripe.checkout.sessions.create(sessionParams)
+    const session = await (await this.getStripe()).checkout.sessions.create(sessionParams)
 
     if (!session.url) {
       throw new Error("Failed to create checkout session")
@@ -97,13 +106,17 @@ export class StripeAdapter implements PaymentAdapter {
       throw new Error("Missing stripe-signature header")
     }
 
-    const event = this.stripe.webhooks.constructEvent(body, signature, this.webhookSecret)
+    const event = (await this.getStripe()).webhooks.constructEvent(
+      body,
+      signature,
+      this.webhookSecret
+    )
 
     return this.mapStripeEvent(event)
   }
 
   async cancelSubscription(providerSubscriptionId: string): Promise<void> {
-    await this.stripe.subscriptions.update(providerSubscriptionId, {
+    await (await this.getStripe()).subscriptions.update(providerSubscriptionId, {
       cancel_at_period_end: true,
     })
   }
@@ -116,27 +129,32 @@ export class StripeAdapter implements PaymentAdapter {
       prorationBehavior = "create_prorations",
     } = params
 
-    const subscription = await this.stripe.subscriptions.retrieve(providerSubscriptionId)
+    const subscription = await (await this.getStripe()).subscriptions.retrieve(
+      providerSubscriptionId
+    )
     const itemId = subscription.items.data[0]?.id
 
     if (!itemId) {
       throw new Error("Subscription has no items")
     }
 
-    const updatedSubscription = await this.stripe.subscriptions.update(providerSubscriptionId, {
-      items: [
-        {
-          id: itemId,
-          price: newPriceId,
+    const updatedSubscription = await (await this.getStripe()).subscriptions.update(
+      providerSubscriptionId,
+      {
+        items: [
+          {
+            id: itemId,
+            price: newPriceId,
+          },
+        ],
+        proration_behavior: prorationBehavior,
+        metadata: {
+          ...subscription.metadata,
+          planId,
+          priceId: newPriceId,
         },
-      ],
-      proration_behavior: prorationBehavior,
-      metadata: {
-        ...subscription.metadata,
-        planId,
-        priceId: newPriceId,
-      },
-    })
+      }
+    )
 
     return {
       providerSubscriptionId: updatedSubscription.id,
@@ -145,7 +163,7 @@ export class StripeAdapter implements PaymentAdapter {
   }
 
   async getCustomerPortalUrl(providerCustomerId: string, returnUrl: string): Promise<string> {
-    const session = await this.stripe.billingPortal.sessions.create({
+    const session = await (await this.getStripe()).billingPortal.sessions.create({
       customer: providerCustomerId,
       return_url: returnUrl,
     })
@@ -153,13 +171,13 @@ export class StripeAdapter implements PaymentAdapter {
   }
 
   private async getOrCreateCustomer(email: string, userId: string): Promise<string> {
-    const existing = await this.stripe.customers.list({ email, limit: 1 })
+    const existing = await (await this.getStripe()).customers.list({ email, limit: 1 })
 
     if (existing.data.length > 0) {
       return existing.data[0].id
     }
 
-    const customer = await this.stripe.customers.create({
+    const customer = await (await this.getStripe()).customers.create({
       email,
       metadata: { userId },
     })
@@ -167,12 +185,12 @@ export class StripeAdapter implements PaymentAdapter {
     return customer.id
   }
 
-  private async mapStripeEvent(event: Stripe.Event): Promise<WebhookEvent> {
+  private async mapStripeEvent(event: StripeNamespace.Event): Promise<WebhookEvent> {
     const eventType = this.mapEventType(event.type)
 
     switch (event.type) {
       case "checkout.session.completed": {
-        const session = event.data.object as Stripe.Checkout.Session
+        const session = event.data.object as StripeNamespace.Checkout.Session
         return {
           type: eventType,
           provider: this.name,
@@ -182,7 +200,7 @@ export class StripeAdapter implements PaymentAdapter {
       }
 
       case "invoice.payment_succeeded": {
-        const invoice = event.data.object as Stripe.Invoice
+        const invoice = event.data.object as StripeNamespace.Invoice
         const subscriptionId = this.getSubscriptionIdFromInvoice(invoice)
         return {
           type: eventType,
@@ -196,7 +214,7 @@ export class StripeAdapter implements PaymentAdapter {
       }
 
       case "invoice.payment_failed": {
-        const invoice = event.data.object as Stripe.Invoice
+        const invoice = event.data.object as StripeNamespace.Invoice
         return {
           type: eventType,
           provider: this.name,
@@ -208,7 +226,7 @@ export class StripeAdapter implements PaymentAdapter {
       case "customer.subscription.created":
       case "customer.subscription.updated":
       case "customer.subscription.deleted": {
-        const subscription = event.data.object as Stripe.Subscription
+        const subscription = event.data.object as StripeNamespace.Subscription
         return {
           type: eventType,
           provider: this.name,
@@ -218,7 +236,7 @@ export class StripeAdapter implements PaymentAdapter {
       }
 
       case "charge.refunded": {
-        const charge = event.data.object as Stripe.Charge
+        const charge = event.data.object as StripeNamespace.Charge
         return {
           type: "refund.created",
           provider: this.name,
@@ -256,7 +274,9 @@ export class StripeAdapter implements PaymentAdapter {
     return mapping[stripeType] || "ignored"
   }
 
-  private buildPaymentInfoFromSession(session: Stripe.Checkout.Session): WebhookPaymentInfo {
+  private buildPaymentInfoFromSession(
+    session: StripeNamespace.Checkout.Session
+  ): WebhookPaymentInfo {
     return {
       providerPaymentId: (session.payment_intent as string) || session.id,
       providerCustomerId: session.customer as string,
@@ -272,7 +292,7 @@ export class StripeAdapter implements PaymentAdapter {
     }
   }
 
-  private getSubscriptionIdFromInvoice(invoice: Stripe.Invoice): string | null {
+  private getSubscriptionIdFromInvoice(invoice: StripeNamespace.Invoice): string | null {
     const lines = invoice.lines?.data || []
     for (const line of lines) {
       if (line.subscription) {
@@ -286,7 +306,7 @@ export class StripeAdapter implements PaymentAdapter {
   }
 
   private async buildPaymentInfoFromInvoice(
-    invoice: Stripe.Invoice,
+    invoice: StripeNamespace.Invoice,
     forceStatus?: PaymentStatus
   ): Promise<WebhookPaymentInfo> {
     const cycleType =
@@ -301,10 +321,10 @@ export class StripeAdapter implements PaymentAdapter {
     const paymentIntentId = (invoice as unknown as { payment_intent?: string }).payment_intent
 
     if (subscriptionId) {
-      const sub = await this.stripe.subscriptions.retrieve(subscriptionId)
+      const sub = await (await this.getStripe()).subscriptions.retrieve(subscriptionId)
       metadata = (sub.metadata as Record<string, string>) || {}
     } else if (paymentIntentId) {
-      const paymentIntent = await this.stripe.paymentIntents.retrieve(paymentIntentId)
+      const paymentIntent = await (await this.getStripe()).paymentIntents.retrieve(paymentIntentId)
       metadata = (paymentIntent.metadata as Record<string, string>) || {}
     }
 
@@ -325,12 +345,12 @@ export class StripeAdapter implements PaymentAdapter {
   }
 
   private async buildSubscriptionInfo(subscriptionId: string): Promise<WebhookSubscriptionInfo> {
-    const subscription = await this.stripe.subscriptions.retrieve(subscriptionId)
+    const subscription = await (await this.getStripe()).subscriptions.retrieve(subscriptionId)
     return this.buildSubscriptionInfoFromObject(subscription)
   }
 
   private buildSubscriptionInfoFromObject(
-    subscription: Stripe.Subscription
+    subscription: StripeNamespace.Subscription
   ): WebhookSubscriptionInfo {
     const item = subscription.items.data[0]
     const metadata = subscription.metadata as Record<string, string>
@@ -359,7 +379,9 @@ export class StripeAdapter implements PaymentAdapter {
     }
   }
 
-  private mapPaymentStatus(status: Stripe.Checkout.Session.PaymentStatus | null): PaymentStatus {
+  private mapPaymentStatus(
+    status: StripeNamespace.Checkout.Session.PaymentStatus | null
+  ): PaymentStatus {
     switch (status) {
       case "paid":
         return "succeeded"
@@ -372,7 +394,7 @@ export class StripeAdapter implements PaymentAdapter {
     }
   }
 
-  private mapSubscriptionStatus(status: Stripe.Subscription.Status): SubscriptionStatus {
+  private mapSubscriptionStatus(status: StripeNamespace.Subscription.Status): SubscriptionStatus {
     const mapping: Record<string, SubscriptionStatus> = {
       active: "active",
       canceled: "canceled",

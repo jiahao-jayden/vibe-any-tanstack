@@ -1,6 +1,5 @@
-import { renderMermaid, THEMES } from "beautiful-mermaid"
 import { Maximize2 } from "lucide-react"
-import { useEffect, useMemo, useState } from "react"
+import { useEffect, useMemo, useRef, useState } from "react"
 import { useTheme } from "tanstack-theme-kit"
 import { Button } from "@/shared/components/ui/button"
 import {
@@ -25,17 +24,21 @@ export function MermaidDiagram({ code, className }: MermaidDiagramProps) {
   const [svg, setSvg] = useState<string>("")
   const [error, setError] = useState<string | null>(null)
   const [open, setOpen] = useState(false)
+  const mermaidRef = useRef<typeof import("beautiful-mermaid") | null>(null)
 
   const currentTheme = theme === "system" ? systemTheme : theme
-  const mermaidTheme = useMemo(() => {
-    return currentTheme === "dark" ? THEMES["github-dark"] : THEMES["github-light"]
-  }, [currentTheme])
 
   useEffect(() => {
     let cancelled = false
 
     const run = async () => {
       try {
+        if (!mermaidRef.current) {
+          mermaidRef.current = await import("beautiful-mermaid")
+        }
+        const { renderMermaid, THEMES } = mermaidRef.current
+        const mermaidTheme =
+          currentTheme === "dark" ? THEMES["github-dark"] : THEMES["github-light"]
         const rendered = await renderMermaid(code, mermaidTheme)
         if (cancelled) return
         setSvg(rendered)
@@ -52,7 +55,7 @@ export function MermaidDiagram({ code, className }: MermaidDiagramProps) {
     return () => {
       cancelled = true
     }
-  }, [code, mermaidTheme])
+  }, [code, currentTheme])
 
   const imageUrl = useMemo(() => (svg ? svgToDataUrl(svg) : ""), [svg])
 

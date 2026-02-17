@@ -1,10 +1,4 @@
-import { render } from "@react-email/components"
-import nodemailer from "nodemailer"
 import React from "react"
-import { Resend } from "resend"
-import { MagicLinkEmail } from "@/shared/components/email/magic-link-email"
-import { VerificationEmail } from "@/shared/components/email/verification-email"
-import { WaitlistEmail } from "@/shared/components/email/waitlist-email"
 
 export type EmailType = "magic-link" | "verification" | "waitlist"
 
@@ -25,14 +19,22 @@ export interface EmailStrategy {
 }
 
 export class ResendEmailStrategy implements EmailStrategy {
-  private resend: Resend
+  private resendInstance: unknown
+  private apiKey: string
 
   constructor(apiKey: string) {
-    this.resend = new Resend(apiKey)
+    this.apiKey = apiKey
   }
 
   async sendEmail(data: EmailSendData, emailHtml: string): Promise<void> {
-    await this.resend.emails.send({
+    if (!this.resendInstance) {
+      const { Resend } = await import("resend")
+      this.resendInstance = new Resend(this.apiKey)
+    }
+    const resend = this.resendInstance as {
+      emails: { send: (opts: Record<string, string>) => Promise<unknown> }
+    }
+    await resend.emails.send({
       from: data.from,
       to: data.to,
       subject: data.subject,
@@ -42,22 +44,31 @@ export class ResendEmailStrategy implements EmailStrategy {
 }
 
 export class NodemailerEmailStrategy implements EmailStrategy {
-  private transporter: nodemailer.Transporter
+  private transporter: unknown
+  private config: {
+    host: string
+    port: number
+    secure: boolean
+    auth: { user: string; pass: string }
+  }
 
   constructor(config: {
     host: string
     port: number
     secure: boolean
-    auth: {
-      user: string
-      pass: string
-    }
+    auth: { user: string; pass: string }
   }) {
-    this.transporter = nodemailer.createTransport(config)
+    this.config = config
   }
 
   async sendEmail(data: EmailSendData, emailHtml: string): Promise<void> {
-    await this.transporter.sendMail({
+    if (!this.transporter) {
+      const nodemailer = await import("nodemailer")
+      this.transporter = nodemailer.default.createTransport(this.config)
+    }
+    await (
+      this.transporter as { sendMail: (opts: Record<string, string>) => Promise<void> }
+    ).sendMail({
       from: data.from,
       to: data.to,
       subject: data.subject,
@@ -66,19 +77,22 @@ export class NodemailerEmailStrategy implements EmailStrategy {
   }
 }
 
-function renderEmailTemplate(data: EmailData): Promise<string> {
+async function renderEmailTemplate(data: EmailData): Promise<string> {
+  const { render } = await import("@react-email/components")
   const type = data.type || "magic-link"
 
   if (type === "verification") {
+    const { VerificationEmail } = await import("@/shared/components/email/verification-email")
     return render(
       React.createElement(VerificationEmail, {
-        verificationLink: data.url,
+        verificationLink: data.url || "",
         locale: data.locale || "en",
       })
     )
   }
 
   if (type === "waitlist") {
+    const { WaitlistEmail } = await import("@/shared/components/email/waitlist-email")
     return render(
       React.createElement(WaitlistEmail, {
         locale: data.locale || "en",
@@ -86,9 +100,10 @@ function renderEmailTemplate(data: EmailData): Promise<string> {
     )
   }
 
+  const { MagicLinkEmail } = await import("@/shared/components/email/magic-link-email")
   return render(
     React.createElement(MagicLinkEmail, {
-      magicLink: data.url,
+      magicLink: data.url || "",
       locale: data.locale || "en",
     })
   )

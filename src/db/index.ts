@@ -1,5 +1,5 @@
-import { drizzle, type NodePgDatabase } from "drizzle-orm/node-postgres"
-import type { Pool } from "pg"
+import { drizzle, type PostgresJsDatabase } from "drizzle-orm/postgres-js"
+import postgres from "postgres"
 
 export * from "./auth.schema"
 export * from "./config.schema"
@@ -31,10 +31,11 @@ const schema = {
 }
 
 export type DbSchema = typeof schema
-export type Database = NodePgDatabase<DbSchema>
+export type Database = PostgresJsDatabase<DbSchema>
 export type DbTransaction = Parameters<Parameters<Database["transaction"]>[0]>[0]
 
 let _db: Database | null = null
+let _client: postgres.Sql | null = null
 
 export const isDatabaseEnabled = !!process.env.DATABASE_URL
 
@@ -43,7 +44,8 @@ export function getDb(): Database | null {
     return null
   }
   if (!_db) {
-    _db = drizzle(process.env.DATABASE_URL!, { schema })
+    _client = postgres(process.env.DATABASE_URL!, { prepare: false })
+    _db = drizzle(_client, { schema })
   }
   return _db
 }
@@ -57,9 +59,9 @@ export function requireDb(): Database {
 }
 
 export async function closeDb(): Promise<void> {
-  if (_db) {
-    const client = (_db as unknown as { $client: Pool }).$client
-    await client.end()
+  if (_client) {
+    await _client.end()
+    _client = null
     _db = null
   }
 }

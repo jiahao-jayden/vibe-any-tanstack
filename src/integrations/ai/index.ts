@@ -45,5 +45,5 @@ function extractProviderConfigs(configs: ConfigValues): AIProviderConfigs {
 export async function getAIProvider() {
   const configs = await getAllConfigs()
   const providerConfigs = extractProviderConfigs(configs)
-  return createAIProvider(providerConfigs)
+  return await createAIProvider(providerConfigs)
 }
