@@ -3,8 +3,6 @@ title: Cloudflare Workers
 description: 将项目部署到 Cloudflare Workers 的完整指南
 ---
 
-import { Callout } from "fumadocs-ui/components/callout"
-
 Cloudflare Workers 是运行在网络边缘的 Serverless 平台，延迟极低且有免费额度。本项目支持部署到 Workers，但由于 Workers 运行时的限制（gzip 后 3 MiB 包体积限制、无原生 `node:fs` 等），需要额外配置。
 
 <Callout type="warn">
@@ -16,11 +14,11 @@ Cloudflare Workers 部署使用独立分支 (`feat/cloudflare`)，该分支在 `
 - 安装 [Wrangler CLI](https://developers.cloudflare.com/workers/wrangler/install-and-update/)
 - Cloudflare 账号
 
-```bash title="全局安装 wrangler"
+```bash
 npm install -g wrangler
 ```
 
-```bash title="登录 Cloudflare"
+```bash
 wrangler login
 ```
 
@@ -44,7 +42,7 @@ wrangler login
 
     从 `.env.production` 生成 JSON 文件：
 
-    ```bash title="生成 secrets.json"
+    ```bash
     grep -v '^#' .env.production | grep '=' | sed 's/^\([^=]*\)=\(.*\)$/"\1": "\2"/' | paste -sd',' | sed 's/^/{/' | sed 's/$/}/' > /tmp/secrets.json
     ```
 

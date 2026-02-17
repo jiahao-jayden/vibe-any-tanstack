@@ -3,7 +3,6 @@ title: Cloudflare Workers
 description: Complete guide to deploying your project on Cloudflare Workers
 ---
 
-import { Callout } from "fumadocs-ui/components/callout"
 
 Cloudflare Workers is a serverless platform running at the network edge, offering extremely low latency and a generous free tier. This project supports deployment to Workers, but requires some additional configuration due to the Workers runtime constraints (3 MiB gzipped bundle size limit, no native `node:fs`, etc.).
 
@@ -17,11 +16,11 @@ The Cloudflare Workers deployment uses a dedicated branch (`feat/cloudflare`) th
 - A Cloudflare account
 - A PostgreSQL database accessible from the internet (e.g., [Supabase](https://supabase.com), [Neon](https://neon.tech))
 
-```bash title="Install wrangler globally"
+```bash
 npm install -g wrangler
 ```
 
-```bash title="Login to Cloudflare"
+```bash
 wrangler login
 ```
 
@@ -45,7 +44,7 @@ wrangler login
 
     Create a JSON file with your secrets:
 
-    ```bash title="Generate secrets.json from .env.production"
+    ```bash
     grep -v '^#' .env.production | grep '=' | sed 's/^\([^=]*\)=\(.*\)$/"\1": "\2"/' | paste -sd',' | sed 's/^/{/' | sed 's/$/}/' > /tmp/secrets.json
     ```
 
