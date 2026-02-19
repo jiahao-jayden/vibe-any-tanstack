@@ -19,12 +19,14 @@ export function useAuthMutations(options: UseAuthMutationsOptions = {}) {
     setTurnstileToken(null)
   }, [])
 
+  const isCaptchaEnabled = import.meta.env.VITE_TURNSTILE_CAPTCHA_ENABLED === "true"
+
   const getCaptchaHeaders = useCallback(() => {
-    if (!turnstileToken) {
+    if (isCaptchaEnabled && !turnstileToken) {
       throw new Error(loginPage.toast.captchaRequired.value)
     }
-    return { "x-captcha-response": turnstileToken }
-  }, [turnstileToken, loginPage.toast.captchaRequired.value])
+    return isCaptchaEnabled && turnstileToken ? { "x-captcha-response": turnstileToken } : undefined
+  }, [turnstileToken, loginPage.toast.captchaRequired.value, isCaptchaEnabled])
 
   const handleAuthError = useCallback(
     (error: { code?: string; message?: string; status?: number }, fallbackMessage: string) => {
