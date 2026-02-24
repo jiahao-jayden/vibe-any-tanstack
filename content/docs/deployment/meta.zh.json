@@ -2,6 +2,7 @@
   "title": "部署",
   "pages": [
     "vercel",
+    "cloudflare",
     "docker"
   ]
 }

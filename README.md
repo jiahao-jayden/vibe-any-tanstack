@@ -90,6 +90,7 @@ We noticed that many people have to repeatedly write boilerplate code and rebuil
 | **Storage** | S3-compatible upload (Cloudflare R2, AWS S3, MinIO) |
 | **UI** | Tailwind CSS v4, shadcn/ui, Radix primitives, Lucide icons |
 | **Theme** | Light / dark / system with one-click toggle |
+| **Deployment** | Node.js, Docker, or **Cloudflare Workers** (edge-native with D1 + R2) |
 
 ## Architecture
 
@@ -236,6 +237,17 @@ src/
 ```
 
 ## Deployment
+
+### Cloudflare Workers
+
+Deploy to the edge with zero cold starts using Cloudflare Workers + D1 (SQLite) + R2 (storage):
+
+```bash
+pnpm build:cf
+wrangler deploy
+```
+
+Configure `wrangler.toml` with your D1 database and R2 bucket bindings. See the [Cloudflare deployment guide](https://vibeany.dev/docs) for details.
 
 ### Docker
 

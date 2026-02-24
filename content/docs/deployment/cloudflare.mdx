@@ -1,0 +1,124 @@
+---
+title: Cloudflare Workers
+description: Complete guide to deploying your project on Cloudflare Workers
+---
+
+
+Cloudflare Workers is a serverless platform running at the network edge, offering extremely low latency and a generous free tier. This project supports deployment to Workers, but requires some additional configuration due to the Workers runtime constraints (3 MiB gzipped bundle size limit, no native `node:fs`, etc.).
+
+<Callout type="warn">
+The Cloudflare Workers deployment uses a dedicated branch (`feat/cloudflare`) that includes necessary Vite plugins and Workers config on top of `main`. Make sure you are working on this branch.
+</Callout>
+
+## Prerequisites
+
+- [Wrangler CLI](https://developers.cloudflare.com/workers/wrangler/install-and-update/) installed
+- A Cloudflare account
+- A PostgreSQL database accessible from the internet (e.g., [Supabase](https://supabase.com), [Neon](https://neon.tech))
+
+```bash
+npm install -g wrangler
+```
+
+```bash
+wrangler login
+```
+
+## Deployment Process
+
+<div className="fd-steps">
+  <div className="fd-step">
+    ### Switch to the Cloudflare branch
+
+    The `feat/cloudflare` branch contains the necessary Vite plugins (`ssrOnlyStubs`, `shikiNoWasm`) and `wrangler.jsonc` config. Keep this branch rebased on `main`.
+
+    ```bash
+    git checkout feat/cloudflare
+    git rebase main
+    ```
+  </div>
+  <div className="fd-step">
+    ### Upload environment variables
+
+    Workers secrets are not read from `.env` files. You need to upload them to Cloudflare.
+
+    Create a JSON file with your secrets:
+
+    ```bash
+    grep -v '^#' .env.production | grep '=' | sed 's/^\([^=]*\)=\(.*\)$/"\1": "\2"/' | paste -sd',' | sed 's/^/{/' | sed 's/$/}/' > /tmp/secrets.json
+    ```
+
+    Then bulk upload:
+
+    ```bash
+    wrangler secret bulk /tmp/secrets.json
+    rm /tmp/secrets.json
+    ```
+
+    <Callout type="info">
+    Environment variables prefixed with `VITE_` are embedded at build time and don't need to be uploaded as secrets. However, uploading them as secrets won't cause issues.
+    </Callout>
+  </div>
+  <div className="fd-step">
+    ### Build and Deploy
+
+    ```bash
+    pnpm run deploy
+    ```
+
+    This runs `vite build` followed by `wrangler deploy`. On success, you'll see the Worker URL:
+
+    ```
+    Total Upload: ~13500 KiB / gzip: ~2330 KiB
+    Deployed vibe-any-tanstack triggers
+      https://vibe-any-tanstack.<your-account>.workers.dev
+    ```
+  </div>
+</div>
+
+## Custom Domain
+
+1. Go to [Cloudflare Dashboard](https://dash.cloudflare.com/) → Workers & Pages → your Worker → Settings → Domains & Routes
+2. Click **Add** → **Custom Domain**
+3. Enter your domain (must be on Cloudflare DNS)
+
+## What the `feat/cloudflare` Branch Changes
+
+Only two files differ from `main`:
+
+| File | Purpose |
+|------|---------|
+| `wrangler.jsonc` | Workers config: name, compatibility date/flags, entry point |
+| `vite.config.ts` | Three additions: `ssrOnlyStubs()` plugin, `shikiNoWasm()` plugin, and conditional `cloudflare()` Vite plugin |
+
+### Bundle Size Optimizations
+
+Workers has a **3 MiB gzipped** limit on the free tier. The SSR stubs replace heavy client-only libraries with no-ops during the SSR build:
+
+- `beautiful-mermaid`, `@streamdown/*` → no-op stubs (removes ~2 MiB of Mermaid/Cytoscape)
+- `shiki` language grammars → empty stubs (saves ~500 KiB gzip)
+- `@shikijs/engine-oniguruma` → JavaScript regex engine (avoids WASM incompatibility)
+
+These stubs only apply to the SSR bundle — the client-side code loads the full libraries normally.
+
+## Troubleshooting
+
+### View real-time logs
+
+```bash
+wrangler tail --format pretty
+```
+
+### Check bundle size breakdown
+
+```bash
+wrangler deploy --dry-run --outdir .wrangler/dist
+```
+
+### "Cannot access 'pg' before initialization"
+
+This error means the `pg` (node-postgres) package is being used instead of `postgres` (postgres.js). The `main` branch already uses `postgres.js`, which is Workers-compatible. Make sure your `feat/cloudflare` branch is rebased on the latest `main`.
+
+### Bundle exceeds 3 MiB
+
+If you add new heavy dependencies, you may need to add them to the `ssrOnlyStubs()` plugin in `vite.config.ts`, or convert them to dynamic imports.

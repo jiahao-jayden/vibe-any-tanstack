@@ -90,6 +90,7 @@
 | **存储** | S3 兼容上传（Cloudflare R2、AWS S3、MinIO） |
 | **UI** | Tailwind CSS v4、shadcn/ui、Radix 原语、Lucide 图标 |
 | **主题** | 亮色 / 暗色 / 跟随系统，一键切换 |
+| **部署** | Node.js、Docker，或 **Cloudflare Workers**（边缘部署，使用 D1 + R2） |
 
 ## 架构
 
@@ -236,6 +237,17 @@ src/
 ```
 
 ## 部署
+
+### Cloudflare Workers
+
+使用 Cloudflare Workers + D1（SQLite）+ R2（存储）部署到边缘节点，零冷启动：
+
+```bash
+pnpm build:cf
+wrangler deploy
+```
+
+在 `wrangler.toml` 中配置 D1 数据库和 R2 存储桶绑定，详见[部署文档](https://vibeany.dev/docs)。
 
 ### Docker
 

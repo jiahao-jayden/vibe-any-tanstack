@@ -1,0 +1,122 @@
+---
+title: Cloudflare Workers
+description: 将项目部署到 Cloudflare Workers 的完整指南
+---
+
+Cloudflare Workers 是运行在网络边缘的 Serverless 平台，延迟极低且有免费额度。本项目支持部署到 Workers，但由于 Workers 运行时的限制（gzip 后 3 MiB 包体积限制、无原生 `node:fs` 等），需要额外配置。
+
+<Callout type="warn">
+Cloudflare Workers 部署使用独立分支 (`feat/cloudflare`)，该分支在 `main` 基础上包含了必要的 Vite 插件和 Workers 配置。请确保在该分支上操作。
+</Callout>
+
+## 前置条件
+
+- 安装 [Wrangler CLI](https://developers.cloudflare.com/workers/wrangler/install-and-update/)
+- Cloudflare 账号
+
+```bash
+npm install -g wrangler
+```
+
+```bash
+wrangler login
+```
+
+## 部署流程
+
+<div className="fd-steps">
+  <div className="fd-step">
+    ### 切换到 Cloudflare 分支
+
+    `feat/cloudflare` 分支包含了必要的 Vite 插件（`ssrOnlyStubs`、`shikiNoWasm`）和 `wrangler.jsonc` 配置。保持该分支 rebase 在 `main` 上即可。
+
+    ```bash
+    git checkout feat/cloudflare
+    git rebase main
+    ```
+  </div>
+  <div className="fd-step">
+    ### 上传环境变量
+
+    Workers 不会读取 `.env` 文件，需要将环境变量上传到 Cloudflare。
+
+    从 `.env.production` 生成 JSON 文件：
+
+    ```bash
+    grep -v '^#' .env.production | grep '=' | sed 's/^\([^=]*\)=\(.*\)$/"\1": "\2"/' | paste -sd',' | sed 's/^/{/' | sed 's/$/}/' > /tmp/secrets.json
+    ```
+
+    批量上传：
+
+    ```bash
+    wrangler secret bulk /tmp/secrets.json
+    rm /tmp/secrets.json
+    ```
+
+    <Callout type="info">
+    以 `VITE_` 为前缀的环境变量会在构建时内联，不需要作为 secret 上传。但上传了也不会有问题。
+    </Callout>
+  </div>
+  <div className="fd-step">
+    ### 构建并部署
+
+    ```bash
+    pnpm run deploy
+    ```
+
+    该命令会先执行 `vite build`，再执行 `wrangler deploy`。部署成功后会看到 Worker URL：
+
+    ```
+    Total Upload: ~13500 KiB / gzip: ~2330 KiB
+    Deployed vibe-any-tanstack triggers
+      https://vibe-any-tanstack.<your-account>.workers.dev
+    ```
+  </div>
+</div>
+
+## 自定义域名
+
+1. 进入 [Cloudflare Dashboard](https://dash.cloudflare.com/) → Workers & Pages → 你的 Worker → Settings → Domains & Routes
+2. 点击 **Add** → **Custom Domain**
+3. 输入你的域名（必须在 Cloudflare DNS 上）
+
+## `feat/cloudflare` 分支的改动
+
+相比 `main` 只多了两个文件的改动：
+
+| 文件 | 作用 |
+|------|------|
+| `wrangler.jsonc` | Workers 配置：名称、兼容性日期/标志、入口 |
+| `vite.config.ts` | 三处新增：`ssrOnlyStubs()` 插件、`shikiNoWasm()` 插件、条件加载的 `cloudflare()` Vite 插件 |
+
+### 包体积优化
+
+Workers 免费版有 **3 MiB gzip** 的限制。SSR stubs 会在 SSR 构建时将仅客户端使用的重型库替换为空实现：
+
+- `beautiful-mermaid`、`@streamdown/*` → 空实现（减少约 2 MiB 的 Mermaid/Cytoscape）
+- `shiki` 语言语法定义 → 空 stubs（节省约 500 KiB gzip）
+- `@shikijs/engine-oniguruma` → JavaScript 正则引擎（避免 WASM 兼容性问题）
+
+这些 stubs 只作用于 SSR bundle，客户端代码仍然正常加载完整的库。
+
+## 常见问题
+
+### 查看实时日志
+
+```bash
+wrangler tail --format pretty
+```
+
+### 查看包体积明细
+
+```bash
+wrangler deploy --dry-run --outdir .wrangler/dist
+```
+
+### "Cannot access 'pg' before initialization"
+
+该错误表示使用了 `pg`（node-postgres）而非 `postgres`（postgres.js）。`main` 分支已切换到 Workers 兼容的 `postgres.js`，确保 `feat/cloudflare` 分支已 rebase 到最新的 `main`。
+
+### 包体积超过 3 MiB
+
+如果新增了重型依赖，需要在 `vite.config.ts` 的 `ssrOnlyStubs()` 插件中添加对应的 stub，或将其改为动态 import。

@@ -34,8 +34,9 @@ VibeAny 使用 [better-auth](https://www.better-auth.com/) 作为认证框架，
   </div>
   <div className="fd-step">
     ### 配置邮件服务
-    邮箱验证默认开启，需要配置邮件服务以便用户完成账号验证：
+    邮箱验证默认关闭，需要配置邮件服务以便用户完成账号验证：
     ```bash
+    EMAIL_VERIFICATION_ENABLED=false
     EMAIL_PROVIDER=resend
     EMAIL_FROM="YourApp <noreply@yourdomain.com>"
     RESEND_API_KEY=re_xxx

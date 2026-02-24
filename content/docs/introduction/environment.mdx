@@ -58,6 +58,11 @@ VibeAny uses TURNSTILE as a captcha service to protect your website. You need to
 ### Email
 You can use the Resend service or a custom email server. VibeAny recommends using Resend. See the email setup documentation for more details.
 
+Email verification is disabled by default. Configure an email provider so users can verify their accounts:
+```bash
+EMAIL_VERIFICATION_ENABLED=false
+```
+
 For Resend, you need to create an API key at [Resend](https://resend.com/api-keys).
 
 | Variable   | Description |
