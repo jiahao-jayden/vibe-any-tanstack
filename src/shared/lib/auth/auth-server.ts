@@ -11,6 +11,8 @@ import { isAuthConfigured } from "./auth-config"
 const isCaptchaEnabled =
   process.env.TURNSTILE_CAPTCHA_ENABLED === "true" && !!process.env.TURNSTILE_SECRET_KEY
 
+const isEmailVerificationEnabled = process.env.EMAIL_VERIFICATION_ENABLED === "true"
+
 const isGitHubOAuthEnabled = !!process.env.GITHUB_CLIENT_ID && !!process.env.GITHUB_CLIENT_SECRET
 
 const isGoogleOAuthEnabled = !!process.env.GOOGLE_CLIENT_ID && !!process.env.GOOGLE_CLIENT_SECRET
@@ -55,27 +57,29 @@ function createAuth() {
     ],
     emailAndPassword: {
       enabled: true,
-      requireEmailVerification: true,
+      requireEmailVerification: isEmailVerificationEnabled,
     },
-    emailVerification: {
-      sendOnSignUp: true,
-      autoSignInAfterVerification: true,
-      sendVerificationEmail: async ({ user, url }) => {
-        const locale = getLocaleFromUrl(url)
-        const subject = getTranslationContent(
-          verificationEmailTranslations.subject,
-          locale as Locale
-        )
+    ...(isEmailVerificationEnabled && {
+      emailVerification: {
+        sendOnSignUp: true,
+        autoSignInAfterVerification: true,
+        sendVerificationEmail: async ({ user, url }) => {
+          const locale = getLocaleFromUrl(url)
+          const subject = getTranslationContent(
+            verificationEmailTranslations.subject,
+            locale as Locale
+          )
 
-        await sendEmail({
-          to: user.email,
-          url,
-          locale,
-          subject,
-          type: "verification",
-        })
+          await sendEmail({
+            to: user.email,
+            url,
+            locale,
+            subject,
+            type: "verification",
+          })
+        },
       },
-    },
+    }),
     socialProviders: {
       ...(isGitHubOAuthEnabled && {
         github: {
