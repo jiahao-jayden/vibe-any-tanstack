@@ -34,8 +34,9 @@ Before setting up authentication, make sure you have:
   </div>
   <div className="fd-step">
     ### Configure Email Service
-    Email verification is enabled by default. Configure an email provider so users can verify their accounts:
+    Email verification is disabled by default. Configure an email provider so users can verify their accounts:
     ```bash
+    EMAIL_VERIFICATION_ENABLED=false
     EMAIL_PROVIDER=resend
     EMAIL_FROM="YourApp <noreply@yourdomain.com>"
     RESEND_API_KEY=re_xxx

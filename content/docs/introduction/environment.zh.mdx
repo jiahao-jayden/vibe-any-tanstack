@@ -58,6 +58,11 @@ VibeAny 使用 TURNSTILE 作为验证码服务，为你的网站启用验证码�
 ### 邮件
 你可以使用Resend服务，也可以使用自定义邮件服务器，VibeAny 推荐您使用 resend 服务，在邮件设置文档中查看更加详细的配置说明。
 
+邮箱验证默认关闭，需要配置邮件服务以便用户完成账号验证：
+```bash
+EMAIL_VERIFICATION_ENABLED=false
+```
+
 对于 Resend 服务，你需要在 [Resend](https://resend.com/api-keys) 创建一个 API 密钥。
 
 | 变量   | 描述 |
