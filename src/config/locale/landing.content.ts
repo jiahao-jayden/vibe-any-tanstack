@@ -43,7 +43,7 @@ export default {
       buttons: {
         start: {
           text: t({ en: "Get Started", zh: "开始" }),
-          url: "/chat",
+          url: github,
         },
         docs: {
           text: t({ en: "Learn More", zh: "了解更多" }),

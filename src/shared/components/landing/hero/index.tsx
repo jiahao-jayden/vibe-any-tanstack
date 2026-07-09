@@ -10,6 +10,8 @@ export const Hero = () => {
   const { hero } = useIntlayer("landing")
 
   const heroTitleId = useId()
+  const startUrl = hero.buttons.start.url.value
+  const isStartExternal = startUrl.startsWith("http")
 
   return (
     <header
@@ -121,12 +123,23 @@ export const Hero = () => {
                       size="lg"
                       className={cn("rounded-xl px-5 text-base cursor-pointer")}
                     >
-                      <LocalizedLink
-                        to={hero.buttons.start.url.value as To}
-                        aria-label={`Get started: ${hero.buttons.start.text.value}`}
-                      >
-                        <span className="text-nowrap">{hero.buttons.start.text.value}</span>
-                      </LocalizedLink>
+                      {isStartExternal ? (
+                        <a
+                          href={startUrl}
+                          target="_blank"
+                          rel="noreferrer"
+                          aria-label={`Get started: ${hero.buttons.start.text.value}`}
+                        >
+                          <span className="text-nowrap">{hero.buttons.start.text.value}</span>
+                        </a>
+                      ) : (
+                        <LocalizedLink
+                          to={startUrl as To}
+                          aria-label={`Get started: ${hero.buttons.start.text.value}`}
+                        >
+                          <span className="text-nowrap">{hero.buttons.start.text.value}</span>
+                        </LocalizedLink>
+                      )}
                     </Button>
                   </div>
 

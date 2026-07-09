@@ -1,5 +1,5 @@
 import { useLocation } from "@tanstack/react-router"
-import { MenuIcon } from "lucide-react"
+import { GithubIcon, MenuIcon } from "lucide-react"
 import { useIntlayer } from "react-intlayer"
 import { siteConfig } from "@/config/site-config"
 import { LocaleSwitcher } from "@/shared/components/locale/locale-switcher"
@@ -37,7 +37,7 @@ interface MenuItem {
 export const LandingHeader = () => {
   const { header } = useIntlayer("landing")
   const location = useLocation()
-  const { title, images, theme } = siteConfig
+  const { title, images, theme, social } = siteConfig
 
   const items: MenuItem[] = header.items.map((item, index) => {
     const children =
@@ -145,6 +145,21 @@ export const LandingHeader = () => {
         </NavigationMenu>
 
         <div className="flex items-center gap-1">
+          <Button
+            asChild
+            variant="ghost"
+            size="icon"
+            className="cursor-pointer"
+          >
+            <a
+              href={social.github}
+              target="_blank"
+              rel="noreferrer"
+              aria-label="Open GitHub repository"
+            >
+              <GithubIcon className="size-5" />
+            </a>
+          </Button>
           {theme.enableSwitch && <ThemeSwitcher />}
           <LocaleSwitcher />
           <UserMenu />
