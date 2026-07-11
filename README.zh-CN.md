@@ -35,7 +35,7 @@
 
 - 完整的**认证系统**：邮箱密码、Google/GitHub OAuth、魔法链接
 - 多供应商 **AI 聊天**：100+ 模型（OpenAI、Claude、Gemini、DeepSeek、Grok 等）
-- **支付集成**：Stripe、Creem、PayPal、微信支付、支付宝——订阅和一次性付款
+- **支付** 集成 Stripe、Creem、PayPal、微信支付、支付宝、加密货币支付——支持订阅和一次性支付
 - **积分系统**：AI 计费，支持每日奖励、注册赠送、FIFO 消耗策略
 - 企业级**落地页**组件——响应式设计，SEO 友好
 - **管理后台**：用户管理、动态配置、角色管理
@@ -79,7 +79,7 @@
 | **认证** | 邮箱密码、Google、GitHub OAuth、魔法链接、邮箱验证（Better Auth） |
 | **RBAC** | 基于角色的权限控制，支持权限继承 |
 | **AI** | Vercel AI SDK，12 个供应商，100+ 模型，流式响应 |
-| **支付** | Stripe、Creem、PayPal、微信支付、支付宝——订阅和一次性付款 |
+| **支付** | Stripe、Creem、PayPal、微信支付、支付宝、加密货币 |
 | **积分** | Token 计费，FIFO 消耗策略，每日奖励，注册赠送 |
 | **落地页** | Hero、功能介绍、用户评价、FAQ、CTA——全部可配置 |
 | **博客和文档** | MDX 博客 + Fumadocs 文档，多语言支持 |
@@ -158,7 +158,7 @@ graph TB
 | 数据获取 | [TanStack Query](https://tanstack.com/query) |
 | 数据库 | [PostgreSQL](https://www.postgresql.org) + [Drizzle ORM](https://orm.drizzle.team) |
 | 认证 | [Better Auth](https://www.better-auth.com) |
-| 支付 | [Stripe](https://stripe.com) / Creem / PayPal / 微信 / 支付宝 |
+| 支付 | [Stripe](https://stripe.com) / Creem / PayPal / 微信 / 支付宝 / 加密货币 |
 | AI | [Vercel AI SDK](https://sdk.vercel.ai)（12 个供应商，100+ 模型） |
 | 样式 | [Tailwind CSS v4](https://tailwindcss.com) + [shadcn/ui](https://ui.shadcn.com) |
 | 国际化 | [Intlayer](https://intlayer.org) |
@@ -191,6 +191,14 @@ cp .env.example .env.local
 ```
 
 应用支持**零配置启动**——落地页、博客和文档无需数据库即可运行。如需启用认证和用户功能，请设置 `DATABASE_URL` 和 `BETTER_AUTH_SECRET`。
+
+要启用加密货币定价和结账界面，请设置 `VITE_CRYPTO_PAYMENT_ENABLED=true`。您还可以使用 `VITE_CRYPTO_ENABLED_CURRENCIES` 控制显示哪些加密货币以及它们的显示顺序（usdc_sol,sol,usdt_erc20,usdt_trc20,btc,eth,trx,usdt_bep20,bnb_bsc）。
+
+三条加密支付链路的搭建要求不同：
+
+- `solanapay`：不需要额外搭建商户服务，但你必须提供自己的 Solana 收款钱包 `SOLANAPAY_WALLET_ADDRESS`。`SOLANAPAY_RPC_URL` 可以用公开 RPC，也可以用你自己的 RPC 服务。
+- `payram`：不需要自己搭区块链节点，但你需要自己的 PayRam 账户和 API 凭据，并且应用要有可被公网访问的地址，这样 PayRam 才能回调 `/api/payment/webhook/crypto/payram`。
+- BNB Smart Chain 的 `evm_direct`：不需要额外的支付网关账户，但你必须提供自己的商户钱包和至少一个 BSC RPC 节点，即 `EVM_DIRECT_MERCHANT_WALLET` 和 `BSC_RPC_URL`。
 
 ### 3. 初始化数据库（可选）
 

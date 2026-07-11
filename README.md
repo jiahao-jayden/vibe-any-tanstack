@@ -35,7 +35,7 @@ We noticed that many people have to repeatedly write boilerplate code and rebuil
 
 - Complete **authentication** system with email/password, Google/GitHub OAuth, magic links
 - Multi-provider **AI chat** with 100+ models (OpenAI, Claude, Gemini, DeepSeek, Grok, and more)
-- **Payment** integration with Stripe, Creem, PayPal, WeChat Pay, Alipay — subscriptions & one-time
+- **Payment** integration with Stripe, Creem, PayPal, WeChat Pay, Alipay, and Cryptocurrency — subscriptions & one-time
 - **Credit system** for AI monetization with daily rewards, sign-up bonuses, and FIFO consumption
 - Enterprise-grade **landing page** components — responsive and SEO-friendly
 - **Admin panel** with user management, dynamic config, role management
@@ -79,7 +79,7 @@ We noticed that many people have to repeatedly write boilerplate code and rebuil
 | **Auth** | Email/password, Google, GitHub OAuth, magic links, email verification (Better Auth) |
 | **RBAC** | Role-based access control with permission inheritance |
 | **AI** | Vercel AI SDK with 12 providers, 100+ models, streaming responses |
-| **Payments** | Stripe, Creem, PayPal, WeChat Pay, Alipay — subscriptions & one-time payments |
+| **Payments** | Stripe, Creem, PayPal, WeChat Pay, Alipay, Cryptocurrency |
 | **Credits** | Token-based AI billing with FIFO consumption, daily rewards, sign-up bonuses |
 | **Landing Page** | Hero, features, benefits, testimonials, FAQ, CTA — all configurable |
 | **Blog & Docs** | MDX-powered blog + Fumadocs documentation, multilingual |
@@ -158,7 +158,7 @@ graph TB
 | Data Fetching | [TanStack Query](https://tanstack.com/query) |
 | Database | [PostgreSQL](https://www.postgresql.org) + [Drizzle ORM](https://orm.drizzle.team) |
 | Auth | [Better Auth](https://www.better-auth.com) |
-| Payments | [Stripe](https://stripe.com) / Creem / PayPal / WeChat / Alipay |
+| Payments | [Stripe](https://stripe.com) / Creem / PayPal / WeChat / Alipay / Cryptocurrency |
 | AI | [Vercel AI SDK](https://sdk.vercel.ai) (12 providers, 100+ models) |
 | Styling | [Tailwind CSS v4](https://tailwindcss.com) + [shadcn/ui](https://ui.shadcn.com) |
 | i18n | [Intlayer](https://intlayer.org) |
@@ -191,6 +191,14 @@ cp .env.example .env.local
 ```
 
 The app runs in **static mode** with zero configuration — landing page, blog, and docs work without a database. To enable auth and user features, set `DATABASE_URL` and `BETTER_AUTH_SECRET`.
+
+To enable crypto pricing and checkout UI, set `VITE_CRYPTO_PAYMENT_ENABLED=true`. You can also use `VITE_CRYPTO_ENABLED_CURRENCIES` to control which cryptocurrencies are displayed and their display order (usdc_sol,sol,usdt_erc20,usdt_trc20,btc,eth,trx,usdt_bep20,bnb_bsc).
+
+Crypto provider setup differs by route:
+
+- `solanapay`: no extra merchant service is required, but you must provide your own Solana receiving wallet with `SOLANAPAY_WALLET_ADDRESS`. `SOLANAPAY_RPC_URL` can use a public Solana RPC or your own RPC provider.
+- `payram`: no self-hosted blockchain node is required, but you do need your own PayRam account/API credentials and a publicly reachable app URL so PayRam webhooks can call back into `/api/payment/webhook/crypto/payram`.
+- `evm_direct` for BNB Smart Chain: no extra payment gateway account is required, but you must provide your own merchant wallet plus at least one BSC RPC endpoint with `EVM_DIRECT_MERCHANT_WALLET` and `BSC_RPC_URL`.
 
 ### 3. Set up database (optional)
 

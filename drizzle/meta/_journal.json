@@ -36,6 +36,13 @@
       "when": 1770484829409,
       "tag": "0004_tired_vermin",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1776266362949,
+      "tag": "0005_soft_sentinels",
+      "breakpoints": true
     }
   ]
 }

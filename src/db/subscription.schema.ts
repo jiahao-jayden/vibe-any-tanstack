@@ -8,6 +8,7 @@ export const paymentProviderEnum = pgEnum("payment_provider", [
   "paypal",
   "wechat",
   "alipay",
+  "crypto",
 ])
 
 export const subscriptionStatusEnum = pgEnum("subscription_status", [

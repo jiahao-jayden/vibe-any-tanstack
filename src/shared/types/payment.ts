@@ -4,11 +4,13 @@ import type {
   subscriptionIntervalEnum,
   subscriptionStatusEnum,
 } from "@/db/subscription.schema"
+import type { CryptoCurrencyId } from "./crypto"
 
 /**
  * Payment Provider - inferred from database enum
  */
 export type PaymentProvider = (typeof paymentProviderEnum.enumValues)[number]
+export type CheckoutProvider = PaymentProvider
 
 /**
  * Subscription Interval - inferred from database enum
@@ -64,6 +66,7 @@ export interface ProviderCustomers {
   paypal?: string
   wechat?: string
   alipay?: string
+  crypto?: string
 }
 
 /**
@@ -132,6 +135,7 @@ export interface PlanPrice {
   currency: string
   interval?: PlanInterval
   trialPeriodDays?: number
+  supportedCryptoCurrencies?: CryptoCurrencyId[]
 }
 
 /**

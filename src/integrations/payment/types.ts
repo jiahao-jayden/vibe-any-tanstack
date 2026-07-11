@@ -1,4 +1,5 @@
 import type {
+  CheckoutProvider,
   PaymentProvider,
   PaymentStatus,
   SubscriptionCycleType,
@@ -133,7 +134,7 @@ export interface UpdateSubscriptionResult {
  * Payment adapter interface
  */
 export interface PaymentAdapter {
-  readonly name: PaymentProvider
+  readonly name: CheckoutProvider
   readonly capabilities: AdapterCapabilities
 
   createCheckout(params: CreateCheckoutParams): Promise<CheckoutResult>

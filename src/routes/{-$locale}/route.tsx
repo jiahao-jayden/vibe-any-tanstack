@@ -3,7 +3,7 @@ import { createServerFn } from "@tanstack/react-start"
 import { getRequestHeader } from "@tanstack/react-start/server"
 import { getCookie, getPathWithoutLocale, getPrefix, Locales, validatePrefix } from "intlayer"
 import { IntlayerProvider, useLocale } from "react-intlayer"
-import { GlobalNotFoundComponent } from "@/shared/components/landing/not-found"
+import { GlobalNotFoundComponent } from "@/shared/components/landing/not-found/index"
 import { setLocaleCookie } from "@/shared/lib/locale/locale-cookie"
 
 const LOCALE_STORAGE_KEY = "INTLAYER_LOCALE"
@@ -79,10 +79,11 @@ export const Route = createFileRoute("/{-$locale}")({
         if (!localeParam) {
           const { localePrefix: storedPrefix } = getPrefix(storedLocale)
           const pathWithoutLocale = getPathWithoutLocale(location.pathname)
+          const localizedPath =
+            pathWithoutLocale === "/" ? `/${storedPrefix}` : `/${storedPrefix}${pathWithoutLocale}`
 
           throw redirect({
-            to: `/{-$locale}${pathWithoutLocale}` as string,
-            params: { locale: storedPrefix } as never,
+            href: localizedPath + window.location.search,
             replace: true,
           })
         } else {

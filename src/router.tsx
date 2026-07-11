@@ -1,6 +1,6 @@
 import { createRouter } from "@tanstack/react-router"
 import { setupRouterSsrQueryIntegration } from "@tanstack/react-router-ssr-query"
-import { GlobalNotFoundComponent } from "@/shared/components/landing/not-found"
+import { GlobalNotFoundComponent } from "@/shared/components/landing/not-found/index"
 import * as TanstackQuery from "./integrations/tanstack-query/root-provider"
 // Import the generated route tree
 import { routeTree } from "./routeTree.gen"

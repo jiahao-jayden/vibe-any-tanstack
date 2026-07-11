@@ -4,6 +4,19 @@ import { useEffect, useState } from "react"
 import { useIntlayer } from "react-intlayer"
 import { toast } from "sonner"
 import { getPlans } from "@/config/payment-config"
+import { isCryptoPaymentEnabled } from "@/integrations/payment/crypto/config"
+import {
+  getDefaultCryptoCurrencyId,
+  getEnabledCryptoCurrencies,
+} from "@/integrations/payment/crypto/currencies"
+import { CryptoCurrencySelector } from "@/shared/components/crypto/crypto-currency-selector"
+import {
+  getPaymentMethodDisplayLabel,
+  getLiveQuoteNote,
+  getPriceDisplay,
+  shouldShowLiveQuoteNote,
+  shouldShowPaymentMethod,
+} from "@/shared/components/landing/pricing/pricing-display"
 import { Button } from "@/shared/components/ui/button"
 import {
   Card,
@@ -18,17 +31,49 @@ import { RadioGroup, RadioGroupItem } from "@/shared/components/ui/radio-group"
 import { useGlobalContext } from "@/shared/context/global.context"
 import { useLocalizedNavigate } from "@/shared/hooks/use-localized-navigate"
 import { usePlanComparison } from "@/shared/hooks/use-plan-comparison"
-import { http } from "@/shared/lib/tools/http-client"
+import { HttpError, http } from "@/shared/lib/tools/http-client"
 import { cn } from "@/shared/lib/utils"
+import type { CryptoCurrencyId } from "@/shared/types/crypto"
 
 interface PricingCardsProps {
   variant?: "default" | "compact"
   onSuccess?: () => void
 }
 
+type PricingErrorMessages = {
+  paymentFailed: string
+  upgradeFailed: string
+  cryptoQuoteUnavailable: string
+  cryptoQuoteTimeout: string
+  cryptoQuoteInvalid: string
+}
+
+const cryptoEnabled = isCryptoPaymentEnabled()
+
+export function getPricingCheckoutErrorMessage(
+  error: unknown,
+  isUpgradeAction: boolean,
+  messages: PricingErrorMessages
+) {
+  if (error instanceof HttpError) {
+    switch (error.errorCode) {
+      case "crypto_quote_unavailable":
+        return messages.cryptoQuoteUnavailable
+      case "crypto_quote_timeout":
+        return messages.cryptoQuoteTimeout
+      case "crypto_quote_invalid":
+        return messages.cryptoQuoteInvalid
+      default:
+        break
+    }
+  }
+
+  return isUpgradeAction ? messages.upgradeFailed : messages.paymentFailed
+}
+
 export function PricingCards({ variant = "default", onSuccess }: PricingCardsProps) {
   const navigate = useLocalizedNavigate()
-  const { userInfo, isLoadingUserInfo } = useGlobalContext()
+  const { userInfo, isLoadingUserInfo, config } = useGlobalContext()
   const content = useIntlayer("pricing")
   const {
     activePlan,
@@ -41,8 +86,14 @@ export function PricingCards({ variant = "default", onSuccess }: PricingCardsPro
 
   const plans = getPlans()
   const isCompact = variant === "compact"
+  const defaultProvider = config?.public_payment_provider || "stripe"
 
   const [selectedPrices, setSelectedPrices] = useState<Record<string, number>>({})
+  const [selectedProviders, setSelectedProviders] = useState<Record<string, string>>({})
+  const [selectedCryptoCurrencies, setSelectedCryptoCurrencies] = useState<
+    Record<string, CryptoCurrencyId>
+  >({})
+  const [currentCryptoOrders, setCurrentCryptoOrders] = useState<Record<string, string>>({})
   const [loadingPlan, setLoadingPlan] = useState<{ planId: string; priceId: string } | null>(null)
 
   useEffect(() => {
@@ -71,7 +122,7 @@ export function PricingCards({ variant = "default", onSuccess }: PricingCardsPro
       return {
         title: planContent.title.value,
         description: planContent.description.value,
-        features: planContent.features.map((f) => f.value),
+        features: planContent.features.map((feature: { value: string }) => feature.value),
       }
     }
     return { title: planId, description: "", features: [] }
@@ -88,10 +139,16 @@ export function PricingCards({ variant = "default", onSuccess }: PricingCardsPro
     mutationFn: async ({
       planId,
       priceId,
+      provider,
+      cryptoCurrency,
+      currentOrderId,
       isUpgradeAction,
     }: {
       planId: string
       priceId: string
+      provider: string
+      cryptoCurrency?: CryptoCurrencyId
+      currentOrderId?: string
       isUpgradeAction: boolean
     }) => {
       if (!userInfo?.user) {
@@ -102,33 +159,63 @@ export function PricingCards({ variant = "default", onSuccess }: PricingCardsPro
 
       setLoadingPlan({ planId, priceId })
 
-      const endpoint = isUpgradeAction ? "/api/payment/upgrade" : "/api/payment/checkout"
+      const isCryptoCheckout = provider === "crypto"
+      const endpoint =
+        isUpgradeAction && !isCryptoCheckout ? "/api/payment/upgrade" : "/api/payment/checkout"
 
-      const data = await http<{ checkoutUrl?: string }>(endpoint, {
-        method: "POST",
-        body: {
-          planId,
-          priceId,
-          successUrl: `${window.location.origin}/dashboard/billing`,
-        },
-      })
+      const data = await http<{ checkoutUrl?: string; orderId?: string; provider?: string }>(
+        endpoint,
+        {
+          method: "POST",
+          silent: isCryptoCheckout,
+          body: {
+            planId,
+            priceId,
+            provider,
+            currentOrderId,
+            successUrl: `${window.location.origin}/dashboard/billing`,
+            metadata: {
+              ...(isCryptoCheckout && cryptoCurrency ? { cryptoCurrency } : {}),
+            },
+          },
+        }
+      )
 
-      return { data, isUpgradeAction }
+      return { data, isUpgradeAction, provider, planId, priceId }
     },
     onSuccess: (res) => {
-      if (res?.isUpgradeAction) {
+      if (!res) {
+        return
+      }
+
+      if (res.provider === "crypto" && res.data?.orderId) {
+        setCurrentCryptoOrders((previous) => ({
+          ...previous,
+          [`${res.planId}:${res.priceId}`]: res.data!.orderId!,
+        }))
+        ;(navigate as (to: string) => void)(`/checkout/crypto/${res.data.orderId}`)
+        return
+      }
+
+      if (res.isUpgradeAction) {
         toast.success("Subscription upgraded successfully!")
         onSuccess?.()
         window.location.reload()
-      } else if (res?.data?.checkoutUrl) {
+      } else if (res.data?.checkoutUrl) {
         window.location.href = res.data.checkoutUrl
       } else {
         toast.error(content.paymentFailed.value)
       }
     },
-    onError: (_, variables) => {
+    onError: (error, variables) => {
       toast.error(
-        variables.isUpgradeAction ? content.upgradeFailed.value : content.paymentFailed.value
+        getPricingCheckoutErrorMessage(error, variables.isUpgradeAction, {
+          paymentFailed: content.paymentFailed.value,
+          upgradeFailed: content.upgradeFailed.value,
+          cryptoQuoteUnavailable: content.cryptoQuoteUnavailable.value,
+          cryptoQuoteTimeout: content.cryptoQuoteTimeout.value,
+          cryptoQuoteInvalid: content.cryptoQuoteInvalid.value,
+        })
       )
       setLoadingPlan(null)
     },
@@ -145,6 +232,25 @@ export function PricingCards({ variant = "default", onSuccess }: PricingCardsPro
         const displayPrice = plan.prices?.[selectedIndex]
         const isPopular = plan.display?.isRecommended
         const planContent = getPlanContent(plan.id)
+        const providerKey = `${plan.id}:${displayPrice?.priceId || "default"}`
+        const supportedCryptoCurrencies = displayPrice?.supportedCryptoCurrencies ?? []
+        const cryptoCurrencies = getEnabledCryptoCurrencies(supportedCryptoCurrencies).map(
+          (currency) => ({
+            id: currency.id,
+            label: currency.label,
+          })
+        )
+        const defaultCryptoCurrency = getDefaultCryptoCurrencyId(supportedCryptoCurrencies)
+        const hasCryptoOption = !!displayPrice && cryptoEnabled && cryptoCurrencies.length > 0
+        const selectedProvider = selectedProviders[providerKey] || defaultProvider
+        const selectedCryptoCurrency =
+          selectedCryptoCurrencies[providerKey] &&
+          cryptoCurrencies.some((currency) => currency.id === selectedCryptoCurrencies[providerKey])
+            ? selectedCryptoCurrencies[providerKey]
+            : defaultCryptoCurrency
+        const currentPriceDisplay = displayPrice
+          ? getPriceDisplay(displayPrice, selectedProvider, selectedCryptoCurrency)
+          : null
 
         return (
           <Card
@@ -180,7 +286,9 @@ export function PricingCards({ variant = "default", onSuccess }: PricingCardsPro
                     {displayPrice ? (
                       <>
                         <span className={cn("font-bold", isCompact ? "text-2xl" : "text-3xl")}>
-                          ${displayPrice.amount / 100}
+                          {currentPriceDisplay?.isCrypto
+                            ? `${currentPriceDisplay.amountText} ${currentPriceDisplay.unitText}`
+                            : `${currentPriceDisplay?.unitText}${currentPriceDisplay?.amountText}`}
                         </span>
                         <span className="text-sm text-muted-foreground">
                           /{getIntervalText(displayPrice.interval)}
@@ -204,28 +312,40 @@ export function PricingCards({ variant = "default", onSuccess }: PricingCardsPro
                       }}
                       className={cn("mt-4 space-y-2", isCompact && "mt-2 space-y-1")}
                     >
-                      {plan.prices.map((price, idx) => (
-                        <div
-                          key={idx}
-                          className="flex items-center space-x-2"
-                        >
-                          <RadioGroupItem
-                            value={idx.toString()}
-                            id={`${plan.id}-price-${idx}`}
-                          />
-                          <Label
-                            htmlFor={`${plan.id}-price-${idx}`}
-                            className={cn("cursor-pointer", isCompact && "text-sm")}
+                      {plan.prices.map((price, idx) => {
+                        const optionPriceDisplay = getPriceDisplay(
+                          price,
+                          selectedProvider,
+                          selectedCryptoCurrency
+                        )
+
+                        return (
+                          <div
+                            key={idx}
+                            className="flex items-center space-x-2"
                           >
-                            ${price.amount / 100} / {getIntervalText(price.interval)}
-                            {price.interval === "year" && (
-                              <span className="ml-2 text-xs text-green-600">
-                                {content.save20.value}
-                              </span>
-                            )}
-                          </Label>
-                        </div>
-                      ))}
+                            <RadioGroupItem
+                              value={idx.toString()}
+                              id={`${plan.id}-price-${idx}`}
+                            />
+                            <Label
+                              htmlFor={`${plan.id}-price-${idx}`}
+                              className={cn("cursor-pointer", isCompact && "text-sm")}
+                            >
+                              {optionPriceDisplay.isCrypto
+                                ? `${optionPriceDisplay.amountText} ${optionPriceDisplay.unitText}`
+                                : `${optionPriceDisplay.unitText}${optionPriceDisplay.amountText}`}
+                              {" /"}
+                              {getIntervalText(price.interval)}
+                              {price.interval === "year" && (
+                                <span className="ml-2 text-xs text-green-600">
+                                  {content.save20.value}
+                                </span>
+                              )}
+                            </Label>
+                          </div>
+                        )
+                      })}
                     </RadioGroup>
                   )}
                 </div>
@@ -241,7 +361,7 @@ export function PricingCards({ variant = "default", onSuccess }: PricingCardsPro
                   )}
                 >
                   {(isCompact ? planContent.features.slice(0, 4) : planContent.features).map(
-                    (feature, index) => (
+                    (feature: string, index: number) => (
                       <li
                         key={index}
                         className="flex items-center gap-2"
@@ -257,6 +377,93 @@ export function PricingCards({ variant = "default", onSuccess }: PricingCardsPro
                     </li>
                   )}
                 </ul>
+
+                {displayPrice && shouldShowPaymentMethod(hasCryptoOption) && (
+                  <div className="space-y-3 rounded-xl border border-dashed p-3">
+                    <div className="space-y-2">
+                      <div className="text-xs font-medium text-muted-foreground">
+                        {content.paymentMethodLabel.value}
+                      </div>
+                      <RadioGroup
+                        value={selectedProvider}
+                        onValueChange={(value) =>
+                          setSelectedProviders((prev) => ({
+                            ...prev,
+                            [providerKey]: value,
+                          }))
+                        }
+                        className="space-y-2"
+                      >
+                        <div className="flex items-center space-x-2">
+                          <RadioGroupItem
+                            value={defaultProvider}
+                            id={`${providerKey}-default`}
+                          />
+                          <Label
+                            htmlFor={`${providerKey}-default`}
+                            className="cursor-pointer"
+                          >
+                            {getPaymentMethodDisplayLabel(
+                              defaultProvider,
+                              {
+                                fiatLabel: content.defaultProviderLabel.value,
+                                cardLabel: content.cardProviderLabel.value,
+                                paypalLabel: content.paypalProviderLabel.value,
+                                wechatLabel: content.wechatProviderLabel.value,
+                                alipayLabel: content.alipayProviderLabel.value,
+                              }
+                            )}
+                          </Label>
+                        </div>
+
+                        {hasCryptoOption && (
+                          <div className="flex items-center space-x-2">
+                            <RadioGroupItem
+                              value="crypto"
+                              id={`${providerKey}-crypto`}
+                            />
+                            <Label
+                              htmlFor={`${providerKey}-crypto`}
+                              className="cursor-pointer"
+                            >
+                              {content.cryptoProviderLabel.value}
+                            </Label>
+                          </div>
+                        )}
+                      </RadioGroup>
+                    </div>
+
+                    {selectedProvider === "crypto" && hasCryptoOption && (
+                      <div className="space-y-2">
+                        <div className="text-xs font-medium text-muted-foreground">
+                          {content.cryptoCurrencyLabel.value}
+                        </div>
+                        <CryptoCurrencySelector
+                          value={selectedCryptoCurrency}
+                          options={cryptoCurrencies}
+                          onValueChange={(value) =>
+                            setSelectedCryptoCurrencies((prev) => ({
+                              ...prev,
+                              [providerKey]: value,
+                            }))
+                          }
+                          ariaLabel={content.cryptoCurrencyLabel.value}
+                        />
+                        <p className="text-xs text-muted-foreground">
+                          {content.cryptoDisclaimer.value}
+                        </p>
+                        {shouldShowLiveQuoteNote(selectedProvider, selectedCryptoCurrency) && (
+                          <p className="text-xs text-muted-foreground">
+                            {getLiveQuoteNote(
+                              content.cryptoLiveQuoteNotice.value,
+                              selectedCryptoCurrency
+                            )}
+                          </p>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                )}
               </CardContent>
 
               <CardFooter className={cn("pt-4", isCompact && "p-4 pt-0")}>
@@ -272,6 +479,16 @@ export function PricingCards({ variant = "default", onSuccess }: PricingCardsPro
                     const isCurrent = isCurrentPlan(plan, selectedPrice.priceId)
                     const isPlanDowngrade = isDowngrade(plan, selectedPrice.priceId)
                     const isPlanUpgrade = isUpgrade(plan, selectedPrice.priceId)
+                    const selectedProviderKey = `${plan.id}:${selectedPrice.priceId}`
+                    const provider = selectedProviders[selectedProviderKey] || defaultProvider
+                    const cryptoCurrency =
+                      selectedCryptoCurrencies[selectedProviderKey] &&
+                      cryptoCurrencies.some(
+                        (currency) => currency.id === selectedCryptoCurrencies[selectedProviderKey]
+                      )
+                        ? selectedCryptoCurrencies[selectedProviderKey]
+                        : defaultCryptoCurrency
+                    const currentOrderId = currentCryptoOrders[selectedProviderKey]
 
                     return (
                       <Button
@@ -292,11 +509,18 @@ export function PricingCards({ variant = "default", onSuccess }: PricingCardsPro
                           handlePayment({
                             planId: plan.id,
                             priceId: selectedPrice.priceId,
-                            isUpgradeAction: isPlanUpgrade,
+                            provider,
+                            cryptoCurrency: cryptoCurrency ?? undefined,
+                            currentOrderId,
+                            isUpgradeAction: provider === "crypto" ? false : isPlanUpgrade,
                           })
                         }}
                         disabled={
-                          isAnyButtonLoading || isCurrent || isPlanDowngrade || isLoadingUserInfo
+                          isAnyButtonLoading ||
+                          isCurrent ||
+                          isPlanDowngrade ||
+                          isLoadingUserInfo ||
+                          (provider === "crypto" && !cryptoCurrency)
                         }
                       >
                         {isCurrentButtonLoading ? (
@@ -313,7 +537,7 @@ export function PricingCards({ variant = "default", onSuccess }: PricingCardsPro
                           content.currentPlan.value
                         ) : isPlanDowngrade ? (
                           content.downgradePlan.value
-                        ) : isPlanUpgrade ? (
+                        ) : isPlanUpgrade && provider !== "crypto" ? (
                           content.upgradePlan.value
                         ) : (
                           content.getStarted.value

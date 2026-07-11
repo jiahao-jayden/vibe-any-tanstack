@@ -1,7 +1,8 @@
 import { getAllConfigs } from "@/shared/model/config.model"
-import type { PaymentProvider } from "@/shared/types/payment"
+import type { CheckoutProvider, PaymentProvider } from "@/shared/types/payment"
 import { CreemAdapter } from "./adapters/creem"
 import { StripeAdapter } from "./adapters/stripe"
+import { CryptoPaymentAdapter } from "./crypto/adapter"
 import type { PaymentAdapter } from "./types"
 
 export type { PaymentAdapter } from "./types"
@@ -10,7 +11,7 @@ export * from "./types"
 /**
  * Get payment adapter by provider name
  */
-export async function getPaymentAdapter(provider: PaymentProvider): Promise<PaymentAdapter> {
+export async function getPaymentAdapter(provider: CheckoutProvider): Promise<PaymentAdapter> {
   const configs = await getAllConfigs()
 
   switch (provider) {
@@ -38,6 +39,9 @@ export async function getPaymentAdapter(provider: PaymentProvider): Promise<Paym
     case "alipay":
       // TODO: Implement AlipayAdapter
       throw new Error("Alipay adapter not implemented yet")
+
+    case "crypto":
+      return new CryptoPaymentAdapter()
 
     default:
       throw new Error(`Unsupported payment provider: ${provider}`)
